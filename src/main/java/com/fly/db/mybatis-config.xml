@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- 해당 xml파일을 mybatis로 쓰기 위한 설정 -->
+
+<!-- DB에 대한 연결, 설정을 지정하는 태그 -->
+<configuration>
+  <!-- enviroments : web 프로젝트에서 사용할 데이터베이스를 기술하는 공간 ! -->
+  <environments default="development">
+ 	 <!-- enviroment : 데이터베이스 1개에 대한 정보들 서술하는 공간 !   -->
+    <environment id="development">
+      <!-- transactionManager : 트랜잭션을 관리하는 방식을 지정하는 공간 !  -->  
+      <transactionManager type="JDBC"/>
+      
+      <!-- dataSource : 실제 사용할 DB의 정보를 기재하는 공간 !   -->
+      <dataSource type="POOLED">
+        <property name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@localhost:1521:XE"/>
+        <property name="username" value="hr"/>
+        <property name="password" value="hr"/>
+      </dataSource>
+    </environment>
+  </environments>
+  <!-- mappers : 위에 적힌 DB 정보들로 실제 실행할 sql구문을 담고 있는 Mapper.xml과 
+  		연결 시켜주는 태그 !
+    -->
+  <mappers>
+  	<!-- mapper 파일이 여러개 생긴ㄷ나면? 그 개수만큼 mapper 태그 추가해주기 -->
+    <mapper resource="com/fly/db/MemberMapper.xml"/>
+  </mappers>
+</configuration>
