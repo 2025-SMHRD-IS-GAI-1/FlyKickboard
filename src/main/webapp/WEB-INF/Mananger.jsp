@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@page import="javax.websocket.Session"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 
-    pageEncoding="UTF-8"%>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -9,7 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>관리자 메뉴</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="system.css" />
+  <link rel="stylesheet" href="${ctx}/assets/css/ManangerPage.css" />
 </head>
 <body>
   <!-- 상단바 -->
@@ -21,7 +21,9 @@
     </nav>
     <div class="spacer"></div>
     <button class="ghost">관리자메뉴</button>
-    <button class="ghost">로그아웃</button>
+    <a href="logout.do">
+      	<button class="ghost">로그아웃</button>
+      </a>
   </header>
 
   <main class="wrap">
