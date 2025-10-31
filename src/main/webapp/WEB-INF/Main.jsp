@@ -18,11 +18,13 @@
       <div class="logo">날아라킥보드</div>
       <nav class="nav">
         <button id="livebutton" class="nav-btn active">실시간</button>
-        <a href="find.do">
-        	<button class="nav-btn">감지 이력 조회</button>
-        </a>
+       	<button class="nav-btn">감지 이력 조회</button>
+        
       </nav>
-      <button class="admin-btn">관리자 메뉴</button>
+      <a href="Manager.do">
+      	<button class="admin-btn">관리자 메뉴</button>
+      </a>
+      
       <a href="logout.do">
       	<button class="login-btn">로그아웃</button>
       </a>

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fly.controller.ManangerService;
 import com.fly.controller.LoginService;
 import com.fly.controller.LogoutService;
 import com.fly.frontcontroller.Command;
@@ -27,6 +28,7 @@ public class FrontController extends HttpServlet {
 		
 		map.put("Login.do", new LoginService());
 		map.put("logout.do", new LogoutService());
+		map.put("Manager.do", new ManangerService());
 	}
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
