@@ -1,0 +1,344 @@
+/* ✅ 전체 공통: 기본 글꼴/배경/글자색 */
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  background-color: #f8f9fb;
+  color: #333;
+}
+
+/* ============================= */
+/* 상단바 (Topbar) 디자인 영역   */
+/* ============================= */
+.topbar {
+  /* 파란 그라데이션 배경 (좌→우) */
+  background: linear-gradient(90deg, #1552d6 0%, #0e3ea9 100%);
+  color: #ffffff;                 /* 상단바 안의 기본 글자색 */
+  display: flex;                  /* 좌우 정렬 위해 플렉스 사용 */
+  align-items: center;            /* 수직 가운데 정렬 */
+  justify-content: space-between; /* 양 끝 정렬: 브랜드 / 탭 / 버튼 */
+  padding: 14px 28px;             /* 상단바 안쪽 여백 */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* 살짝 그림자 */
+}
+
+/* 로고/브랜드 텍스트 */
+.topbar .brand {
+  font-weight: 800;
+  font-size: 20px;
+}
+
+/* 탭(실시간, 감지 이력 조회) 래퍼 */
+.topbar .tabs {
+  display: flex;
+  gap: 24px;          /* 탭 간 간격 */
+  margin-left: 24px;  /* 브랜드와 탭 사이 간격 */
+}
+
+/* 탭 기본 링크 스타일 */
+.topbar .tab {
+  color: #cfe0ff;           /* 비활성 색상 */
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s;         /* hover 시 색상 전환 부드럽게 */
+  padding-bottom: 2px;       /* 활성 밑줄 자리 확보 */
+}
+
+/* 탭 호버 시 */
+.topbar .tab:hover { color: #ffffff; }
+
+/* 활성 탭(현재 페이지) 표시 */
+.topbar .tab.active {
+  color: #ffffff;
+  border-bottom: 2px solid #ffffff; /* 밑줄 강조 */
+}
+
+/* 오른쪽 상단 고스트 버튼(관리자메뉴/로그아웃) */
+button.ghost {
+  background: transparent;      /* 투명 배경 */
+  border: 1px solid #ffffff;    /* 흰 테두리 */
+  color: #ffffff;               /* 흰 글씨 */
+  border-radius: 6px;
+  padding: 6px 14px;
+  margin-left: 8px;             /* 버튼 간 간격 */
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+/* 고스트 버튼 hover 효과 */
+button.ghost:hover { background-color: rgba(255,255,255,0.2); }
+
+/* ============================= */
+/* 페이지 공통 레이아웃          */
+/* ============================= */
+.wrap { padding: 40px 60px; }
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* ============================= */
+/* 상단 액션 영역 (버튼/검색)    */
+/* ============================= */
+.actions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* 공통 버튼 */
+.btn {
+  display: inline-block;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn.small { font-size: 14px; }
+
+/* 기본 파란 버튼 */
+.btn.primary {
+  background-color: #1552d6;
+  color: #ffffff;
+}
+.btn.primary:hover { background-color: #0e3ea9; }
+
+/* 검색창 */
+.search { display: flex; align-items: center; gap: 6px; }
+.search input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.search-btn {
+  border: none;
+  background-color: #1552d6;
+  color: #fff;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.search-btn:hover { background-color: #0e3ea9; }
+
+/* ============================= */
+/* 테이블 카드 영역              */
+/* ============================= */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* 테이블 래퍼(세로 쌓기) */
+.table {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* 헤더/행 공통 그리드: 5열(ID/지역/권한/액션/비고) */
+.thead, .tr {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  padding: 12px 8px;
+  align-items: center;
+}
+
+/* 헤더 스타일(파란 배경) */
+.thead {
+  background-color: #1552d6;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 8px 8px 0 0;
+}
+
+/* 짝수 행에 옅은 배경 */
+.tr:nth-child(even) { background-color: #f5f7ff; }
+
+/* 셀 정렬 공통 */
+.td, .th { text-align: center; }
+
+/* 권한이 '관리자'일 때 강조 */
+.role.hot {
+  color: #e53935;
+  font-weight: 700;
+}
+
+/* 수정/삭제 링크 색상 */
+a.edit, a.del {
+  color: #5b46f2;
+  text-decoration: none;
+  font-weight: 500;
+}
+a.edit:hover, a.del:hover { text-decoration: underline; }
+
+/* ============================= */
+/* 페이지네이션 (숫자형 버튼 스타일) */
+/* ============================= */
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 16px;                 /* 버튼 사이 간격 */
+  font-size: 14px;
+  justify-content: center;   /* 가운데 정렬 */
+  margin-top: 20px;
+}
+/* ============================= */
+/* 하단 페이징 (‹ Previous / Next › 수정완료) */
+/* ============================= */
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 16px;                 /* 버튼 간 간격 */
+  font-size: 14px;
+  justify-content: center;   /* 가운데 정렬 */
+  margin-top: 20px;
+}
+
+/* 이전 / 다음 버튼 (박스 없이 검정 텍스트) */
+.table-foot .pager .ghost {
+  color: #000000;            /* ✅ 글자색 검정 */
+  border: none;              /* ✅ 테두리 제거 */
+  background: transparent;   /* ✅ 배경 투명 */
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.table-foot .pager .ghost:hover {
+  background: transparent;   /* hover 시에도 투명 유지 */
+  color: #000000;            /* 유지: 검정 */
+  text-decoration: underline;/* ✅ hover 시 밑줄로 구분감 */
+}
+
+/* 숫자 버튼 기본 */
+.pager .page-btn {
+  background: transparent;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #222;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+/* 현재 페이지 (활성) */
+.pager .page-btn.active {
+  border: 1px solid #dcdcdc;
+  background-color: #ffffff;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+/* 클릭 불가 상태 */
+.pager .page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+
+.table-foot .pager .ghost {
+  color: #000000;               /* ✅ 글자색 검정 */
+  border: 1px solid #ccc;       /* 연한 회색 테두리 */
+  background: transparent;      /* 배경 투명 */
+}
+
+.table-foot .pager .ghost:hover {
+  background-color: #f0f0f0;    /* hover 시 살짝 회색 배경 */
+  color: #000000;               /* 유지: 검정 */
+  border-color: #bbb;           /* hover 시 테두리 살짝 진하게 */
+}
+
+/* 숫자 버튼 기본 */
+.pager .page-btn {
+  background: transparent;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 8px;        /* 둥근 사각형 */
+  cursor: pointer;
+  color: #222;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+/* 현재 페이지 (활성) */
+.pager .page-btn.active {
+  border: 1px solid #dcdcdc; /* 옅은 회색 테두리 */
+  background-color: #ffffff;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+/* 클릭 불가 상태 */
+.pager .page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 혹시 기존 .pager button 규칙이 적용될 경우 무력화 */
+.pager > button {
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+}
+
+
+/* ============================= */
+/* 모달 (사용자 추가 창)         */
+/* ============================= */
+.modal { display: none; }              /* 기본 숨김 */
+
+/* 체크박스가 체크되면 모달 표시 */
+.hide:checked ~ .modal { display: block; }
+
+/* 딤드 배경 */
+.modal .dim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+/* 모달 다이얼로그 박스 */
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 10px;
+  width: 360px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* 모달 헤더 */
+.dialog-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.dialog-head h2 { margin: 0; font-size: 18px; font-weight: 700; }
+.close { cursor: pointer; font-size: 20px; }
+
+/* 폼 필드 */
+.field { display: flex; flex-direction: column; margin-bottom: 12px; }
+.label { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* 모달 하단 버튼 영역 */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
