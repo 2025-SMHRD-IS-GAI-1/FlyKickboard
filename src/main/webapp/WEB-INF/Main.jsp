@@ -1,13 +1,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@page import="javax.websocket.Session"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>  
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI기반 킥보드 위반 감지 대시보드</title>
-  <link rel="stylesheet" href="main.css" />
+  <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -16,11 +17,16 @@
     <header class="header">
       <div class="logo">날아라킥보드</div>
       <nav class="nav">
-        <button class="nav-btn active">실시간</button>
-        <button class="nav-btn">감지 이력 조회</button>
+        <button id="livebutton" class="nav-btn active">실시간</button>
+        <a href="find.do">
+        	<button class="nav-btn">감지 이력 조회</button>
+        </a>
       </nav>
       <button class="admin-btn">관리자 메뉴</button>
-      <button class="login-btn">로그인</button>
+      <a href="logout.do">
+      	<button class="login-btn">로그아웃</button>
+      </a>
+      
     </header>
 
     <!-- 메인 콘텐츠 -->
