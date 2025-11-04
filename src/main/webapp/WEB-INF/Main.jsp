@@ -9,62 +9,140 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI기반 킥보드 위반 감지 대시보드</title>
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
+  <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> <!-- 관리자 메뉴 전용 -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
   <div class="container">
-    <!-- 헤더 -->
+   <!-- 상단 헤더 -->
     <header class="header">
       <div class="logo">날아라킥보드</div>
-      <nav class="nav">
-        <button id="livebutton" class="nav-btn active">실시간</button>
-       	<button class="nav-btn">감지 이력 조회</button>
-        
+      <nav class="nav" aria-label="주요 탭">
+      	<a href="Main.do">
+      		<button class="nav-btn" type="button">실시간</button>
+      	</a>
+      	<a href="Log.do">
+      		<button class="nav-btn" type="button">감지 이력 조회</button>
+      	</a>      
       </nav>
+      
+      <div class="actions" aria-label="사용자 메뉴">
       <a href="Manager.do">
-      	<button class="admin-btn">관리자 메뉴</button>
+      	<button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
       </a>
-      
-      <a href="logout.do">
-      	<button class="login-btn">로그아웃</button>
-      </a>
-      
+        
+        <button class="login-btn" type="button" data-action="logout">로그아웃</button>
+      </div>
     </header>
 
     <!-- 메인 콘텐츠 -->
     <main class="main-content">
-      <!-- 감지 위치 -->
-      <section class="map-section">
-        <h2>감지 위치</h2>
-        <div class="map-box">
-          <img src="https://i.imgur.com/FKX3v5T.png" alt="지도 이미지 예시" class="map-img" />
-        </div>
+      <section class="map-section" aria-labelledby="mapTitle">
+        <h2 id="mapTitle">감지 위치</h2>
+        <!--  실제 네이버 지도가 표시될 영역 -->
+        <div id="map" style="width:100%; height:500px; border-radius:12px;"></div>
       </section>
 
       <!-- 최근 감지 이력 -->
-      <section class="history-section">
-        <h2>최근 감지 이력</h2>
-        <div class="summary-box">
-          <div class="summary-card helmet">
-            <div class="count"></div>
-            <p><br><span></span></p>
+      <section class="history-section" aria-labelledby="historyTitle">
+        <h2 id="historyTitle">최근 감지 이력</h2>
+
+        <div class="summary-box" role="group" aria-label="감지 요약">
+          <div class="summary-card helmet" aria-label="헬멧 미착용 건수">
+            <div class="count" id="cntHelmet">0</div>
+            <p>헬멧 미착용</p>
           </div>
-          <div class="summary-card double">
-            <div class="count"></div>
-            <p><br><span></span>
+          <div class="summary-card double" aria-label="2인 탑승 건수">
+            <div class="count" id="cntDouble">0</div>
+            <p>2인 탑승</p>
           </div>
         </div>
 
-        <ul class="history-list">
-
-          <li>
-            <span class="dot helmet"></span>
-            <span class="region"></span>
-            <span class="time"></span>
-          </li>
+        <ul class="history-list" id="historyList" aria-live="polite">
+          <!-- JS에서 li 자동 추가 -->
         </ul>
       </section>
     </main>
   </div>
+
+  <!--  네이버 지도 API (YOUR_CLIENT_ID를 실제 키로 교체하세요) -->
+  <script type="text/javascript"
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=abcd1234efgh5678ijkl">
+  document.addEventListener("DOMContentLoaded", () => {
+	  initNaverMapAndLoad();   // 지도 + 마커
+	  loadRecentHistory();     // 최근 이력 + 카운트
+	});
+
+	/* 지도와 마커 */
+	async function initNaverMapAndLoad() {
+	  try {
+	    // DB에서 좌표/유형/시간/위치 등 가져오기
+	    const res = await fetch("/api/mapdata", { headers: { "Accept": "application/json" } });
+	    if (!res.ok) throw new Error("지도 데이터 응답 오류");
+	    const points = await res.json(); // [{lat,lng,type,time,location}, ...]
+
+	    // 초기 중심
+	    const center = points.length
+	      ? new naver.maps.LatLng(points[0].lat, points[0].lng)
+	      : new naver.maps.LatLng(35.1605, 126.8514);
+
+	    const map = new naver.maps.Map("map", {
+	      center,
+	      zoom: 14,
+	      mapTypeControl: true
+	    });
+
+	    /* 지도 생성 직후 위반유형 범례 */
+	    const legendEl = document.getElementById("mapLegend");
+	    if (legendEl) {
+	      legendEl.style.display = "block";
+	      document.getElementById("map").appendChild(legendEl);
+	    }
+
+	    /* 붉은 번짐 원 */
+	    points.forEach((p) => {
+	      const position = new naver.maps.LatLng(p.lat, p.lng);
+	      new naver.maps.Circle({
+	        map,
+	        center: position,
+	        radius: 160,
+	        strokeOpacity: 0,
+	        fillColor: "#ff0000",
+	        fillOpacity: 0.25
+	      });
+	    });
+
+	  } catch (e) {
+	    console.error(e);
+
+	    //  지도가 필수라면 빈 지도라도 생성
+	    const map = new naver.maps.Map("map", {
+	      center: new naver.maps.LatLng(35.1605, 126.8514),
+	      zoom: 14
+	    });
+
+	    // 지도 안쪽 좌하단에 범례 추가
+	    const legendEl = document.getElementById("mapLegend");
+	    if (legendEl) {
+	      legendEl.style.display = "block";
+	      document.getElementById("map").appendChild(legendEl); 
+	    }
+	  }
+	} 
+
+
+
+	    // 범례 표시
+	    const legendEl = document.getElementById("mapLegend");
+	    if (legendEl) {
+	      legendEl.style.display = "block";
+	      map.controls[naver.maps.Position.LEFT_BOTTOM].push(legendEl);
+	    }
+  </script>
+
+  <!--  main.js (지도+데이터 로직) -->
+  <script src="main.js"></script>
 </body>
 </html>
+

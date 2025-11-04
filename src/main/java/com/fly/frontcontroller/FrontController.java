@@ -13,8 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fly.controller.ManangerService;
+import com.fly.controller.AllManagerService;
+import com.fly.controller.DeleteService;
+import com.fly.controller.JoinService;
+import com.fly.controller.LogService;
 import com.fly.controller.LoginService;
 import com.fly.controller.LogoutService;
+import com.fly.controller.MainService;
 import com.fly.frontcontroller.Command;
 
 @WebServlet("*.do")
@@ -25,10 +30,14 @@ public class FrontController extends HttpServlet {
 	@Override
 	public void init (ServletConfig config) throws ServletException {
 		map = new HashMap<String, Command>();
-		
+		map.put("Main.do", new MainService());
+		map.put("Join.do", new JoinService());
 		map.put("Login.do", new LoginService());
 		map.put("logout.do", new LogoutService());
 		map.put("Manager.do", new ManangerService());
+		map.put("Log.do", new LogService());
+		map.put("Delete.do", new DeleteService());
+		map.put("Manager.do", new AllManagerService());
 	}
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -60,7 +69,7 @@ public class FrontController extends HttpServlet {
 			// ex) Gomain.do
 			// main.jsp 파일로 forward 방식 이동
 			// 최종적으로 이동해야하는 경로를 만들어주는 작업
-			MoveUrl = FinalUrl.substring(2).replaceAll("do", "jsp");
+			MoveUrl = FinalUrl.substring(2).replaceAll("do", "jsp");  
 		} else {
 			com = map.get(FinalUrl);
 			MoveUrl = com.execute(request, response);

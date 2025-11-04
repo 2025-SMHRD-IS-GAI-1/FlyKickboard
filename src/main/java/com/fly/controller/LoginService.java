@@ -19,13 +19,21 @@ public class LoginService implements Command {
 		mvo.setId(id);
 		mvo.setPw(pw);
 		
+		System.out.println(mvo.getId());
 		MemberDAO dao = new MemberDAO();
 		MemberVO login = dao.Login(mvo);
 		
+		System.out.println(login);
+		
+//		System.out.println(login.getId());
 		if (login != null) {
 			System.out.println("로그인 성공 !");
 			HttpSession session = request.getSession();
 			session.setAttribute("login", login);
+			System.out.println(login.getId());
+			dao.LastLogin(login.getId());
+		} else {
+			System.out.println("실패151");
 		}
 		return "redirect:/GoMain.do";
 	}
