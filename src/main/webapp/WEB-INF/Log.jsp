@@ -7,13 +7,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI기반 킥보드 위반 감지 대시보드</title>
+  <title>감지 이력 조회 - 날아라킥보드</title>
+
+  <!-- 공통 폰트, 스타일 -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="main.css" />
+  <link rel="stylesheet" href="main.css" /> <!-- 헤더 공통 -->
+  <link rel="stylesheet" href="logs.css" /> <!-- 감지이력 전용 -->
 </head>
-<body>
+
+<!-- 컨텍스트/로그인 경로 지정  -->
+<body data-ctx="/FlyKickboard" data-login="pages/LoginPage.html">
   <div class="container">
+
     <!-- 상단 헤더 -->
     <header class="header">
       <div class="logo">날아라킥보드</div>
@@ -24,46 +30,129 @@
       </nav>
       
       <div class="actions" aria-label="사용자 메뉴">
+        <!-- 현재 페이지 표시: aria-current 병행 -->
         <button class="admin-btn active" type="button" data-route="system.html" aria-current="page">관리자 메뉴</button>
+        <!-- 규약 통일: 로그아웃 버튼 클래스는 .login-btn 사용 -->
         <button class="login-btn" type="button" data-action="logout">로그아웃</button>
       </div>
     </header>
 
-    <!-- 메인 콘텐츠 -->
-    <main class="main-content">
-      <section class="map-section" aria-labelledby="mapTitle">
-        <h2 id="mapTitle">감지 위치</h2>
-        <!--  실제 네이버 지도가 표시될 영역 -->
-        <div id="map" style="width:100%; height:500px; border-radius:12px;"></div>
-      </section>
+    <!-- 본문 -->
+    <main class="main-content" role="main">
+      <section class="logs-section" aria-labelledby="logsTitle">
+        <h2 id="logsTitle">감지 이력 조회</h2>
 
-      <section class="history-section" aria-labelledby="historyTitle">
-        <h2 id="historyTitle">최근 감지 이력</h2>
+<div class="toolbar">
+  <div class="toolbar-left">
+    <!-- 날짜 + 검색 -->
+    <label><input type="date" id="startDate" /></label>
+    <span>~</span>
+    <label><input type="date" id="endDate" /></label>
+    <button class="btn-search" type="button">검색</button>
 
-        <div class="summary-box" role="group" aria-label="감지 요약">
-          <div class="summary-card helmet" aria-label="헬멧 미착용 건수">
-            <div class="count" id="cntHelmet">0</div>
-            <p>헬멧 미착용</p>
-          </div>
-          <div class="summary-card double" aria-label="2인 탑승 건수">
-            <div class="count" id="cntDouble">0</div>
-            <p>2인 탑승</p>
-          </div>
+    <!-- 분류 버튼 + 필터패널 -->
+    <div class="filter-wrapper">
+      <button class="btn-filter" id="btnFilter" type="button">분류</button>
+      <div class="filter-panel" id="filterPanel" role="dialog" aria-label="분류 필터">
+        <div class="filter-group">
+          <span class="filter-label">상태</span>
+          <button class="filter-option">전체</button>
+          <button class="filter-option">처리완료</button>
+          <button class="filter-option">처리중</button>
+          <button class="filter-option">처리전</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">감지 유형</span>
+          <button class="filter-option">전체</button>
+          <button class="filter-option">헬멧 미착용</button>
+          <button class="filter-option">2인 탑승</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 동작기능 버튼 -->
+  <div class="toolbar-right">
+    <button type="button" class="btn blue" id="btnSend">전송</button>
+    <button type="button" class="btn blue" id="btnPrint">출력</button>
+    <button type="button" class="btn red" id="btnDelete">삭제</button>
+  </div>
+</div>
+
+
+
+
+      <!-- 감지이력 테이블 -->
+      <table class="logs-table" aria-label="감지 이력 테이블">
+    <thead>
+       <tr>
+      <th scope="col">
+        <input type="checkbox" id="checkAll" aria-label="전체 선택" />
+      </th>
+      <th scope="col">날짜</th>
+      <th scope="col">위치</th>
+      <th scope="col">감지 유형</th>
+      <th scope="col">상태</th>
+    </tr>
+      </thead>
+      <tbody>
+            <tr>
+         <td><input type="checkbox" /></td>
+          <td>2025-11-02</td>
+          <td>광주 북구 첨단로 123</td>
+          <td>헬멧 미착용</td>
+          <td><span class="status complete">처리완료</span></td>
+             </tr>
+             <tr>
+         <td><input type="checkbox" /></td>
+          <td>2025-11-01</td>
+          <td>광주 북구  123</td>
+          <td>2인 탑승</td>
+         <td><span class="status progress">처리중</span></td>       
+          </tr>
+          <tr>
+         <td><input type="checkbox" /></td>
+          <td>2025-11-04</td>
+          <td>광주 광산구  123</td>
+          <td>2인 탑승</td>
+          <td><span class="status pending">처리전</span></td>
+          </tr>
+      </tbody>
+      </table>
+
+
+           <!-- 통계 박스 -->
+        <div class="stats-box" aria-label="이력 통계">
+        <div class="stat-item total">
+        <span class="label">총 감지 건수</span>
+        <span class="value" id="totalCount">-</span>
+        </div>
+        <div class="stat-item complete">
+        <span class="label">처리완료</span>
+        <span class="value" id="completeCount">-</span>
+        </div>
+        <div class="stat-item progress">
+        <span class="label">처리중</span>
+        <span class="value" id="progressCount">-</span>
+        </div>
+        <div class="stat-item pending">
+        <span class="label">처리전</span>
+        <span class="value" id="pendingCount">-</span>
+        </div>
         </div>
 
-        <ul class="history-list" id="historyList" aria-live="polite">
-          <!-- JS에서 li 자동 추가 -->
-        </ul>
+
+        <!-- 페이지 이동 -->
+        <div class="pagination" role="navigation" aria-label="페이지네이션">
+          <button class="page-btn prev" type="button">이전</button>
+          <span class="page-no" aria-live="polite">1</span>
+          <button class="page-btn next" type="button">다음</button>
+        </div>
       </section>
     </main>
   </div>
 
-  <!--  네이버 지도 API (YOUR_CLIENT_ID를 실제 키로 교체하세요) -->
-  <script type="text/javascript"
-    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=abcd1234efgh5678ijkl">
-  </script>
-
-  <!--  main.js (지도+데이터 로직) -->
-  <script src="main.js"></script>
+  <!-- JS연결 -->
+  <script src="logs.js"></script>
 </body>
 </html>
