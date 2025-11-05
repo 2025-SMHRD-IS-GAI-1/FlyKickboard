@@ -56,6 +56,13 @@
 		SET USER_PW   = #{pw, jdbcType=VARCHAR},
 		USER_AREA = #{area, jdbcType=VARCHAR}
 		WHERE USER_ID = #{id, jdbcType=VARCHAR}
-</update>
+	</update>
+	
+	<select id="searchuser" parameterType="string" resultType="com.fly.model.MemberVO">
+	  SELECT USER_ID AS id, USER_AREA AS area
+	  FROM T_USER
+	  WHERE USER_ID LIKE '%' || #{keyword} || '%'
+	     OR USER_AREA LIKE '%' || #{keyword} || '%'
+	</select>
 	
 </mapper>
