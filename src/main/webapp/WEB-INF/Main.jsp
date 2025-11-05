@@ -13,9 +13,11 @@
   <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+
   <!--  네이버 지도 API (YOUR_CLIENT_ID를 실제 키로 교체하세요) -->
   <script type="text/javascript"
     src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=azilk7tpsg">
+
   document.addEventListener("DOMContentLoaded", () => {
 	  initNaverMapAndLoad();   // 지도 + 마커
 	  loadRecentHistory();     // 최근 이력 + 카운트
@@ -87,6 +89,7 @@
 	      map.controls[naver.maps.Position.LEFT_BOTTOM].push(legendEl);
 	    }
   </script>
+
 </head>
 <body>
   <div class="container">
@@ -155,6 +158,7 @@
 
   <!--  main.js (지도+데이터 로직) -->
   <script src="${ctx}/assets/js/Main.js"></script>
+
 </body>
 </html>
 
