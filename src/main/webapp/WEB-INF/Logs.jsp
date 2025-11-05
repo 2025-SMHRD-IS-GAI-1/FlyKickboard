@@ -156,11 +156,6 @@
     </main>
   </div>
 
-
- // 로그아웃 알림
-	const logoutBtn = document.querySelector(".login-btn");
-	if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
-
   <!-- JS연결 -->
   <script src="Logs.js"></script>
 
