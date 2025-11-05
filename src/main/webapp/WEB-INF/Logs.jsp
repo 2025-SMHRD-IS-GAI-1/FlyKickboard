@@ -7,6 +7,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>감지 이력 조회 - 날아라킥보드</title>
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
   <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> 
@@ -150,12 +151,18 @@
           <span class="page-no" aria-live="polite">1</span>
           <button class="page-btn next" type="button">다음</button>
         </div>
+
       </section>
     </main>
   </div>
 
 
+ // 로그아웃 알림
+	const logoutBtn = document.querySelector(".login-btn");
+	if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+
   <!-- JS연결 -->
   <script src="Logs.js"></script>
+
 </body>
 </html>

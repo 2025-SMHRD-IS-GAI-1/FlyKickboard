@@ -20,21 +20,21 @@
     <div class="brand">날아라킥보드</div>
     <nav class="nav" aria-label="주요 탭">
         <a href="Main.do">
-      		<button class="nav-btn" type="button">실시간</button>
-      	</a>
-      	<a href="Logs.do">
-      		<button class="nav-btn" type="button">감지 이력 조회</button>
-      	</a> 
+            <button class="nav-btn" type="button">실시간</button>
+         </a>
+         <a href="Logs.do">
+            <button class="nav-btn" type="button">감지 이력 조회</button>
+         </a> 
       </nav>
       
     <div class="actions" aria-label="사용자 메뉴">
         <!-- 현재 페이지 표시: aria-current 병행 -->
         <a href="Manager.do">
-        	<button class="admin-btn active" type="button" aria-current="page">관리자메뉴</button>
+           <button class="admin-btn active" type="button" aria-current="page">관리자메뉴</button>
         </a>
         <!-- 규약 통일: 로그아웃 버튼 클래스는 .login-btn 사용 -->
         <a href="logout.do">
-        	<button class="login-btn" type="button" data-action="logout">로그아웃</button>
+           <button class="login-btn" type="button" data-action="logout">로그아웃</button>
         </a>        
       </div>
     
@@ -48,7 +48,7 @@
         <!-- 사용자 추가 + 검색 -->
         <div class="actions-bar">
         <a>
-        	<button class="btn primary" id="addUserBtn" type="button">사용자 추가</button>
+           <button class="btn primary" id="addUserBtn" type="button">사용자 추가</button>
         </a>
 
           <div class="search-box">
@@ -69,7 +69,7 @@
           <tbody id="userTable">
             <c:forEach var="member" items="${allmanager}">
             <tr>
-            	<td>${member.id}</td> <td>${member.area}</td>
+               <td>${member.id}</td> <td>${member.area}</td>
                 <td>
                     <button class="btn small UpdaBtn" type="button" id="UpdateBtn">수정</button>
                     <button class="btn small danger DelBtn" type="button">삭제</button>
@@ -87,31 +87,31 @@
       </section>
         <!-- 사용자 추가 모달 -->
       <div class="modal" id="userModal">
-  		<div class="modal-content">
-    	<h3>사용자 추가</h3>
-    	<form action="Join.do" method="post">
-      		<label>아이디 <input type="text" name="newId" /></label>
-      		<label>비밀번호 <input type="password" name="newPw" /></label>
-      		<label>지역 <input type="text" name="newArea" /></label>
-      		<div class="modal-actions">
-        		<button id="saveUser" class="btn primary" type="submit">등록</button>
-        		<button id="cancelUser" class="btn" type="button">취소</button>
-      		</div>
-      	</form>
-  		</div>
-		</div>
-		<div class="modal" id="upModal">
-  		<div class="modal-content">
-    	<h3>사용자 수정</h3>
-    	<form action="${ctx}/Update.do" method="post">
-		  <input type="hidden" name="id" />
-		  <label>비밀번호 <input type="password" name="UpPw" /></label>
-		  <label>지역 <input type="text" name="UpArea" /></label>
-		  <button type="submit" class="btn primary">수정</button>
-		  <button id="CancelUser" class="btn" type="button">취소</button>
-		</form>
-  		</div>
-		</div>
+        <div class="modal-content">
+       <h3>사용자 추가</h3>
+       <form action="Join.do" method="post">
+            <label>아이디 <input type="text" name="newId" /></label>
+            <label>비밀번호 <input type="password" name="newPw" /></label>
+            <label>지역 <input type="text" name="newArea" /></label>
+            <div class="modal-actions">
+              <button id="saveUser" class="btn primary" type="submit">등록</button>
+              <button id="cancelUser" class="btn" type="button">취소</button>
+            </div>
+         </form>
+        </div>
+      </div>
+      <div class="modal" id="upModal">
+        <div class="modal-content">
+       <h3>사용자 수정</h3>
+       <form action="${ctx}/Update.do" method="post">
+        <input type="hidden" name="id" />
+        <label>비밀번호 <input type="password" name="UpPw" /></label>
+        <label>지역 <input type="text" name="UpArea" /></label>
+        <button type="submit" class="btn primary">수정</button>
+        <button id="CancelUser" class="btn" type="button">취소</button>
+      </form>
+        </div>
+      </div>
     </main>
   </div>
   <!-- JS 연결 -->
