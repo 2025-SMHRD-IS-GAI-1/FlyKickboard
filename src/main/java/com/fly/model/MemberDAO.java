@@ -66,5 +66,14 @@ public class MemberDAO {
 		
 		return row;
 	}
+	public List<MemberVO> SearchUser(String keyword) {
+		SqlSession sqlSession = factory.openSession(true);
+		
+		List<MemberVO> vo = sqlSession.selectList("searchuser", keyword);
+		
+		sqlSession.close();
+		
+		return vo;
+	}
 }
 	
