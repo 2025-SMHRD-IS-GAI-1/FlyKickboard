@@ -74,7 +74,7 @@
             <tr>
             	<td>${member.id}</td> <td>${member.area}</td>
                 <td>
-                    <button class="btn small UpdaBtn" type="button">수정</button>
+                    <button class="btn small UpdaBtn" type="button" id="UpdateBtn">수정</button>
                     <button class="btn small danger DelBtn" type="button">삭제</button>
                 </td>
             </tr>
@@ -103,93 +103,97 @@
       	</form>
   		</div>
 		</div>
+		<div class="modal" id="upModal">
+  		<div class="modal-content">
+    	<h3>사용자 수정</h3>
+    	<form action="${ctx}/Update.do" method="post">
+		  <input type="hidden" name="id" />
+		  <label>비밀번호 <input type="password" name="UpPw" /></label>
+		  <label>지역 <input type="text" name="UpArea" /></label>
+		  <button type="submit" class="btn primary">수정</button>
+		  <button id="CancelUser" class="btn" type="button">취소</button>
+		</form>
+  		</div>
+		</div>
     </main>
   </div>
   <!-- JS 연결 -->
   <script type="text/javascript">
+(function(){
+  const ctx = '${ctx}';
+
+  // 로그아웃 알림
   const logoutBtn = document.querySelector(".login-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      alert("로그아웃 되었습니다.");
-    });
-  }
-//2. 사용자 추가 모달
+  if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+
+  // 추가 모달 열기/닫기
   const addUserBtn = document.getElementById("addUserBtn");
   const userModal = document.getElementById("userModal");
+  const cancelUser = document.getElementById("cancelUser");
+  if (addUserBtn && userModal) addUserBtn.addEventListener("click", () => userModal.classList.add("show"));
+  if (cancelUser && userModal) cancelUser.addEventListener("click", () => userModal.classList.remove("show"));
 
-  addUserBtn.addEventListener("click", () => {
-    userModal.classList.add("show");
-  });
+  // 수정 모달 요소
+  const upModal = document.getElementById("upModal");
+  const editHiddenInput = document.querySelector("#upModal input[name='id']");
+  const editPwInput = document.querySelector("#upModal input[name='UpPw']");
+  const editAreaInput = document.querySelector("#upModal input[name='UpArea']");
+  const cancelUpUser = document.getElementById("CancelUser"); // null 가능
 
-  document.getElementById("cancelUser").addEventListener("click", () => {
-    userModal.classList.remove("show");
-  });
+  if (cancelUpUser && upModal) cancelUpUser.addEventListener("click", () => upModal.classList.remove("show"));
 
- 
-  
-//3. 검색 기능
-  document.getElementById("searchBtn").addEventListener("click", () => {
-    const keyword = document.querySelector(".search-box input").value.trim().toLowerCase();
-    const rows = document.querySelectorAll("#userTable tr");
-
-    rows.forEach(row => {
-      const text = row.innerText.toLowerCase();
-      row.style.display = keyword === "" || text.includes(keyword) ? "" : "none";
+  // 검색 기능
+  const searchBtn = document.getElementById("searchBtn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", function() {
+      const keyword = (document.querySelector(".search-box input").value || "").trim().toLowerCase();
+      document.querySelectorAll("#userTable tr").forEach(function(row){
+        const text = (row.innerText || "").toLowerCase();
+        row.style.display = (keyword === "" || text.includes(keyword)) ? "" : "none";
+      });
     });
+  }
+
+  // 이벤트 위임: userTable에서 삭제/수정 처리
+  const userTable = document.getElementById("userTable");
+  if (!userTable) return;
+
+  userTable.addEventListener("click", function(event) {
+    const target = event.target;
+
+    // 삭제 버튼
+    if (target.classList.contains("DelBtn")) {
+      const row = target.closest("tr");
+      const id = target.dataset.id || (row ? (row.cells[0].textContent || "").trim() : null);
+      console.log("DEBUG delete id:", id);
+      if (!id) { alert("ID를 찾을 수 없습니다."); return; }
+      if (confirm(`정말로 ID: ${id} 님을 삭제하시겠습니까?`)) {
+        window.location.href = ctx + '/Delete.do?id=' + encodeURIComponent(id);
+      }
+      return;
+    }
+
+    // 수정 버튼
+    if (target.classList.contains("UpdaBtn")) {
+      const row = target.closest("tr");
+      const id = target.dataset.id || (row ? (row.cells[0].textContent || "").trim() : null);
+      const area = target.dataset.area || (row ? (row.cells[1].textContent || "").trim() : null);
+
+      console.log("DEBUG UpdaBtn clicked, extracted id:", id);
+
+      if (!id) { alert("ID를 찾을 수 없습니다."); return; }
+
+      // 모달에 id 채우기 (hidden input)
+      if (editHiddenInput) editHiddenInput.value = id;
+      if (editPwInput) editPwInput.value = ""; // 보안상 초기화
+      if (editAreaInput) editAreaInput.value ="";
+
+      if (upModal) upModal.classList.add("show");
+      return;
+    }
   });
 
-//4. 사용자 수정 / 삭제 기능
-	const userTable = document.getElementById("userTable");
-	
-	// userTable(테이블 본문) 영역에 클릭 이벤트 리스너를 추가합니다.
-	userTable.addEventListener("click", (event) => {
-	
-		// 클릭된 요소(event.target)가 "DelBtn" 클래스를 가지고 있는지 확인
-		if (event.target.classList.contains("DelBtn")) {
-			
-			// --- ★★★ 디버깅 코드 ★★★ ---
-          // (따옴표 " "가 빠지면 SyntaxError가 발생합니다!)
-			console.log("삭제 버튼 클릭됨!"); 
-			const row = event.target.closest("tr");
-			console.log("찾은 행(tr):", row);
-			
-			console.log("row.cells[0] 내용:", row.cells[0].textContent);
-            console.log("row.cells[1] 내용:", row.cells[1].textContent);
-			if (row) { // row를 찾았는지 확인
-				const idCell = row.cells[0]; // 첫 번째 셀(td)
-				console.log("찾은 ID 셀(td):", idCell);
-				
-				// innerText 대신 textContent 사용 (공백 제거)
-				const id = idCell.textContent.trim(); 
-				
-				console.log("추출한 ID 값:", id); // ★★★ ID 값이 여기서 찍혀야 합니다 ★★★
-				
-				if (id) { // ID가 비어있지 않은지 확인
-					  if (confirm(`정말로 삭제하시겠습니까?`)) {
-						  window.location.href = '${ctx}/Delete.do?id=' + encodeURIComponent(id);
-					  }
-				} else {
-					alert("ID를 찾을 수 없습니다. (콘솔 확인)");
-				}
-			} else {
-				alert("테이블 행(tr)을 찾지 못했습니다.");
-			}
-		}
-		
-		if (event.target.classList.contains("UpdaBtn")) {
-			console.log("수정 버튼");
-			const row = event.target.colsest("tr");
-			if (row) {
-				const
-			}
-		}
-
-		// (추후 수정 기능도 여기에 추가)
-		// if (event.target.classList.contains("UpdaBtn")) {
-		//     // 수정 로직...
-		// }
-	});
-  </script>
+})();
+</script>
 </body>
 </html>
-window.location.href = `Delete.do?id=${id}`; 내생각엔 이게 문제야 
