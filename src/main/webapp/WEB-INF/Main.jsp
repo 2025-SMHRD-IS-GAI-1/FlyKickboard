@@ -31,8 +31,10 @@
       <a href="Manager.do">
       	<button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
       </a>
+      <a href="Logout.do">
+      	<button class="login-btn" type="button" data-action="logout">로그아웃</button>
+      </a>
         
-        <button class="login-btn" type="button" data-action="logout">로그아웃</button>
       </div>
     </header>
 

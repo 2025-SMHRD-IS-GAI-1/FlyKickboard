@@ -28,12 +28,18 @@
       <a href="Log.do">
       	<button class="nav-btn" type="button" >감지 이력 조회</button>
       </a>  
-        
+       
       </nav>
       
       <div class="actions" aria-label="사용자 메뉴">
-        <button class="admin-btn active" type="button" data-route="system.html" aria-current="page">관리자 메뉴</button>
-        <button class="login-btn" type="button" data-action="logout">로그아웃</button>
+        <!-- 현재 페이지 표시: aria-current 병행 -->
+        <a href="Manager.do">
+        	<button class="admin-btn active" type="button" aria-current="page">관리자메뉴</button>
+        </a>
+        <!-- 규약 통일: 로그아웃 버튼 클래스는 .login-btn 사용 -->
+        <a href="logout.do">
+        	<button class="login-btn" type="button" data-action="logout">로그아웃</button>
+        </a>        
       </div>
     </header>
 
