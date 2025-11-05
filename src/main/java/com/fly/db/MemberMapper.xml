@@ -51,5 +51,11 @@
   		DELETE FROM T_USER WHERE USER_ID = #{id}
 	</delete>	
 	
+	<update id="updateuser" parameterType="com.fly.model.MemberVO">
+  	UPDATE T_USER
+		SET USER_PW   = #{pw, jdbcType=VARCHAR},
+		USER_AREA = #{area, jdbcType=VARCHAR}
+		WHERE USER_ID = #{id, jdbcType=VARCHAR}
+</update>
 	
 </mapper>
