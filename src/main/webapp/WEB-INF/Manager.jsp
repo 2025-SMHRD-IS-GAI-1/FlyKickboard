@@ -7,16 +7,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>관리자 메뉴</title>
+  <title>관리자 메뉴 - 날아라킥보드</title>
+  
+  <!-- 공통 폰트 및 스타일 -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
-  <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" />
+  <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" /> <!-- 공통 헤더 -->
+  <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> <!-- 관리자 메뉴 전용 -->
 </head>
+
 <body>
-  <!-- 상단바 -->
-  <header class="topbar">
-    <div class="brand">날아라킥보드</div>
-    <nav class="nav" aria-label="주요 탭">
+  <div class="container">
+    <!-- 상단바 -->
+    <header class="topbar">
+      <div class="brand">날아라킥보드</div>
+      <nav class="nav" aria-label="주요 탭">
         <a href="Main.do">
       		<button class="nav-btn" type="button">실시간</button>
       	</a>
@@ -25,7 +30,7 @@
       	</a> 
       </nav>
       
-    <div class="actions" aria-label="사용자 메뉴">
+      <div class="actions" aria-label="사용자 메뉴">
         <!-- 현재 페이지 표시: aria-current 병행 -->
         <a href="Manager.do">
         	<button class="admin-btn active" type="button" aria-current="page">관리자메뉴</button>
