@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
 
   <!-- 외부 CSS 연결 -->
-  <link rel="stylesheet" href="LoginPage.css" />
+  <link rel="stylesheet" href="${ctx}/assets/css/LoginPage.css"/>
 </head>
 <body>
   <div class="wrapper">
