@@ -142,55 +142,89 @@
   const editHiddenInput = document.querySelector("#upModal input[name='id']");
   const editPwInput = document.querySelector("#upModal input[name='UpPw']");
   const editAreaInput = document.querySelector("#upModal input[name='UpArea']");
-  const cancelUpUser = document.getElementById("CancelUser"); // null 가능
-
+  const cancelUpUser = document.getElementById("CancelUser");
   if (cancelUpUser && upModal) cancelUpUser.addEventListener("click", () => upModal.classList.remove("show"));
-  
-  // 검색기능
+
+//✅ 검색 + 페이지네이션 변수
+  const searchBtn = document.getElementById("searchBtn");
+  const tableBody = document.getElementById("userTable");
+  const prevBtn = document.querySelector(".page-btn.prev");
+  const nextBtn = document.querySelector(".page-btn.next");
+  const pageNo = document.querySelector(".page-no");
+
+  let allData = [];       // ✅ 항상 allData 로 고정
+  let currentPage = 1;
+  const pageSize = 10;
+
+  // ✅ 테이블 출력 함수
+  function renderTable(page = 1) {
+    tableBody.innerHTML = "";
+
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const pageData = allData.slice(start, end);
+
+    if (!pageData.length) {
+      tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 없습니다.</td></tr>`;
+      return;
+    }
+
+    pageData.forEach(member => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>\${member.id}</td>
+        <td>\${member.area}</td>
+        <td>
+          <button class="btn small UpdaBtn" type="button">수정</button>
+          <button class="btn small danger DelBtn" type="button">삭제</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    pageNo.textContent = page;
+  }
+
+  // ✅ 검색 기능
   if (searchBtn) {
-	  searchBtn.addEventListener("click", () => {
-	    const keyword = document.getElementById("keyword").value.trim();
+    searchBtn.addEventListener("click", () => {
+      const keyword = document.getElementById("keyword").value.trim();
+      if (keyword === "") return;
 
-	    if (keyword === "") {
-	      return;
-	    }
+      fetch("Search.do?keyword=" + encodeURIComponent(keyword))
+        .then(res => res.json())
+        .then(result => {
+          console.log("검색 결과:", result);
 
-	    const url = "Search.do?keyword=" + encodeURIComponent(keyword);
+          allData = result;      // ✅ 데이터 저장
+          currentPage = 1;
+          renderTable(currentPage);
+        })
+        .catch(err => console.error("에러 발생:", err));
+    });
+  }
 
-	    fetch(url)
-	      .then(res => res.json())
-	      .then(result => {
-	        console.log("검색 결과:", result);
-			// 검색 코드 완료
-			
-			
-	        // 기존에 있는 목록 지우고 테이블에 검색된 목록 출력 
-	        const tableBody = document.getElementById("userTable");
-	        tableBody.innerHTML = ""; // 기존 내용 비우기
+  // ✅ 이전 / 다음 버튼
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable(currentPage);
+      }
+    });
+  }
 
-	        if (!result || result.length === 0) {
-	          tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 없습니다.</td></tr>`;
-	          return;
-	        }
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      const maxPage = Math.ceil(allData.length / pageSize);
+      if (currentPage < maxPage) {
+        currentPage++;
+        renderTable(currentPage);
+      }
+    });
+  }
 
-	        result.forEach(member => {
-	          const row = document.createElement("tr");
-	          row.innerHTML = `
-	            <td>\${member.id}</td>
-	            <td>\${member.area}</td>
-	            <td>
-	              <button class="btn small UpdaBtn" type="button">수정</button>
-	              <button class="btn small danger DelBtn" type="button">삭제</button>
-	            </td>
-	          `;
-	          tableBody.appendChild(row);
-	        });
-	      })
-	      .catch(err => console.error("에러 발생:", err));
-	  });
-	}
-
-  // ✂️ 이벤트 위임: userTable에서 삭제/수정 처리
+  // 삭제 & 수정 이벤트 위임
   const userTable = document.getElementById("userTable");
   if (!userTable) return;
 
@@ -200,8 +234,7 @@
     // 삭제 버튼
     if (target.classList.contains("DelBtn")) {
       const row = target.closest("tr");
-      const id = target.dataset.id || (row ? (row.cells[0].textContent || "").trim() : null);
-      console.log("DEBUG delete id:", id);
+      const id = row.cells[0].textContent.trim();
       if (!id) { alert("ID를 찾을 수 없습니다."); return; }
       if (confirm(`정말로 삭제하시겠습니까?`)) {
         window.location.href = ctx + '/Delete.do?id=' + encodeURIComponent(id);
@@ -212,17 +245,15 @@
     // 수정 버튼
     if (target.classList.contains("UpdaBtn")) {
       const row = target.closest("tr");
-      const id = target.dataset.id || (row ? (row.cells[0].textContent || "").trim() : null);
-      const area = target.dataset.area || (row ? (row.cells[1].textContent || "").trim() : null);
-
-      console.log("DEBUG UpdaBtn clicked, extracted id:", id);
-
+      const id = row.cells[0].textContent.trim();
+      const area = row.cells[1].textContent.trim();
+	  
+      // 아이디 불일치시
       if (!id) { alert("ID를 찾을 수 없습니다."); return; }
 
-      // 모달에 id 채우기 (hidden input)
-      if (editHiddenInput) editHiddenInput.value = id;
-      if (editPwInput) editPwInput.value = ""; // 보안상 초기화
-      if (editAreaInput) editAreaInput.value = "";
+      editHiddenInput.value = id;
+      editPwInput.value = "";
+      editAreaInput.value = "";
 
       if (upModal) upModal.classList.add("show");
       return;

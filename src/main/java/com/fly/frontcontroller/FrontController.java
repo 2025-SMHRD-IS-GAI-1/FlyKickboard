@@ -80,10 +80,7 @@ public class FrontController extends HttpServlet {
 			MoveUrl = com.execute(request, response);
 		}
 		// 페이지 경로를 이동
-		if (MoveUrl == null) {
-		    // fetch() 요청 등에서 이미 response 완료된 경우
-		    return;
-		} else if (MoveUrl.contains("fetch:/")) {
+		if (MoveUrl.contains("fetch:/")) {
 		    response.setContentType("application/json;charset=UTF-8");
 		    PrintWriter out = response.getWriter();
 		    out.print(MoveUrl.substring(7));
