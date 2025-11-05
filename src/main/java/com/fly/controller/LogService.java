@@ -10,7 +10,7 @@ public class LogService implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
 		// TODO Auto-generated method stub
-		return "redirect:/GoLog.do";
+		return "redirect:/GoLogs.do";
 	}
 
 }

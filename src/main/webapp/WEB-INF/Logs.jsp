@@ -25,7 +25,7 @@
       <a href="Main.do">
       	<button class="nav-btn" type="button" >실시간</button>
       </a>
-      <a href="Log.do">
+      <a href="Logs.do">
       	<button class="nav-btn" type="button" >감지 이력 조회</button>
       </a>  
        
@@ -73,11 +73,15 @@
   </div>
 
   <!--  네이버 지도 API (YOUR_CLIENT_ID를 실제 키로 교체하세요) -->
-  <script type="text/javascript"
+<script type="text/javascript">
+ // 로그아웃 알림
+	const logoutBtn = document.querySelector(".login-btn");
+	if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+  
     src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=abcd1234efgh5678ijkl">
-  </script>
+</script>
 
   <!--  main.js (지도+데이터 로직) -->
-  <script src="main.js"></script>
+  <!-- <script src="main.js"></script> -->
 </body>
 </html>
