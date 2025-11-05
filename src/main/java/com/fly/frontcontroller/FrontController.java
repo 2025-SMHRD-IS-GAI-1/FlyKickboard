@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fly.controller.ManangerService;
+import com.fly.controller.SearchService;
 import com.fly.controller.UpdateService;
 import com.fly.controller.AllManagerService;
 import com.fly.controller.DeleteService;
@@ -27,9 +28,9 @@ import com.fly.frontcontroller.Command;
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, Command> map;
-	
+
 	@Override
-	public void init (ServletConfig config) throws ServletException {
+	public void init(ServletConfig config) throws ServletException {
 		map = new HashMap<String, Command>();
 		map.put("Main.do", new MainService());
 		map.put("Join.do", new JoinService());
@@ -40,7 +41,9 @@ public class FrontController extends HttpServlet {
 		map.put("Delete.do", new DeleteService());
 		map.put("Manager.do", new AllManagerService());
 		map.put("Update.do", new UpdateService());
+		map.put("Search.do", new SearchService());
 	}
+
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -71,27 +74,21 @@ public class FrontController extends HttpServlet {
 			// ex) Gomain.do
 			// main.jsp 파일로 forward 방식 이동
 			// 최종적으로 이동해야하는 경로를 만들어주는 작업
-			MoveUrl = FinalUrl.substring(2).replaceAll("do", "jsp");  
+			MoveUrl = FinalUrl.substring(2).replaceAll("do", "jsp");
 		} else {
 			com = map.get(FinalUrl);
 			MoveUrl = com.execute(request, response);
 		}
 		// 페이지 경로를 이동
 		if (MoveUrl.contains("fetch:/")) {
-			// 비동기통신으로 요청이 들어왔을때, 페이지를 이동하지 않겠다.
-			response.setContentType("application/json;charset=UTF-8");
-			PrintWriter out = response.getWriter();
-			out.print(MoveUrl.substring(7));
-		}
-		else if (MoveUrl.contains("redirect:/")) {
-			// 1. redirect:/main.jsp --> redirect 방식 이동
-			// moveUrl -> redirect:/ 잘라줘야 이동할 경로가 제대로 나온다
-			response.sendRedirect(MoveUrl.substring(10));
+		    response.setContentType("application/json;charset=UTF-8");
+		    PrintWriter out = response.getWriter();
+		    out.print(MoveUrl.substring(7));
+		} else if (MoveUrl.contains("redirect:/")) {
+		    response.sendRedirect(MoveUrl.substring(10));
 		} else {
-			// 2. join_success.jsp --> forward 방식 이동
-			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/" + MoveUrl);
-			rd.forward(request, response);
+		    RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/" + MoveUrl);
+		    rd.forward(request, response);
 		}
 	}
 }
-

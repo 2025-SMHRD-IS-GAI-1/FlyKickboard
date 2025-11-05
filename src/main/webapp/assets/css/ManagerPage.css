@@ -18,6 +18,47 @@
   color: #222;
   letter-spacing: -0.3px;
 }
+/* 상단 헤더 영역 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #1552d6 0%, #0e3ea9 100%);
+  color: #fff;
+  padding: 14px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.logo {
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.3px;
+}
+
+/* 공통 버튼 기본 스타일 */
+.nav-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* 마우스 hover 시 */
+.nav-btn:hover {
+  background: #fff;
+  color: #0e3ea9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
 
 /* 상단 액션 바 (좌: 사용자 추가 / 우: 검색) */
 .actions-bar {
