@@ -7,10 +7,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>감지 이력 조회 - 날아라킥보드</title>
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
-  <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> <!-- 관리자 메뉴 전용 -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/LogsPage.css">
+  <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> 
+  <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
@@ -25,7 +26,7 @@
       	<a href="Main.do">
       		<button class="nav-btn" type="button">실시간</button>
       	</a>
-      	<a href="Log.do">
+      	<a href="Logs.do">
       		<button class="nav-btn" type="button">감지 이력 조회</button>
       	</a>      
       </nav>
@@ -150,12 +151,18 @@
           <span class="page-no" aria-live="polite">1</span>
           <button class="page-btn next" type="button">다음</button>
         </div>
+
       </section>
     </main>
   </div>
 
 
+ // 로그아웃 알림
+	const logoutBtn = document.querySelector(".login-btn");
+	if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+
   <!-- JS연결 -->
   <script src="Logs.js"></script>
+
 </body>
 </html>
