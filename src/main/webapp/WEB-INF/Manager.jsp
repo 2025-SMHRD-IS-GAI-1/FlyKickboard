@@ -20,7 +20,7 @@
         <a href="Main.do">
       		<button class="nav-btn" type="button">실시간</button>
       	</a>
-      	<a href="Log.do">
+      	<a href="Logs.do">
       		<button class="nav-btn" type="button">감지 이력 조회</button>
       	</a> 
       </nav>

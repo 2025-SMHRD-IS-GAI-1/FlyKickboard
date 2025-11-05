@@ -22,7 +22,7 @@
       	<a href="Main.do">
       		<button class="nav-btn" type="button">실시간</button>
       	</a>
-      	<a href="Log.do">
+      	<a href="Logs.do">
       		<button class="nav-btn" type="button">감지 이력 조회</button>
       	</a>      
       </nav>
@@ -31,8 +31,10 @@
       <a href="Manager.do">
       	<button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
       </a>
+      <a href="logout.do">
+      	<button class="login-btn" type="button" data-action="logout">로그아웃</button>
+      </a>
         
-        <button class="login-btn" type="button" data-action="logout">로그아웃</button>
       </div>
     </header>
 
@@ -67,7 +69,13 @@
   </div>
 
   <!--  네이버 지도 API (YOUR_CLIENT_ID를 실제 키로 교체하세요) -->
-  <script type="text/javascript"
+  <script type="text/javascript">
+  
+  //로그아웃 알림
+  const logoutBtn = document.querySelector(".login-btn");
+  if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+  
+  
     src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=abcd1234efgh5678ijkl">
   document.addEventListener("DOMContentLoaded", () => {
 	  initNaverMapAndLoad();   // 지도 + 마커
@@ -140,9 +148,6 @@
 	      map.controls[naver.maps.Position.LEFT_BOTTOM].push(legendEl);
 	    }
   </script>
-
-  <!--  main.js (지도+데이터 로직) -->
-  <script src="main.js"></script>
 </body>
 </html>
 
