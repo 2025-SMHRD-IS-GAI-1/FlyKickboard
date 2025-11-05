@@ -1,0 +1,395 @@
+/* 감지 이력 페이지 스타일 */
+.logs-section {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease;
+}
+.logs-section:hover {
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
+}
+.logs-section h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #222;
+  letter-spacing: -0.3px;
+}
+
+/* 검색필터 */
+
+/* 섹션 자체를 독립 블록으로 만들어 flex 간섭 제거 */
+.logs-section {
+  width: 100%;
+  display: block !important;
+}
+
+/* 검색/분류 라인 전체 */
+.logs-section .toolbar {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important; /* 왼쪽 가변, 오른쪽 내용 고정 */
+  align-items: center !important;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* 왼쪽 묶음: 날짜, 검색, 분류 */
+.logs-section .toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* 오른쪽 묶음: 전송, 출력, 삭제 */
+.logs-section .toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: end;   /* 오른쪽 끝 정렬 */
+  white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+/* 버튼 공통 스타일 */
+.logs-section .btn {
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logs-section .btn.blue { background: #1e4ba8; }
+.logs-section .btn.red  { background: #e54848; }
+.logs-section .btn:hover { opacity: 0.85; }
+
+
+
+
+
+
+
+/* 날짜 입력 필드 */
+.toolbar input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #a4baff;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #222;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.toolbar input[type="date"]:focus {
+  outline: none;
+  border-color: #2558bd;
+  box-shadow: 0 0 0 3px rgba(37, 88, 189, 0.20);
+}
+
+/* 검색 버튼 */
+.btn-search {
+  background: #1e4ba8;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.btn-search:hover {
+  background: #2558bd;
+  transform: translateY(-1px);
+}
+
+/* 테이블 */
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.logs-table thead {
+  background: linear-gradient(90deg, #0e3ea9 0%, #1552d6 100%);
+  color: #fff;
+}
+.logs-table th {
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+.logs-table th:last-child { border-right: none; }
+.logs-table td {
+  text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid #eef1f8;
+  color: #333;
+}
+.logs-table tr:nth-child(even) { background: #f9fbff; }
+
+/* 상태 뱃지 */
+.logs-table .status{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  padding:6px 12px !important;
+  border-radius:6px !important;   /* ✅ 둥근 사각형 느낌 */
+  font-weight:700 !important;
+  font-size:13px !important;
+  line-height:1 !important;
+
+  /* 기본값 초기화 */
+  background:transparent !important;
+  border:1px solid transparent !important;
+  color:#1d2230 !important; /* 상태별에서 다시 덮어씀 */
+}
+
+/* 처리완료 = 민트 */
+.logs-table .status.complete{
+  background:#E9FBF3 !important;
+  border-color:#BFEFDC !important;
+  color:#148A53 !important;
+}
+
+/* 처리중 = 파스텔 노랑 */
+.logs-table .status.progress{
+  background:#FFF3CC !important;
+  border-color:#FFE08A !important;
+  color:#8A6A00 !important;
+}
+
+/* 처리전 = 파스텔 하늘 */
+.logs-table .status.pending{
+  background:#E9F0FF !important;
+  border-color:#C9DAFF !important;
+  color:#1E49B5 !important;
+}
+
+/* 상태 열 너비 */
+.logs-table th:last-child,
+.logs-table td:last-child{
+  width:120px;
+  text-align:center !important;
+}
+
+
+
+/* 통계 박스 */
+.stats-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #f8faff;
+  border-radius: 10px;
+  padding: 16px 12px;
+  font-weight: 700;
+  border: 1px solid #dce3ff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  margin-top: 14px;
+}
+.stat-item { flex: 1; text-align: center; }
+.stat-item .label {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 4px;
+}
+.stat-item .value {
+  font-size: 18px;
+  color: #0e3ea9;
+  font-weight: 800;
+}
+
+/* 페이지네이션 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+.page-btn {
+  background: #fff;
+  border: 1px solid #ccd5f2;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-weight: 500;
+}
+.page-btn:hover {
+  background: #0e3ea9;
+  color: #fff;
+  border-color: #0e3ea9;
+  transform: translateY(-1px);
+}
+.page-no {
+  font-weight: 700;
+  color: #0e3ea9;
+  font-size: 15px;
+}
+
+/* ===== 상단 네비게이션 탭 버튼 (활성/호버) ===== */
+.nav-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.nav-btn:hover {
+  background: #fff;
+  color: #0e3ea9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+.nav-btn.active,
+.nav-btn[aria-current="page"] {
+  background: #fff;
+  color: #0e3ea9;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.15);
+}
+/* ===== 분류 필터 (검색 버튼 옆) ===== */
+.filter-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: top;
+}
+
+/* toolbar: 검색바와 옆으로 나란히 */
+.toolbar {
+  display: inline-flex;
+}
+
+.btn-filter {
+  background: #fff;
+  border: 1px solid #ccd5f2;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #0e3ea9;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.btn-filter:hover {
+  background: #0e3ea9;
+  color: #fff;
+}
+
+/* 기본 드롭다운 패널 (모달 미사용시용) */
+.filter-panel {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  width: 240px;
+  background: #fff;
+  border: 1px solid #d4dcff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  padding: 14px 16px;
+  z-index: 100;
+  display: none;              /* 기본 숨김 */
+  animation: filterFade .25s ease;
+}
+.filter-panel.open {          /* 드롭다운 모드에서만 사용 */
+  display: block;
+}
+
+/* 그룹/라벨/옵션 */
+.filter-group { margin-bottom: 14px; }
+.filter-group:last-child { margin-bottom: 0; }
+
+.filter-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0e3ea9;
+  margin-bottom: 8px;
+}
+
+.filter-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid #e3e8ff;
+  border-radius: 6px;
+  background: #f8faff;
+  color: #333;
+  margin-bottom: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+.filter-option:hover { background: #e6ecff; }
+.filter-option.active {
+  background: #0e3ea9;
+  color: #fff;
+  border-color: #0e3ea9;
+}
+
+/* 등장 애니메이션 */
+@keyframes filterFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 분류 필터 '모달' 공통 ===== */
+.filter-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.4);
+  backdrop-filter: blur(2px);
+  z-index: 1200;
+}
+.filter-modal-backdrop.show { display: flex; }
+
+/* 패널을 모달로 띄울 때 레이아웃 오버라이드 */
+.filter-panel.as-modal {
+  position: static;           /* absolute 덮어쓰기 */
+  top: auto; right: auto; left: auto;
+  width: 340px;
+  max-width: 90vw;
+  display: block;             /* display:none 무력화 */
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.25);
+  animation: filterModalIn .25s ease;
+}
+
+@keyframes filterModalIn {
+  from { opacity: 0; transform: scale(.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/*  분류 모달이 항상 화면 위로 표시되도록 */
+#filterBackdrop {
+  z-index: 2000 !important;
+}
+
+#filterPanel.as-modal {
+  z-index: 2100 !important;
+}

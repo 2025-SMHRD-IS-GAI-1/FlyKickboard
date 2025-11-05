@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>YOLO11 기반 공유 킥보드 헬멧 미착용·2인탑승 자동 인식 시스템 - 로그인</title>
+  <title>YOLOv8 기반 공유 킥보드 헬멧미착용·2인탑승 자동 인식 시스템 - 로그인</title>
 
   <!-- 웹폰트 (선택) -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,8 @@
 </head>
 <body>
   <div class="wrapper">
-    <h1 class="hero">YOLO11 기반 공유 킥보드 헬멧 미착용·2인탑승 자동 인식 시스템</h1>
+    <h1 class="hero">YOLOv8 기반 공유 킥보드 헬멧미착용·2인탑승 자동 인식 시스템</h1>
+
 
     <main class="card" role="main" aria-labelledby="loginTitle">
       <form action="Login.do" method="post" autocomplete="on">
@@ -37,10 +38,12 @@
         </label>
         
         <button class="button" type="submit" id="loginBtn">로그인</button>
+        
       </form>
 
       <div class="version" aria-hidden="true">ver 1.0.0</div>
     </main>
+    <script src="Login.js"></script>
   </div>
 </body>
 </html>
