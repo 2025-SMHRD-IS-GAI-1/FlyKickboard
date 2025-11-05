@@ -57,5 +57,14 @@ public class MemberDAO {
 		
 		return row;
 	}
+	public int UpdateUser(MemberVO mvo) {
+		SqlSession sqlSession = factory.openSession(true);
+		
+		int row = sqlSession.update("updateuser", mvo);
+		
+		sqlSession.close();
+		
+		return row;
+	}
 }
 	

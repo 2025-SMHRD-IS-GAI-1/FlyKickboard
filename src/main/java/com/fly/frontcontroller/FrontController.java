@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fly.controller.ManangerService;
+import com.fly.controller.UpdateService;
 import com.fly.controller.AllManagerService;
 import com.fly.controller.DeleteService;
 import com.fly.controller.JoinService;
@@ -38,6 +39,7 @@ public class FrontController extends HttpServlet {
 		map.put("Logs.do", new LogService());
 		map.put("Delete.do", new DeleteService());
 		map.put("Manager.do", new AllManagerService());
+		map.put("Update.do", new UpdateService());
 	}
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
