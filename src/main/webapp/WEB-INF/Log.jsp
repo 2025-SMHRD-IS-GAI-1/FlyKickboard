@@ -12,8 +12,11 @@
   <!-- 공통 폰트, 스타일 -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="main.css" /> <!-- 헤더 공통 -->
-  <link rel="stylesheet" href="logs.css" /> <!-- 감지이력 전용 -->
+  	<c:url value="/assets/css/MainPage.css" var="mainCss" />
+	<c:url value="/assets/css/LogPage.css" var="logCss" />
+	<link rel="stylesheet" href="${mainCss}" />
+	<link rel="stylesheet" href="${logCss}" />
+
 </head>
 
 <!-- 컨텍스트/로그인 경로 지정  -->
@@ -25,8 +28,13 @@
       <div class="logo">날아라킥보드</div>
       
       <nav class="nav" aria-label="주요 탭">
-        <button class="nav-btn" type="button" data-route="main.html">실시간</button>
-        <button class="nav-btn" type="button" data-route="logs.html">감지 이력 조회</button>
+      <a href="Main.do">
+      	<button class="nav-btn" type="button" >실시간</button>
+      </a>
+      <a href="Log.do">
+      	<button class="nav-btn" type="button" >감지 이력 조회</button>
+      </a>  
+        
       </nav>
       
       <div class="actions" aria-label="사용자 메뉴">

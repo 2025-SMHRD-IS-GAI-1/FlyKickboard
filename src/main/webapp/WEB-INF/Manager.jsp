@@ -62,6 +62,15 @@
             </tr>
           </thead>
           <tbody id="userTable">
+            <c:forEach var="member" items="${allmanager}">
+            <tr>
+            	<td>${member.id}</td> <td>${member.area}</td>
+                <td>
+                    <button class="btn small UpdaBtn" type="button" id="UpdateBtn">수정</button>
+                    <button class="btn small danger DelBtn" type="button">삭제</button>
+                </td>
+            </tr>
+            </c:forEach>
           </tbody>
         </table>
 
@@ -75,24 +84,118 @@
 
       <!-- 사용자 추가 모달 -->
       <div class="modal" id="userModal">
-        <div class="modal-content">
-          <h3>사용자 추가</h3>
-          <label>아이디 <input type="text" id="newId" /></label>
-          <label>비밀번호 <input type="password" id="newpw" /></label>
-          <label>지역 <input type="text" id="newRegion" /></label>
-        
-          <div class="modal-actions">
-            <button id="saveUser" class="btn primary">등록</button>
-            <button id="cancelUser" class="btn">취소</button>
-          </div>
-        </div>
-      </div>
+  		<div class="modal-content">
+    	<h3>사용자 추가</h3>
+    	<form action="Join.do" method="post">
+      		<label>아이디 <input type="text" name="newId" /></label>
+      		<label>비밀번호 <input type="password" name="newPw" /></label>
+      		<label>지역 <input type="text" name="newArea" /></label>
+      		<div class="modal-actions">
+        		<button id="saveUser" class="btn primary" type="submit">등록</button>
+        		<button id="cancelUser" class="btn" type="button">취소</button>
+      		</div>
+      	</form>
+  		</div>
+		</div>
+		<div class="modal" id="upModal">
+  		<div class="modal-content">
+    	<h3>사용자 수정</h3>
+    	<form action="${ctx}/Update.do" method="post">
+		  <input type="hidden" name="id" />
+		  <label>비밀번호 <input type="password" name="UpPw" /></label>
+		  <label>지역 <input type="text" name="UpArea" /></label>
+		  <button type="submit" class="btn primary">수정</button>
+		  <button id="CancelUser" class="btn" type="button">취소</button>
+		</form>
+  		</div>
+		</div>
+
     </main>
   </div>
 
   <!-- JS 연결 -->
+<<<<<<< HEAD
   <script src="system.js"></script>
 </body>
 </html>
 
-window.location.href = `Delete.do?id=${id}`; 내생각엔 이게 문제야 
+  <script type="text/javascript">
+(function(){
+  const ctx = '${ctx}';
+
+  // 로그아웃 알림
+  const logoutBtn = document.querySelector(".login-btn");
+  if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+
+  // 추가 모달 열기/닫기
+  const addUserBtn = document.getElementById("addUserBtn");
+  const userModal = document.getElementById("userModal");
+  const cancelUser = document.getElementById("cancelUser");
+  if (addUserBtn && userModal) addUserBtn.addEventListener("click", () => userModal.classList.add("show"));
+  if (cancelUser && userModal) cancelUser.addEventListener("click", () => userModal.classList.remove("show"));
+
+  // 수정 모달 요소
+  const upModal = document.getElementById("upModal");
+  const editHiddenInput = document.querySelector("#upModal input[name='id']");
+  const editPwInput = document.querySelector("#upModal input[name='UpPw']");
+  const editAreaInput = document.querySelector("#upModal input[name='UpArea']");
+  const cancelUpUser = document.getElementById("CancelUser"); // null 가능
+
+  if (cancelUpUser && upModal) cancelUpUser.addEventListener("click", () => upModal.classList.remove("show"));
+
+  // 검색 기능
+  const searchBtn = document.getElementById("searchBtn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", function() {
+      const keyword = (document.querySelector(".search-box input").value || "").trim().toLowerCase();
+      document.querySelectorAll("#userTable tr").forEach(function(row){
+        const text = (row.innerText || "").toLowerCase();
+        row.style.display = (keyword === "" || text.includes(keyword)) ? "" : "none";
+      });
+    });
+  }
+
+  // 이벤트 위임: userTable에서 삭제/수정 처리
+  const userTable = document.getElementById("userTable");
+  if (!userTable) return;
+
+  userTable.addEventListener("click", function(event) {
+    const target = event.target;
+
+    // 삭제 버튼
+    if (target.classList.contains("DelBtn")) {
+      const row = target.closest("tr");
+      const id = target.dataset.id || (row ? (row.cells[0].textContent || "").trim() : null);
+      console.log("DEBUG delete id:", id);
+      if (!id) { alert("ID를 찾을 수 없습니다."); return; }
+      if (confirm(`정말로 ID: ${id} 님을 삭제하시겠습니까?`)) {
+        window.location.href = ctx + '/Delete.do?id=' + encodeURIComponent(id);
+      }
+      return;
+    }
+
+    // 수정 버튼
+    if (target.classList.contains("UpdaBtn")) {
+      const row = target.closest("tr");
+      const id = target.dataset.id || (row ? (row.cells[0].textContent || "").trim() : null);
+      const area = target.dataset.area || (row ? (row.cells[1].textContent || "").trim() : null);
+
+      console.log("DEBUG UpdaBtn clicked, extracted id:", id);
+
+      if (!id) { alert("ID를 찾을 수 없습니다."); return; }
+
+      // 모달에 id 채우기 (hidden input)
+      if (editHiddenInput) editHiddenInput.value = id;
+      if (editPwInput) editPwInput.value = ""; // 보안상 초기화
+      if (editAreaInput) editAreaInput.value ="";
+
+      if (upModal) upModal.classList.add("show");
+      return;
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
+>>>>>>> e067f33cf5c98fe4ba550b2baac3417866acb54b
