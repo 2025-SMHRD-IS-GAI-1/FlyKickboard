@@ -9,74 +9,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI기반 킥보드 위반 감지 대시보드</title>
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
-  <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> <!-- 관리자 메뉴 전용 -->
+  <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> 
+  <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
-</head>
-<body>
-  <div class="container">
-   <!-- 상단 헤더 -->
-    <header class="header">
-      <div class="logo">날아라킥보드</div>
-      <nav class="nav" aria-label="주요 탭">
-      	<a href="Main.do">
-      		<button class="nav-btn" type="button">실시간</button>
-      	</a>
-      	<a href="Logs.do">
-      		<button class="nav-btn" type="button">감지 이력 조회</button>
-      	</a>      
-      </nav>
-      
-      <div class="actions" aria-label="사용자 메뉴">
-      <a href="Manager.do">
-      	<button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
-      </a>
-      <a href="logout.do">
-      	<button class="login-btn" type="button" data-action="logout">로그아웃</button>
-      </a>
-        
-      </div>
-    </header>
-
-    <!-- 메인 콘텐츠 -->
-    <main class="main-content">
-      <section class="map-section" aria-labelledby="mapTitle">
-        <h2 id="mapTitle">감지 위치</h2>
-        <!--  실제 네이버 지도가 표시될 영역 -->
-        <div id="map" style="width:100%; height:500px; border-radius:12px;"></div>
-      </section>
-
-      <!-- 최근 감지 이력 -->
-      <section class="history-section" aria-labelledby="historyTitle">
-        <h2 id="historyTitle">최근 감지 이력</h2>
-
-        <div class="summary-box" role="group" aria-label="감지 요약">
-          <div class="summary-card helmet" aria-label="헬멧 미착용 건수">
-            <div class="count" id="cntHelmet">0</div>
-            <p>헬멧 미착용</p>
-          </div>
-          <div class="summary-card double" aria-label="2인 탑승 건수">
-            <div class="count" id="cntDouble">0</div>
-            <p>2인 탑승</p>
-          </div>
-        </div>
-
-        <ul class="history-list" id="historyList" aria-live="polite">
-          <!-- JS에서 li 자동 추가 -->
-        </ul>
-      </section>
-    </main>
-  </div>
 
   <!--  네이버 지도 API (YOUR_CLIENT_ID를 실제 키로 교체하세요) -->
-  <script type="text/javascript">
-  
-  //로그아웃 알림
-  const logoutBtn = document.querySelector(".login-btn");
-  if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
-  
-  
-    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=abcd1234efgh5678ijkl">
+  <script type="text/javascript"
+    src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=azilk7tpsg">
+
   document.addEventListener("DOMContentLoaded", () => {
 	  initNaverMapAndLoad();   // 지도 + 마커
 	  loadRecentHistory();     // 최근 이력 + 카운트
@@ -148,6 +89,76 @@
 	      map.controls[naver.maps.Position.LEFT_BOTTOM].push(legendEl);
 	    }
   </script>
+
+</head>
+<body>
+  <div class="container">
+   <!-- 상단 헤더 -->
+    <header class="header">
+      <div class="logo">날아라킥보드</div>
+      <nav class="nav" aria-label="주요 탭">
+      	<a href="Main.do">
+      		<button class="nav-btn" type="button">실시간</button>
+      	</a>
+      	<a href="Logs.do">
+      		<button class="nav-btn" type="button">감지 이력 조회</button>
+      	</a>      
+      </nav>
+      
+      <div class="actions" aria-label="사용자 메뉴">
+      <a href="Manager.do">
+      	<button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
+      </a>
+        
+        <button class="login-btn" type="button" data-action="logout">로그아웃</button>
+      </div>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+      <section class="map-section" aria-labelledby="mapTitle">
+        <h2 id="mapTitle">감지 위치</h2>
+        
+        <!--  실제 네이버 지도가 표시될 영역 -->
+        <div id="map" style="position:relative; overflow:hidden; 
+            width:100%; height:700px; border-radius:12px;"></div>
+            
+        <!-- 위반유형 -->
+          <div id="mapLegend" class="map-legend" style="display:none">
+          <strong class="legend-title">위반유형</strong>
+          <div class="legend-item"><span class="dot helmet" aria-hidden="true"></span> 헬멧 미착용</div>
+          <div class="legend-item"><span class="dot double" aria-hidden="true"></span> 2인 이상 탑승</div>
+        </div>    
+      </section>
+
+      <!-- 최근 감지 이력 -->
+      <section class="history-section" aria-labelledby="historyTitle">
+        <h2 id="historyTitle">최근 감지 이력</h2>
+
+        <div class="summary-box" role="group" aria-label="감지 요약">
+          <div class="summary-card helmet" aria-label="헬멧 미착용 건수">
+            <div class="count" id="cntHelmet">0</div>
+            <p>헬멧 미착용</p>
+          </div>
+          <div class="summary-card double" aria-label="2인 탑승 건수">
+            <div class="count" id="cntDouble">0</div>
+            <p>2인 탑승</p>
+          </div>
+        </div>
+
+        <ul id="historyList" >
+          <!-- JS에서 li 자동 추가 -->
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  
+  
+
+  <!--  main.js (지도+데이터 로직) -->
+  <script src="${ctx}/assets/js/Main.js"></script>
+
 </body>
 </html>
 

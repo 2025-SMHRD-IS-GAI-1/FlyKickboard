@@ -1,3 +1,4 @@
+/* 기본 설정 */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,66 +11,103 @@ body {
   color: #222;
 }
 
-/* 헤더 */
+/* 상단 헤더 영역 */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #0e3ea9;
+  background: linear-gradient(90deg, #1552d6 0%, #0e3ea9 100%);
   color: #fff;
-  padding: 14px 24px;
+  padding: 14px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
 }
 
 .logo {
-  font-weight: 700;
-  font-size: 18px;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.3px;
 }
 
+/* 네비게이션 탭 */
 .nav {
+  display: flex;
+  gap: 10px;
+}
+
+/* 공통 버튼 기본 스타일 */
+.nav-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* 마우스 hover 시 */
+.nav-btn:hover {
+  background: #fff;
+  color: #0e3ea9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* 현재 페이지(활성 버튼) */
+.nav-btn.active,
+.nav-btn[aria-current="page"] {
+  background: #fff;
+  color: #0e3ea9;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* 관리자 메뉴 / 로그아웃 버튼 */
+.actions {
   display: flex;
   gap: 8px;
 }
 
-.nav-btn {
-  background: #1552d6;
-  border: none;
+.admin-btn,
+.login-btn {
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.nav-btn.active {
-  background: #fff;
-  color: #0e3ea9;
-  font-weight: 600;
-}
-
-.admin-btn, .login-btn {
-  background: #fff;
-  color: #0e3ea9;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 8px 14px;
-  border-radius: 4px;
-  cursor: pointer;
+  border-radius: 8px;
   font-weight: 600;
-  margin-left: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-/* 메인 레이아웃 */
+.admin-btn:hover,
+.login-btn:hover {
+  background: #fff;
+  color: #0e3ea9;
+  transform: translateY(-1px);
+}
+
+/*  메인 레이아웃  */
 .main-content {
   display: flex;
   gap: 24px;
   padding: 24px;
 }
 
-/* 지도 영역 */
+/* 지도 섹션 */
 .map-section {
   flex: 2;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .map-section h2 {
@@ -82,17 +120,102 @@ body {
   width: 100%;
   height: 500px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
 }
 
-/* 최근 감지 이력 */
+/*지도 크기 화면 꽉 채우기 */
+
+/* 메인 레이아웃이 화면 높이에 맞게 확장 */
+html, body { height: 100%; }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* 메인 콘텐츠가 남는 높이를 전부 차지 */
+.main-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+/* 지도 섹션이 flex 높이를 따라가도록 */
+.map-section {
+  display: flex;
+  flex-direction: column;
+  flex: 2 1 0;
+  min-height: 0;
+}
+
+/* map-box가 고정 500px 대신 자동으로 부모 높이에 맞게 */
+.map-box {
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0;
+}
+
+/* 실제 지도(#map)가 부모를 꽉 채움 */
+#map {
+  flex: 1 1 auto;
+  width: 100%;
+  height: auto !important;
+  min-height: 0;
+}
+
+/* 메인 레이아웃이 자동으로 세로 확장되도록 */
+.main-content {
+  display: block !important;    /* flex → block으로 덮어써 세로 흐름으로 변경 */
+  height: auto !important;      /* calc(...) 무시 */
+  min-height: 100vh;            /* 화면보다 커질 수 있음 */
+  padding-bottom: 40px;         /* 바닥 여백 여유 */
+}
+
+/* 지도 섹션, 감지 섹션 모두 자동 높이로 확장 */
+.map-section,
+.history-section {
+  height: auto !important;
+}
+
+/* 지도 박스 고정 높이 제거 */
+.map-box {
+  height: auto !important;
+  min-height: 600px;            /* 최소 높이만 유지하고 아래로 늘어남 */
+}
+
+/* 실제 지도 요소도 자동 확장 */
+#map {
+  width: 100%;
+  height: 100% !important;
+  min-height: 600px;
+}
+
+/* 최근감지이력 우측 고정 (맨 아래 추가) */
+.main-content {
+  display: flex !important;   /* 가로 배치 강제 */
+  flex-wrap: nowrap !important; /* 줄바꿈 금지 */
+  align-items: stretch;
+}
+
+/* 양 칼럼이 줄바꿈 없이 폭 계산되게 */
+.main-content > * { min-width: 0; }  /* 넘침 방지 */
+
+/* 왼쪽 지도, 오른쪽 이력 비율 */
+.map-section     { flex: 2 1 0; min-width: 0; }
+.history-section { flex: 1 1 0; min-width: 300px; } /* 필요하면 280~360px로 조정 */
+
+/* 좁은 화면에서도 억지로 아래로 안 떨어지게 하려면(선택) */
+@media (max-width: 640px) {
+  .history-section { min-width: 260px; }
+}
+/* 감지 이력 섹션 */
 .history-section {
   flex: 1;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .history-section h2 {
@@ -101,6 +224,7 @@ body {
   margin-bottom: 12px;
 }
 
+/* 감지 요약 카드 */
 .summary-box {
   display: flex;
   gap: 10px;
@@ -113,6 +237,12 @@ body {
   border-radius: 8px;
   text-align: center;
   color: #333;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .summary-card.helmet {
@@ -129,7 +259,56 @@ body {
   margin-bottom: 6px;
 }
 
-/* 리스트 */
+#map {
+  position: relative; 
+  overflow: hidden;   
+}
+
+
+/* 위반유형 박스  */
+.map-legend {
+  position: absolute;
+  bottom: 16px;         /* 지도 안쪽 여백 살짝 늘림 */
+  left: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #d1d5db;
+  border-radius: 10px;  /* 모서리 둥글게 */
+  padding: 12px 18px;   /* 내부 여백 크게 */
+  font-size: 14px;      /* 글씨 크게 */
+  line-height: 1.6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  transform: scale(1.1);           /* 전체 크기 비율로 살짝 확대 */
+  transform-origin: bottom left;   /* 왼쪽 아래 기준으로 확대 */
+}
+
+.map-legend .legend-title {
+  font-weight: 700;
+  color: #111;
+  font-size: 14px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+}
+
+.map-legend .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.map-legend .dot {
+  width: 14px;  /* 점 크기 확대 */
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+
+
+
+/* 감지 이력 리스트 */
 .history-list {
   list-style: none;
   display: flex;
@@ -158,7 +337,6 @@ body {
 .dot.helmet {
   background: #4e5cff;
 }
-
 .dot.double {
   background: #2bc26b;
 }
@@ -174,3 +352,35 @@ body {
   font-size: 12px;
   color: #999;
 }
+
+/* 내부요소 방지 */
+.main-content,
+.map-section,
+.history-section {
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+
+/*최근 감지 이력 제목 + 새로고침 버튼 줄 */
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 제목 왼쪽, 버튼 오른쪽 */
+  margin-bottom: 12px;
+}
+
+/* 새로고침 버튼 스타일 */
+.refresh-btn {
+  background: #f1f4ff;
+  border: 1px solid #c8d4ff;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 16px;
+  color: #0e3ea9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+

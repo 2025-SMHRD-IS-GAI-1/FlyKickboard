@@ -11,10 +11,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
   <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" />
+  <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
 <body>
   <!-- 상단바 -->
-  <header class="topbar">
+  <header class="header">
     <div class="brand">날아라킥보드</div>
     <nav class="nav" aria-label="주요 탭">
         <a href="Main.do">
