@@ -22,7 +22,7 @@
 				: 자바에서 전달반은 매개변수를 채울 때, 사용하는 mybatis만의 방식
 			
 	 -->
-  
+  <!--로그인  -->
   <select id="login" parameterType="com.fly.model.MemberVO" resultType="com.fly.model.MemberVO">
   	SELECT USER_ID AS id,
        USER_PW AS pw,
@@ -31,26 +31,31 @@
 	WHERE USER_ID = #{id} AND USER_PW = #{pw}
   </select>
   
+  <!-- 사용자 추가 -->
   <insert id="join" parameterType="com.fly.model.MemberVO">
   	INSERT INTO T_USER (USER_ID, USER_PW, USER_AREA)
   		VALUES (#{id},#{pw},#{area})
   </insert>
   
+  <!-- 최근 로그인 기록  -->
 	<update id="lastlogin" parameterType="string">
     	UPDATE T_USER
     		SET LAST_LOGIN = CURRENT_TIMESTAMP
     		WHERE USER_ID = #{id}
 	</update>
 	
+	<!-- 사용자 전체 조회  -->
 	<select id="allmanager" resultType="com.fly.model.MemberVO">
 		SELECT USER_ID AS id, USER_AREA AS area
 		FROM T_USER
 	</select>
 	
+	<!-- 사용자 삭제 -->
 	<delete id="deleteuser">
   		DELETE FROM T_USER WHERE USER_ID = #{id}
 	</delete>	
 	
+	<!-- 사용자 수정 -->
 	<update id="updateuser" parameterType="com.fly.model.MemberVO">
   	UPDATE T_USER
 		SET USER_PW   = #{pw, jdbcType=VARCHAR},
@@ -58,11 +63,20 @@
 		WHERE USER_ID = #{id, jdbcType=VARCHAR}
 	</update>
 	
+	<!-- 사용자 검색 -->
 	<select id="searchuser" parameterType="string" resultType="com.fly.model.MemberVO">
 	  SELECT USER_ID AS id, USER_AREA AS area
 	  FROM T_USER
 	  WHERE USER_ID LIKE '%' || #{keyword} || '%'
 	     OR USER_AREA LIKE '%' || #{keyword} || '%'
+	</select>
+	<!-- 전체 감지기록 조히  -->
+	<select id="alllog" resultType="com.fly.model.MemberVO">
+    SELECT REG_DT AS "date",
+    DETECT_TYPE AS "type",
+        CAMERA_LOC AS "loc",
+        PROG_STATUS AS "prog"
+	FROM T_DETECTION
 	</select>
 	
 </mapper>

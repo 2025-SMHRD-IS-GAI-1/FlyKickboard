@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.fly.controller.ManangerService;
 import com.fly.controller.SearchService;
 import com.fly.controller.UpdateService;
+import com.fly.controller.AllLogService;
 import com.fly.controller.AllManagerService;
 import com.fly.controller.DeleteService;
 import com.fly.controller.JoinService;
@@ -37,11 +38,12 @@ public class FrontController extends HttpServlet {
 		map.put("Login.do", new LoginService());
 		map.put("logout.do", new LogoutService());
 		map.put("Manager.do", new ManangerService());
-		map.put("Logs.do", new LogService());
+		//map.put("Logs.do", new LogService());
 		map.put("Delete.do", new DeleteService());
 		map.put("Manager.do", new AllManagerService());
 		map.put("Update.do", new UpdateService());
 		map.put("Search.do", new SearchService());
+		map.put("Logs.do", new AllLogService());
 	}
 
 	protected void service(HttpServletRequest request, HttpServletResponse response)
