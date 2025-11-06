@@ -90,14 +90,17 @@ public class MemberDAO {
 		return vo;
 	}
 	// 감지이력 삭제
-	public int DeleteLog(MemberVO mvo) {
-		SqlSession sqlSession = factory.openSession(true);
-		
-		int row = sqlSession.delete("deletelog", mvo);
-		
-		sqlSession.close();
-		
-		return row;
+	public int DeleteLog(List<Integer> ids) {
+	    System.out.println(1);
+	    SqlSession sqlSession = factory.openSession(true);
+	    System.out.println(2);
+
+	    int row = sqlSession.delete("deleteLogs", ids); // ★ namespace 포함
+
+	    System.out.println(3);
+	    sqlSession.close();
+	    System.out.println(4);
+	    return row;
 	}
 }
 	
