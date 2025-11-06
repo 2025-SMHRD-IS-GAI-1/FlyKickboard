@@ -79,4 +79,7 @@
 	FROM T_DETECTION
 	</select>
 	
+	<delete id="deletelog">
+		DELETE FROM T_DETECTION WHERE DETECT_ID = #{detId}
+	</delete>
 </mapper>

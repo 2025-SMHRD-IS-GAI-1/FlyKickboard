@@ -78,8 +78,8 @@ public class MemberDAO {
 		sqlSession.close();
 		
 		return vo;
-	}
-	
+	}	
+	// 감지이력 조회
 	public List<MemberVO> AllLog(MemberVO mvo) {
 		SqlSession sqlSession = factory.openSession(true);
 		
@@ -88,6 +88,16 @@ public class MemberDAO {
 		sqlSession.close();
 		
 		return vo;
+	}
+	// 감지이력 삭제
+	public int DeleteLog(MemberVO mvo) {
+		SqlSession sqlSession = factory.openSession(true);
+		
+		int row = sqlSession.delete("deletelog", mvo);
+		
+		sqlSession.close();
+		
+		return row;
 	}
 }
 	

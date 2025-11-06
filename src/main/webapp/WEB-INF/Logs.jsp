@@ -79,8 +79,8 @@
         <!-- 동작기능 버튼 -->
   <div class="toolbar-right">
     <button type="button" class="btn blue" id="btnSend">전송</button>
-    <button type="button" class="btn blue" id="btnPrint">출력</button>
-    <button type="button" class="btn red" id="btnDelete">삭제</button>
+    <button type="button" class="btn blue" id="btnPr">출력</button>
+    <button type="button" class="btn red" id="btnDel">삭제</button>
   </div>
 </div>
 
@@ -100,21 +100,14 @@
       <th scope="col">상태</th>
     </tr>
       </thead>
-      <tbody>
+      <tbody id="LogTable">
       <c:forEach var="log" items="${alllog}">
 	      <tr>
 	      	<td><input type="checkbox" /></td>
 	      	<td>${log.date}</td><td>${log.loc}</td><td>${log.type}</td><td>${log.prog}</td>
 	      </tr>
       </c:forEach>
-            <tr>
-         <!-- 
-         <td>2025-11-02</td>
-          <td>광주 북구 첨단로 123</td>
-          <td>헬멧 미착용</td>
-          <td><span class="status complete">처리완료</span></td>
-             </tr>
-          --> 
+            <tr>     
       </tbody>
       </table>
 
@@ -160,7 +153,26 @@
 	const logoutBtn = document.querySelector(".login-btn");
 	if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
 	
-	//
+	// 삭제 버튼
+	const LogTable = document.getElementbyId("LogTalbe");
+	if (!LogTable) return;
+	
+	const btnDel
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
   </script>
 
 </body>
