@@ -1,4 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <%@page import="javax.websocket.Session"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
@@ -105,6 +107,7 @@
 	      <tr>
 	      	<td><input type="checkbox" /></td>
 	      	<td>${log.date}</td><td>${log.loc}</td><td>${log.type}</td><td>${log.prog}</td>
+	      	
 	      </tr>
       </c:forEach>
             <tr>
