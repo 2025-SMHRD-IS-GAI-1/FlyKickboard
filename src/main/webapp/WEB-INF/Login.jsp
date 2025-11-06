@@ -18,7 +18,8 @@
 </head>
 <body>
   <div class="wrapper">
-    <h1 class="hero">YOLOv8 기반 공유 킥보드 헬멧미착용·2인탑승 자동 인식 시스템</h1>
+    <h1 class="hero">YOLO11 기반 공유 킥보드 헬멧미착용·2인탑승 자동 인식 시스템</h1>
+
 
     <main class="card" role="main" aria-labelledby="loginTitle">
       <form action="Login.do" method="post" autocomplete="on">
