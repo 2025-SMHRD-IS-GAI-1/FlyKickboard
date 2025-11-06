@@ -35,8 +35,10 @@
       <a href="Manager.do">
       	<button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
       </a>
+      <a href="Logout.do">
+      	<button class="login-btn" type="button" data-action="logout">로그아웃</button>
+      </a>
         
-        <button class="login-btn" type="button" data-action="logout">로그아웃</button>
       </div>
     </header>
 
@@ -99,27 +101,20 @@
     </tr>
       </thead>
       <tbody>
+      <c:forEach var="log" items="${alllog}">
+	      <tr>
+	      	<td><input type="checkbox" /></td>
+	      	<td>${log.date}</td><td>${log.loc}</td><td>${log.type}</td><td>${log.prog}</td>
+	      </tr>
+      </c:forEach>
             <tr>
-         <td><input type="checkbox" /></td>
-          <td>2025-11-02</td>
+         <!-- 
+         <td>2025-11-02</td>
           <td>광주 북구 첨단로 123</td>
           <td>헬멧 미착용</td>
           <td><span class="status complete">처리완료</span></td>
              </tr>
-             <tr>
-         <td><input type="checkbox" /></td>
-          <td>2025-11-01</td>
-          <td>광주 북구  123</td>
-          <td>2인 탑승</td>
-         <td><span class="status progress">처리중</span></td>       
-          </tr>
-          <tr>
-         <td><input type="checkbox" /></td>
-          <td>2025-11-04</td>
-          <td>광주 광산구  123</td>
-          <td>2인 탑승</td>
-          <td><span class="status pending">처리전</span></td>
-          </tr>
+          --> 
       </tbody>
       </table>
 
@@ -431,9 +426,16 @@ function filterLogs(logs, f) {
   return out;
 }
 
+
 </script>
   <!-- JS연결 -->
-  <script src="Logs.js"></script>
+  <script>
+	//로그아웃 알림
+	const logoutBtn = document.querySelector(".login-btn");
+	if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+	
+	//
+  </script>
 
 </body>
 </html>
