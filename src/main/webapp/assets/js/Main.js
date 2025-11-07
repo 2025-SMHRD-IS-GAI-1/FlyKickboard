@@ -1,120 +1,168 @@
-// ==============================
-// 로그아웃 알림
-// ==============================
-const logoutBtn = document.querySelector(".login-btn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+/*************************************************
+ * 페이지 로드 시 초기 실행
+ *************************************************/
+window.addEventListener("load", () => {
+  setupLogout();
+  initNaverMap();
+  loadLogs();
+  setupFilterButtons();
+});
+
+
+/*************************************************
+ * 로그아웃 버튼 클릭 알림
+ *************************************************/
+function setupLogout() {
+  const logoutBtn = document.querySelector(".login-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+  }
 }
 
-// ==============================
-// 메인 로직 (페이지 로드시 실행)
-// ==============================
-window.addEventListener('load', () => {
 
-  let allLogs = [];   // 전체 데이터 저장
-  let noHelmet = [];  // 헬멧 미착용 데이터
-  let doublepl = [];  // 2인 탑승 데이터
+/*************************************************
+ * ✅ 네이버 지도 + 붉은 반경 표시
+ *************************************************/
+async function initNaverMap() {
+  const mapElement = document.getElementById("map");
+  if (!mapElement) return;
 
-  let isHelmetFilter = false; // 현재 헬멧 필터 상태
-  let isDoubleFilter = false; // 현재 2인탑승 필터 상태
-
-  const ctx = document.body.dataset.ctx;
-
-  // 요소 선택
-  const btnHelmet = document.getElementById("btnHelmet");
-  const btnDouble = document.getElementById("btnDouble");
-  const cntHelmet = document.getElementById("cntHelmet");
-  const cntDouble = document.getElementById("cntDouble");
-  const historyList = document.getElementById("historyList");
-
-  // ===============================
-  // 감지이력 불러오기
-  // ===============================
-  function loadLogs() {
-    fetch("LogType.do", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" }
-    })
-      .then(res => res.json())
-      .then(data => {
-
-        allLogs = data; // ✅ 전체 데이터 기억
-
-        noHelmet = data.filter(a => a.type.includes("미착용"));
-        doublepl = data.filter(a => a.type.includes("2인"));
-
-        renderLogs(allLogs);
-        updateCounts(allLogs);
-      })
-      .catch(err => console.error("데이터 로드 실패:", err));
+  // 네이버 지도 로드 확인
+  if (!(window.naver && naver.maps)) {
+    return console.error("❌ 네이버 지도 스크립트가 먼저 로드되어야 합니다.");
   }
 
+  try {
+    const res = await fetch("/api/mapdata");
+    const points = res.ok ? await res.json() : [];
 
-  // ===============================
-  // 버튼 클릭 시 목록 토글 표시
-  // ===============================
-  btnHelmet.addEventListener("click", () => {
-    if (!isHelmetFilter) {
-      renderLogs(noHelmet);
-      isHelmetFilter = true;
-      isDoubleFilter = false;
-    } else {
+    const center = points.length
+      ? new naver.maps.LatLng(points[0].lat, points[0].lng)
+      : new naver.maps.LatLng(35.1605, 126.8514);
+
+    // ✅ 전역 map 객체 저장
+    window.map = new naver.maps.Map("map", {
+      center,
+      zoom: 14,
+      mapTypeControl: true
+    });
+
+    // 🔥 붉은 분포 원 표시
+    points.forEach(p => {
+      new naver.maps.Circle({
+        map: window.map,
+        center: new naver.maps.LatLng(p.lat, p.lng),
+        radius: 160,
+        strokeOpacity: 0,
+        fillColor: "#ff0000",
+        fillOpacity: 0.25
+      });
+    });
+
+    showMapLegend();
+
+  } catch (err) {
+    console.error("지도 데이터 로딩 실패:", err);
+  }
+}
+
+
+/*************************************************
+ * 범례 표시
+ *************************************************/
+function showMapLegend() {
+  const legendEl = document.getElementById("mapLegend");
+  if (!(legendEl && window.map && naver.maps)) return;
+  legendEl.style.display = "block";
+  window.map.controls[naver.maps.Position.LEFT_BOTTOM].push(legendEl);
+}
+
+
+/*************************************************
+ * ✅ 감지 로그 데이터 로드
+ *************************************************/
+let allLogs = [];
+let noHelmet = [];
+let doublepl = [];
+
+function loadLogs() {
+  fetch("LogType.do", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  })
+    .then(res => res.json())
+    .then(data => {
+      allLogs = data;
+      noHelmet = data.filter(d => d.type.includes("미착용"));
+      doublepl = data.filter(d => d.type.includes("2인"));
+
       renderLogs(allLogs);
-      isHelmetFilter = false;
-    }
+      updateCounts(allLogs);
+    })
+    .catch(err => console.error("데이터 로드 실패:", err));
+}
+
+
+/*************************************************
+ * ✅ 감지 목록 화면에 표시
+ *************************************************/
+function renderLogs(logs) {
+  const historyList = document.getElementById("historyList");
+  if (!historyList) return;
+
+  historyList.innerHTML = "";
+
+  if (!logs || logs.length === 0) {
+    historyList.innerHTML = `<li>최근 감지 이력이 없습니다.</li>`;
+    return;
+  }
+
+  logs.forEach(log => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>
+        <span class="dot ${log.type.includes("미착용") ? "helmet" : "double"}"></span>
+        ${log.type}
+      </span>
+      <span class="region">${log.loc}</span>
+      <span class="time">${log.date}</span>
+    `;
+    historyList.appendChild(li);
+  });
+}
+
+
+/*************************************************
+ * ✅ 감지 건수 UI 업데이트
+ *************************************************/
+function updateCounts(logs) {
+  document.getElementById("cntHelmet").textContent =
+    logs.filter(l => l.type.includes("미착용")).length;
+
+  document.getElementById("cntDouble").textContent =
+    logs.filter(l => l.type.includes("2인")).length;
+}
+
+
+/*************************************************
+ * ✅ 버튼 토글(헬멧 / 2인탑승)
+ *************************************************/
+let isHelmetFilter = false;
+let isDoubleFilter = false;
+
+function setupFilterButtons() {
+  const btnHelmet = document.getElementById("btnHelmet");
+  const btnDouble = document.getElementById("btnDouble");
+
+  btnHelmet.addEventListener("click", () => {
+    isHelmetFilter = !isHelmetFilter;
+    isDoubleFilter = false;
+    renderLogs(isHelmetFilter ? noHelmet : allLogs);
   });
 
   btnDouble.addEventListener("click", () => {
-    if (!isDoubleFilter) {
-      renderLogs(doublepl);
-      isDoubleFilter = true;
-      isHelmetFilter = false;
-    } else {
-      renderLogs(allLogs);
-      isDoubleFilter = false;
-    }
+    isDoubleFilter = !isDoubleFilter;
+    isHelmetFilter = false;
+    renderLogs(isDoubleFilter ? doublepl : allLogs);
   });
-
-
-  // ===============================
-  // 감지이력 화면 표시
-  // ===============================
-  function renderLogs(logs) {
-    historyList.innerHTML = ""; // 기존 목록 비우기
-
-    if (!logs || logs.length === 0) {
-      historyList.innerHTML = `<li>최근 감지 이력이 없습니다.</li>`;
-      return;
-    }
-
-    logs.forEach(log => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span>
-          <span class="dot ${log.type.includes("미착용") ? "helmet" : "double"}"></span>
-          ${log.type}
-        </span>
-        <span class="region">${log.loc}</span>
-        <span class="time">${log.date}</span>
-      `;
-      historyList.appendChild(li);
-    });
-  }
-
-  // ===============================
-  // 감지 건수 업데이트
-  // ===============================
-  function updateCounts(logs) {
-    const helmetCount = logs.filter(l => l.type.includes("미착용")).length;
-    const doubleCount = logs.filter(l => l.type.includes("2인")).length;
-
-    cntHelmet.textContent = helmetCount;
-    cntDouble.textContent = doubleCount;
-  }
-
-  // ===============================
-  // 페이지 로드시 전체 로그 로드
-  // ===============================
-  loadLogs();
-
-});
+}
