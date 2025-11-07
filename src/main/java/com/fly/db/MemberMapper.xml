@@ -75,8 +75,54 @@
     SELECT REG_DT AS "date",
     DETECT_TYPE AS "type",
         CAMERA_LOC AS "loc",
-        PROG_STATUS AS "prog"
+        PROG_STATUS AS "prog",
+        DETECT_ID AS "det_id"
 	FROM T_DETECTION
 	</select>
 	
+	<!-- 선택 감지기록 삭제   -->
+	<delete id="deleteLogs" parameterType="java.util.List">
+  		DELETE FROM T_DETECTION
+  		WHERE DETECT_ID IN
+  		<foreach collection="list" item="id" open="(" separator="," close=")">
+    		#{id}
+  		</foreach>
+	</delete>
+	
+	<select id="filterLogs" parameterType="map" resultType="com.fly.model.MemberVO">
+	SELECT 
+	    DETECT_ID AS det_id,
+	    REG_DT AS date,
+	    CAMERA_LOC AS loc,
+	    DETECT_TYPE AS type,
+	    PROG_STATUS AS prog
+	FROM T_DETECTION
+	WHERE MANAGER_ID = #{id}
+	
+	<!-- 날짜를 선택한경우 수행 -->
+	<!-- 시작 날짜 -->
+	<if test="startDate != null and startDate != ''">
+	    AND REG_DT &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+	</if>
+	
+	<if test="endDate != null and endDate != ''">
+	    AND REG_DT &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+	</if>
+	<!-- 상태를 선택한경우 수행 -->
+	<if test="statusList != null and statusList.size() > 0">
+	    AND PROG_STATUS IN
+	    <foreach collection="statusList" item="s" open="(" separator="," close=")">
+	        #{s}
+	    </foreach>
+	</if>
+	<!-- 감지유형을 선택한 경우 수행 -->
+	<if test="dtypeList != null and dtypeList.size() > 0">
+	    AND DETECT_TYPE IN
+	    <foreach collection="dtypeList" item="d" open="(" separator="," close=")">
+	        #{d}
+	    </foreach>
+	</if>
+	
+	ORDER BY REG_DT DESC
+	</select>
 </mapper>

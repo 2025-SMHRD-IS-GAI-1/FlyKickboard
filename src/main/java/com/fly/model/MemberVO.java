@@ -14,5 +14,6 @@ public class MemberVO {
 	private String date; // 감지날짜
 	private String type; // 감지유형
 	private String loc; // 감지 위치
-	private String prog;
+	private String prog; // 처리상태
+	private String det_id; // 감지이력 아이디
 }
