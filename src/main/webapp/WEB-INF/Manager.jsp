@@ -128,8 +128,8 @@
   const editHiddenInput = document.querySelector("#upModal input[name='id']");
   const editPwInput = document.querySelector("#upModal input[name='UpPw']");
   const editAreaInput = document.querySelector("#upModal input[name='UpArea']");
-  const cancelUpUser = document.getElementById("CancelUser");
-  if (cancelUpUser && upModal) cancelUpUser.addEventListener("click", () => upModal.classList.remove("show"));
+  const cancelUpdate = document.getElementById("cancelUpdate");
+  if (cancelUpdate && upModal) cancelUpdate.addEventListener("click", () => upModal.classList.remove("show"));
 
 //✅ 검색 + 페이지네이션 변수
   const searchBtn = document.getElementById("searchBtn");
@@ -174,7 +174,7 @@
   // ✅ 검색 기능
   if (searchBtn) {
     searchBtn.addEventListener("click", () => {
-      const keyword = document.getElementById("keyword").value.trim();
+      const keyword = document.getElementById("searchInput").value.trim();
       if (keyword === "") return;
 
       fetch("Search.do?keyword=" + encodeURIComponent(keyword))
