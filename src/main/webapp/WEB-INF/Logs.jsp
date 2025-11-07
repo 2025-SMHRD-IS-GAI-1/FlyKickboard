@@ -79,8 +79,8 @@
         <!-- 동작기능 버튼 -->
   <div class="toolbar-right">
     <button type="button" class="btn blue" id="btnSend">전송</button>
-    <button type="button" class="btn blue" id="btnPrint">출력</button>
-    <button type="button" class="btn red" id="btnDelete">삭제</button>
+    <button type="button" class="btn blue" id="btnPr">출력</button>
+    <button type="button" class="btn red" id="btnDel">삭제</button>
   </div>
 </div>
 
@@ -100,21 +100,17 @@
       <th scope="col">상태</th>
     </tr>
       </thead>
-      <tbody>
+      <tbody id="LogTable">
       <c:forEach var="log" items="${alllog}">
-         <tr>
-            <td><input type="checkbox" /></td>
-            <td>${log.date}</td><td>${log.loc}</td><td>${log.type}</td><td>${log.prog}</td>
-         </tr>
-      </c:forEach>
-            <tr>
-         <!-- 
-         <td>2025-11-02</td>
-          <td>광주 북구 첨단로 123</td>
-          <td>헬멧 미착용</td>
-          <td><span class="status complete">처리완료</span></td>
-             </tr>
-          --> 
+		  <tr data-id="${log.det_id}">
+		    <td><input type="checkbox" /></td>
+		    <td>${log.date}</td>
+		    <td>${log.loc}</td>
+		    <td>${log.type}</td>
+		    <td>${log.prog}</td>
+		  </tr>
+	  </c:forEach>     
+
       </tbody>
       </table>
 
@@ -152,33 +148,25 @@
   </div>
 
 <script type="text/javascript">
-// ==============================
-// Eclipse / JSP 환경 + ES5 호환 통합본
-// ==============================
 
-// JSP에서 <body data-ctx="${pageContext.request.contextPath}">
-var ctx = (document.body && document.body.getAttribute('data-ctx')) || "";
+// ==============================
+// 로그아웃 알림
+// ==============================
+const logoutBtn = document.querySelector(".login-btn");
+if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
 
+
+// ==============================
+// 체크된 행 데이터 가져오기 (삭제에 사용)
+// ==============================
+function getCheckedRows() {
+  const checked = document.querySelectorAll("#LogTable input[type='checkbox']:checked");
+  let selected = [];
+
+  
 // ------------------------------
 // DOM 로드
 // ------------------------------
-document.addEventListener("DOMContentLoaded", function () {
-  // 0) 상단 메뉴/로그아웃
-  var realtimeBtn = document.querySelector(".nav-btn[data-route='main']");
-  if (realtimeBtn) realtimeBtn.addEventListener("click", function () { window.location.href = ctx + "/Main.jsp"; });
-
-  var logsBtn = document.querySelector(".nav-btn[data-route='logs']");
-  if (logsBtn) logsBtn.addEventListener("click", function () { window.location.href = ctx + "/Logs.jsp"; });
-
-  var adminBtn = document.querySelector(".admin-btn");
-  if (adminBtn) adminBtn.addEventListener("click", function () { window.location.href = ctx + "/Manager.jsp"; });
-
-  var logoutBtn = document.querySelector(".login-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function () {
-      alert("로그아웃 되었습니다."); window.location.href = ctx + "/Login.jsp";
-    });
-  }
   //===============================
   // ✅ 날짜 검색 (LAST_LOGS 기반)
   // ===============================
@@ -225,7 +213,117 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
   
-  // 1) 분류 모달
+  checked.forEach(chk => {
+    const row = chk.closest("tr");
+    selected.push({ id: row.dataset.id });
+  });
+
+  return selected;
+}
+
+// 삭제 버튼 이벤트
+document.getElementById("btnDel").addEventListener("click", () => {
+  const rows = getCheckedRows();
+  if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
+  if (!confirm("정말 삭제하시겠습니까?")) return;
+
+  fetch("DeleteLog.do", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(rows.map(r => Number(r.id)))
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    location.reload();
+  });
+});
+
+
+// ==============================
+// ✅ 페이징 처리
+// ==============================
+const tableBody = document.getElementById("LogTable");
+const prevBtn = document.querySelector(".page-btn.prev");
+const nextBtn = document.querySelector(".page-btn.next");
+const pageNo = document.querySelector(".page-no");
+
+// ✅ 서버에서 출력된 HTML → JS 배열로 변환
+let allData = Array.from(document.querySelectorAll("#LogTable tr")).map(row => ({
+  id: row.dataset.id,
+  date: row.cells[1].textContent.trim(),
+  loc: row.cells[2].textContent.trim(),
+  type: row.cells[3].textContent.trim(),
+  prog: row.cells[4].textContent.trim()
+}));
+
+let currentPage = 1;
+const pageSize = 10;
+
+
+// ✅ 테이블 렌더링 함수
+function renderTable(page = 1) {
+  tableBody.innerHTML = "";
+
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const pageData = allData.slice(start, end);
+
+  if (pageData.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="5">감지 이력이 없습니다.</td></tr>`;
+    return;
+  }
+
+  pageData.forEach(log => {
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-id", log.id);
+    tr.innerHTML = `
+      <td><input type="checkbox"></td>
+      <td>\${log.date}</td>
+      <td>\${log.loc}</td>
+      <td>\${log.type}</td>
+      <td>\${log.prog}</td>
+    `;
+    tableBody.appendChild(tr);
+  });
+
+  pageNo.textContent = page;
+  updateButtons();
+}
+
+
+// ✅ Prev / Next 버튼 상태 변경
+function updateButtons() {
+  const maxPage = Math.ceil(allData.length / pageSize);
+  prevBtn.disabled = currentPage === 1;
+  nextBtn.disabled = currentPage === maxPage;
+}
+
+
+// ✅ 페이지 버튼 이벤트
+prevBtn.addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderTable(currentPage);
+  }
+});
+
+nextBtn.addEventListener("click", () => {
+  const maxPage = Math.ceil(allData.length / pageSize);
+  if (currentPage < maxPage) {
+    currentPage++;
+    renderTable(currentPage);
+  }
+});
+
+
+// ✅ 페이지 처음 출력
+renderTable();
+console.log("총 감지 이력 수:", allData.length);
+
+// 분류 모달
+
+// 1) 분류 모달
   var filterBtn = document.getElementById("btnFilter");
   var filterPanel = document.getElementById("filterPanel");
   if (filterBtn && filterPanel) {
@@ -266,18 +364,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 2) 체크박스/테이블 초기화
   ensureRowCheckboxes();
+ master
 
-  var table = document.querySelector(".logs-table");
-  var tbody = table ? table.tBodies[0] : null;
-  var checkAll = table ? table.querySelector("#checkAll") : null;
-
-  if (checkAll) {
-    checkAll.addEventListener("change", function () {
-      var cbs = table.querySelectorAll("tbody .row-check");
-      for (var i = 0; i < cbs.length; i++) cbs[i].checked = checkAll.checked;
-      checkAll.indeterminate = false;
-    });
-  }
 
   if (tbody) {
     tbody.addEventListener("change", function (e) {
@@ -288,7 +376,6 @@ document.addEventListener("DOMContentLoaded", function () {
     mo.observe(tbody, { childList: true });
   }
 
-  bindActionButtons();
 
   // 3) 초기 원본 배열 확보 + 통계 갱신 + 상태 뱃지 스타일 주입
   //    (JSP가 단순 텍스트로 렌더링해도 여기서 span.status로 감쌈)
@@ -525,6 +612,7 @@ function statusClass(status) {
   if (status === "처리완료") return "complete";
   return "";
 }
+
 </script>
 
 
