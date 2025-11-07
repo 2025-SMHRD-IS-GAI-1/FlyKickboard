@@ -17,6 +17,7 @@ import com.fly.controller.SearchService;
 import com.fly.controller.UpdateService;
 import com.fly.controller.AllLogService;
 import com.fly.controller.AllManagerService;
+import com.fly.controller.DeleteLogService;
 import com.fly.controller.DeleteService;
 import com.fly.controller.JoinService;
 import com.fly.controller.LogService;
@@ -44,6 +45,7 @@ public class FrontController extends HttpServlet {
 		map.put("Update.do", new UpdateService());
 		map.put("Search.do", new SearchService());
 		map.put("Logs.do", new AllLogService());
+		map.put("DeleteLog.do", new DeleteLogService());
 	}
 
 	protected void service(HttpServletRequest request, HttpServletResponse response)
