@@ -1,6 +1,8 @@
 package com.fly.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -101,10 +103,6 @@ public class MemberDAO {
 	    sqlSession.close();
 	    System.out.println(4);
 	    return row;
-	}
-	// 감지이력 분류
-	public void FilterLogs() {
-		
 	}
 }
 	
