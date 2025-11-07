@@ -16,7 +16,7 @@
 <body>
   <!-- 상단바 -->
   <header class="header">
-    <div class="brand">날아라킥보드</div>
+    <div class="logo">날아라킥보드</div>
     <nav class="nav" aria-label="주요 탭">
       <a href="Main.do"><button class="nav-btn" type="button">실시간</button></a>
       <a href="Logs.do"><button class="nav-btn" type="button">감지 이력 조회</button></a>
