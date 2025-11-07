@@ -1,271 +1,459 @@
 // ==============================
-// Eclipse / JSP 환경 + ES5 호환
+// Logs.js (버튼 안먹는 이슈 보강: 선택자 통일 + 방어 로깅 + 페이징/필터 연동)
 // ==============================
 
-// JSP에서 <body data-ctx="${pageContext.request.contextPath}">
-var ctx = (document.body && document.body.getAttribute('data-ctx')) || "";
+var ctx = (document.body && document.body.getAttribute("data-ctx")) || "";
 
-// DOM 로드
+// 전역 상태
+var CURRENT_FILTER = { start:null, end:null, status:null, dtype:null };
+var FILTERED_LOGS = [];
+var CURRENT_PAGE = 1;
+var PAGE_SIZE = 10;
+
 document.addEventListener("DOMContentLoaded", function () {
-  // 상단 메뉴/로그아웃
-  var realtimeBtn = document.querySelector(".nav-btn[data-route='main']");
-  if (realtimeBtn) realtimeBtn.addEventListener("click", function () {
-    window.location.href = ctx + "/Main.jsp";
-  });
+  try {
+    // --- 필수 DOM
+    var tableBody = document.getElementById("LogTable");             // ✅ tbody id=LogTable
+    var prevBtn   = document.querySelector(".page-btn.prev");
+    var nextBtn   = document.querySelector(".page-btn.next");
+    var pageNo    = document.querySelector(".page-no");
+    var searchBtn = document.querySelector(".btn-search");
+    var filterBtn = document.getElementById("btnFilter");
+    var filterPanel = document.getElementById("filterPanel");
+    var statsBtn  = document.getElementById("btnStats");
+    var modal     = document.getElementById("reportModal");
+    var closeBtn  = document.getElementById("closeReportBtn");
 
-  var logsBtn = document.querySelector(".nav-btn[data-route='logs']");
-  if (logsBtn) logsBtn.addEventListener("click", function () {
-    window.location.href = ctx + "/Logs.jsp";
-  });
+    // 존재 로깅 (개발 단계에서 콘솔 확인)
+    [
+      ["#LogTable", tableBody],
+      [".page-btn.prev", prevBtn],
+      [".page-btn.next", nextBtn],
+      [".page-no", pageNo],
+      [".btn-search", searchBtn],
+      ["#btnFilter", filterBtn],
+      ["#filterPanel", filterPanel],
+      ["#btnStats", statsBtn],
+      ["#reportModal", modal],
+      ["#closeReportBtn", closeBtn],
+    ].forEach(function (p){ if(!p[1]) console.warn("[Logs.js] Missing:", p[0]); });
 
-  var adminBtn = document.querySelector(".admin-btn");
-  if (adminBtn) adminBtn.addEventListener("click", function () {
-    window.location.href = ctx + "/Manager.jsp";
-  });
+    // 모달 안전 초기화(덮어씌우는 이슈 방지)
+    if (modal) modal.classList.remove("show");
 
-  var logoutBtn = document.querySelector(".login-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function () {
-      alert("로그아웃 되었습니다.");
-      window.location.href = ctx + "/Login.jsp";
-    });
-  }
+    // 초기 데이터 적재
+    window.LAST_LOGS = readLogsFromDom();
+    FILTERED_LOGS = window.LAST_LOGS.slice();
+    renderTable(CURRENT_PAGE);
 
-  // 필터 모달
-  var filterBtn = document.getElementById("btnFilter");
-  var filterPanel = document.getElementById("filterPanel");
-  if (filterBtn && filterPanel) {
-    var backdrop = document.getElementById("filterBackdrop");
-    if (!backdrop) {
-      backdrop = document.createElement("div");
+    // ============ 날짜 검색 ============
+    if (searchBtn) {
+      searchBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        var startInput = document.getElementById("startDate");
+        var endInput   = document.getElementById("endDate");
+        var startDate  = startInput ? startInput.value : "";
+        var endDate    = endInput ? endInput.value : "";
+
+        if (!startDate && !endDate) {
+          alert("조회할 날짜를 선택하세요.");
+          return;
+        }
+        CURRENT_FILTER.start = startDate ? new Date(startDate + "T00:00:00") : null;
+        CURRENT_FILTER.end   = endDate   ? new Date(endDate   + "T23:59:59") : null;
+        CURRENT_PAGE = 1;
+        applyAllFilters();
+      });
+    }
+
+    // ============ 분류 모달 ============
+    if (filterBtn && filterPanel) {
+      var backdrop = document.createElement("div");
       backdrop.id = "filterBackdrop";
       backdrop.className = "filter-modal-backdrop";
       document.body.appendChild(backdrop);
+
+      function openFilter() {
+        backdrop.classList.add("show");
+        backdrop.appendChild(filterPanel);
+        filterPanel.classList.add("as-modal");
+      }
+      function closeFilter() {
+        backdrop.classList.remove("show");
+        var wrap = document.querySelector(".filter-wrapper");
+        if (wrap) wrap.appendChild(filterPanel);
+        filterPanel.classList.remove("as-modal");
+      }
+      filterBtn.addEventListener("click", function (e){ e.preventDefault(); openFilter(); });
+      backdrop.addEventListener("click", function (e){ if (!filterPanel.contains(e.target)) closeFilter(); });
+      document.addEventListener("keydown", function (e){ if (e.key === "Escape" && backdrop.classList.contains("show")) closeFilter(); });
+
+      var opts = filterPanel.querySelectorAll(".filter-option");
+      for (var i=0; i<opts.length; i++) {
+        opts[i].addEventListener("click", function () {
+          var group = closest(this, ".filter-group");
+          var all = group ? group.querySelectorAll(".filter-option") : [];
+          for (var j=0; j<all.length; j++) all[j].classList.remove("active");
+          this.classList.add("active");
+
+          var f = getActiveFilters();
+          CURRENT_FILTER.status = f.status;
+          CURRENT_FILTER.dtype  = f.dtype;
+          CURRENT_PAGE = 1;
+          applyAllFilters();
+        });
+      }
     }
 
-    function openModal() {
-      backdrop.classList.add("show");
-      backdrop.appendChild(filterPanel);
-      filterPanel.classList.add("as-modal");
-    }
-
-    function closeModal() {
-      backdrop.classList.remove("show");
-      var wrapper = document.querySelector(".filter-wrapper");
-      if (wrapper) wrapper.appendChild(filterPanel);
-      filterPanel.classList.remove("as-modal");
-    }
-
-    filterBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      openModal();
-    });
-
-    backdrop.addEventListener("click", function (e) {
-      if (!filterPanel.contains(e.target)) closeModal();
-    });
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && backdrop.classList.contains("show")) closeModal();
-    });
-
-    var opts = filterPanel.querySelectorAll(".filter-option");
-    for (var i = 0; i < opts.length; i++) {
-      opts[i].addEventListener("click", function () {
-        var group = closest(this, ".filter-group");
-        var all = group ? group.querySelectorAll(".filter-option") : [];
-        for (var j = 0; j < all.length; j++) all[j].classList.remove("active");
-        this.classList.add("active");
+    // ============ 통계 모달 ============
+    if (statsBtn && modal) {
+      statsBtn.addEventListener("click", function () {
+        modal.classList.add("show");
+        updateReportModal(FILTERED_LOGS);
       });
     }
-  }
+    if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
+    if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
 
-  // 체크박스/테이블
-  ensureRowCheckboxes();
-
-  var table = document.querySelector(".logs-table");
-  var tbody = table ? table.tBodies[0] : null;
-  var checkAll = table ? table.querySelector("#checkAll") : null;
-
-  if (checkAll) {
-    checkAll.addEventListener("change", function () {
-      var cbs = table.querySelectorAll("tbody .row-check");
-      for (var i = 0; i < cbs.length; i++) cbs[i].checked = checkAll.checked;
-      checkAll.indeterminate = false;
+    // ============ 페이징 ============
+    if (prevBtn) prevBtn.addEventListener("click", function () {
+      if (CURRENT_PAGE > 1) { CURRENT_PAGE--; renderTable(CURRENT_PAGE); }
     });
-  }
-
-  if (tbody) {
-    tbody.addEventListener("change", function (e) {
-      var t = e.target || e.srcElement;
-      if (t && hasClass(t, "row-check")) syncHeaderState();
+    if (nextBtn) nextBtn.addEventListener("click", function () {
+      var maxPage = Math.ceil(FILTERED_LOGS.length / PAGE_SIZE);
+      if (CURRENT_PAGE < maxPage) { CURRENT_PAGE++; renderTable(CURRENT_PAGE); }
     });
 
-    var mo = new MutationObserver(function () { ensureRowCheckboxes(); });
-    mo.observe(tbody, { childList: true });
+  } catch (err) {
+    console.error("[Logs.js] 초기화 중 에러:", err);
   }
-
-  bindActionButtons();
-
-  // 초기 통계 채우기
-  var initLogs = map(readLogsFromDom(), function (l) {
-    l.status = normalizeStatus(l.status);
-    return l;
-  });
-  window.LAST_LOGS = initLogs;
-  updateStats(initLogs);
 });
 
-// 유틸
-function hasClass(el, c) { return el && (' ' + el.className + ' ').indexOf(' ' + c + ' ') > -1; }
-function closest(el, sel) {
-  while (el && el.nodeType === 1) {
-    if (matches(el, sel)) return el;
-    el = el.parentElement;
-  }
+// ---------- 공통 util ----------
+function closest(el, sel){ while (el && el.nodeType===1){ if (el.matches ? el.matches(sel) : el.msMatchesSelector(sel)) return el; el=el.parentElement; } return null; }
+function setText(id, v){ var el=document.getElementById(id); if (el) el.textContent=v; }
+
+// ---------- 날짜 파서 ----------
+function parseDateForFilter(str){
+  if(!str) return null;
+  var m1=str.match(/(\d{4})-(\d{2})-(\d{2})/); // yyyy-mm-dd
+  if(m1) return new Date(m1[1], m1[2]-1, m1[3]);
+  var m2=str.match(/(\d{2})\/(\d{2})\/(\d{2})/); // yy/mm/dd
+  if(m2) return new Date(2000+parseInt(m2[1],10), parseInt(m2[2],10)-1, parseInt(m2[3],10));
   return null;
 }
-function matches(el, sel) {
-  var p = Element.prototype;
-  var f = p.matches || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector;
-  return f.call(el, sel);
-}
-function map(arr, fn) {
-  var out = [];
-  for (var i = 0; i < arr.length; i++) out.push(fn(arr[i], i));
-  return out;
-}
 
-// 상태 정규화
-function normalizeStatus(s) {
-  var v = String(s || "").trim().toLowerCase();
-  if (["완료","처리완료","done","complete","completed","success"].indexOf(v) > -1) return "처리완료";
-  if (["진행","처리중","in_progress","progress","processing","working"].indexOf(v) > -1) return "처리중";
-  if (["대기","처리전","pending","new","todo","준비중"].indexOf(v) > -1) return "처리전";
-  return s || "-";
+// ---------- 상태 정규화 ----------
+function normalizeProg(s){
+  var v=String(s||"").trim().toLowerCase();
+  if(["대기","처리전","pending","new","todo","준비중"].indexOf(v)>-1) return "처리전";
+  if(["진행","처리중","in_progress","progress","processing","working"].indexOf(v)>-1) return "처리중";
+  if(["완료","처리완료","done","complete","completed","success"].indexOf(v)>-1) return "처리완료";
+  return s||"-";
 }
+function statusClass(st){ if(st==="처리전") return "pending"; if(st==="처리중") return "progress"; if(st==="처리완료") return "complete"; return ""; }
 
-// 통계
-function updateStats(logs) {
-  var i, norm = [];
-  for (i = 0; i < (logs || []).length; i++) {
-    norm.push({ time: logs[i].time, location: logs[i].location, type: logs[i].type, status: normalizeStatus(logs[i].status) });
+// ---------- 필터 읽기 ----------
+function getActiveFilters(){
+  var f={status:null, dtype:null};
+  var panel=document.getElementById("filterPanel");
+  if(!panel) return f;
+  var groups=panel.querySelectorAll(".filter-group");
+
+  if(groups[0]){
+    var a1=groups[0].querySelector(".filter-option.active");
+    if(a1 && a1.textContent.trim()!=="전체") f.status=a1.textContent.trim();
   }
-  var total = norm.length, complete = 0, progress = 0, pending = 0;
-  for (i = 0; i < norm.length; i++) {
-    if (norm[i].status === "처리완료") complete++;
-    else if (norm[i].status === "처리중") progress++;
-    else if (norm[i].status === "처리전") pending++;
+  if(groups[1]){
+    var a2=groups[1].querySelector(".filter-option.active");
+    if(a2 && a2.textContent.trim()!=="전체") f.dtype=a2.textContent.trim();
   }
-  setText("totalCount", total + "건");
-  setText("completeCount", complete + "건");
-  setText("progressCount", progress + "건");
-  setText("pendingCount", pending + "건");
-}
-function setText(id, v) {
-  var el = document.getElementById(id);
-  if (el) el.textContent = v;
+  return f;
 }
 
-// 체크박스
-function ensureRowCheckboxes() {
-  var table = document.querySelector(".logs-table");
-  if (!table) return;
-  var tbody = table.tBodies[0];
-  if (!tbody) return;
-
-  var rows = tbody.rows;
-  for (var i = 0; i < rows.length; i++) {
-    var firstCell = rows[i].cells[0];
-    if (!firstCell) continue;
-    if (!firstCell.querySelector("input[type='checkbox']")) {
-      var id = (firstCell.textContent || "").trim();
-      firstCell.innerHTML = '<input type="checkbox" class="row-check" data-id="' + id + '" aria-label="' + id + '번 선택">';
-    }
-  }
-  syncHeaderState();
-}
-function syncHeaderState() {
-  var table = document.querySelector(".logs-table");
-  if (!table) return;
-  var checkAll = table.querySelector("#checkAll");
-  var cbs = table.querySelectorAll("tbody .row-check");
-  if (!checkAll || cbs.length === 0) return;
-
-  var checked = 0;
-  for (var i = 0; i < cbs.length; i++) if (cbs[i].checked) checked++;
-  if (checked === 0)      { checkAll.checked = false; checkAll.indeterminate = false; }
-  else if (checked === cbs.length) { checkAll.checked = true;  checkAll.indeterminate = false; }
-  else                    { checkAll.checked = false; checkAll.indeterminate = true;  }
-}
-
-// 버튼
-function bindActionButtons() {
-  var btnSend   = document.getElementById("btnSend");
-  var btnPrint  = document.getElementById("btnPrint");
-  var btnDelete = document.getElementById("btnDelete");
-
-  if (btnPrint) btnPrint.addEventListener("click", function () { window.print(); });
-
-  if (btnSend) btnSend.addEventListener("click", function () {
-    var ids = getSelectedLogIds();
-    if (!ids.length) return alert("선택된 항목이 없습니다.");
-    alert("전송 대상 번호: " + ids.join(", "));
-  });
-
-  if (btnDelete) btnDelete.addEventListener("click", function () {
-    var ids = getSelectedLogIds();
-    if (!ids.length) return alert("삭제할 항목을 선택하세요.");
-    if (!confirm("선택된 " + ids.length + "건을 삭제하시겠습니까?")) return;
-
-    removeSelectedRowsFromDom();
-    var logs = readLogsFromDom();
-    updateStats(logs);
-    syncHeaderState();
-    alert("삭제되었습니다.");
-  });
-}
-
-// 선택/읽기
-function getSelectedLogIds() {
-  var cbs = document.querySelectorAll(".logs-table tbody .row-check:checked");
-  var out = [];
-  for (var i = 0; i < cbs.length; i++) out.push(cbs[i].getAttribute("data-id"));
-  return out;
-}
-function removeSelectedRowsFromDom() {
-  var cbs = document.querySelectorAll(".logs-table tbody .row-check:checked");
-  for (var i = 0; i < cbs.length; i++) {
-    var tr = cbs[i].closest ? cbs[i].closest("tr") : closest(cbs[i], "tr");
-    if (tr && tr.parentNode) tr.parentNode.removeChild(tr);
-  }
-}
-function readLogsFromDom() {
-  var rows = document.querySelectorAll(".logs-table tbody tr");
-  var out = [];
-  for (var i = 0; i < rows.length; i++) {
-    var cells = rows[i].querySelectorAll("td");
+// ---------- DOM → 배열 ----------
+function readLogsFromDom(){
+  var tbody=document.getElementById("LogTable");
+  var out=[];
+  if(!tbody){ console.warn("[Logs.js] #LogTable not found"); return out; }
+  var rows=tbody.getElementsByTagName("tr");
+  for(var i=0;i<rows.length;i++){
+    var tds=rows[i].getElementsByTagName("td");
     out.push({
-      time:    (cells[1] && cells[1].textContent ? cells[1].textContent.trim() : ""),
-      location:(cells[2] && cells[2].textContent ? cells[2].textContent.trim() : ""),
-      type:    (cells[3] && cells[3].textContent ? cells[3].textContent.trim() : ""),
-      status:  (cells[4] && cells[4].textContent ? cells[4].textContent.trim() : "")
+      date: tds[1]? tds[1].textContent.trim() : "",
+      loc : tds[2]? tds[2].textContent.trim() : "",
+      type: tds[3]? tds[3].textContent.trim() : "",
+      prog: tds[4]? tds[4].textContent.trim() : ""
     });
   }
   return out;
 }
 
-// 필터
-window.LAST_LOGS = window.LAST_LOGS || [];
-function filterLogs(logs, f) {
-  var out = [];
-  for (var i = 0; i < logs.length; i++) {
-    var it = logs[i];
-    var s = normalizeStatus(it.status);
-    var okStatus = f.status ? (s === f.status) : true;
-    var okType   = f.dtype  ? (it.type === f.dtype) : true;
-    if (okStatus && okType) out.push(it);
-  }
-  return out;
+// ---------- 통합필터 & 렌더 ----------
+function applyAllFilters(){
+  if(!Array.isArray(window.LAST_LOGS)) return;
+  FILTERED_LOGS = window.LAST_LOGS.filter(function (log){
+    var passDate=true;
+    if(CURRENT_FILTER.start || CURRENT_FILTER.end){
+      var d=parseDateForFilter(log.date);
+      if(!d) passDate=false;
+      else{
+        if(CURRENT_FILTER.start && d<CURRENT_FILTER.start) passDate=false;
+        if(CURRENT_FILTER.end   && d>CURRENT_FILTER.end)   passDate=false;
+      }
+    }
+    var passStatus = CURRENT_FILTER.status ? (normalizeProg(log.prog)===CURRENT_FILTER.status) : true;
+    var passType   = CURRENT_FILTER.dtype  ? (log.type===CURRENT_FILTER.dtype) : true;
+    return passDate && passStatus && passType;
+  });
+  CURRENT_PAGE=1;
+  renderTable(CURRENT_PAGE);
 }
 
+function renderTable(page){
+  var tbody=document.getElementById("LogTable");
+  if(!tbody) return;
+  tbody.innerHTML="";
+
+  var start=(page-1)*PAGE_SIZE;
+  var end=start+PAGE_SIZE;
+  var pageData=FILTERED_LOGS.slice(start,end);
+
+  if(pageData.length===0){
+    tbody.innerHTML="<tr><td colspan='5'>데이터가 없습니다.</td></tr>";
+  }else{
+    for(var i=0;i<pageData.length;i++){
+      var log=pageData[i];
+      var st = normalizeProg(log.prog);
+      var tr=document.createElement("tr");
+      tr.innerHTML =
+        "<td><input type='checkbox' class='row-check' /></td>"+
+        "<td>"+(log.date||"-")+"</td>"+
+        "<td>"+(log.loc||"-")+"</td>"+
+        "<td>"+(log.type||"-")+"</td>"+
+        "<td><span class='status "+statusClass(st)+"'>"+st+"</span></td>";
+      tbody.appendChild(tr);
+    }
+  }
+
+  var pageNo=document.querySelector(".page-no");
+  var maxPage=Math.ceil(FILTERED_LOGS.length/PAGE_SIZE)||1;
+  if(pageNo) pageNo.textContent = page + " / " + maxPage;
+
+  updateStats(FILTERED_LOGS);
+}
+
+// ---------- 통계 ----------
+function updateStats(list){
+  var total=list.length, p=0, g=0, c=0;
+  for(var i=0;i<list.length;i++){
+    var s=normalizeProg(list[i].prog);
+    if(s==="처리전") p++;
+    else if(s==="처리중") g++;
+    else if(s==="처리완료") c++;
+  }
+  setText("totalCount", total+"건");
+  setText("pendingCount", p+"건");
+  setText("progressCount", g+"건");
+  setText("completeCount", c+"건");
+}
+
+// ---------- 통계 모달 ----------
+function updateReportModal(list){
+  if(!list || !list.length) return;
+
+  // ------------------------------
+  // ① 지역별 통계
+  // ------------------------------
+  var regionCount={}, total=list.length;
+  for(var i=0;i<list.length;i++){
+    var m=(list[i].loc||"").match(/(광산구|북구|서구|남구|동구)/);
+    var r=m?m[1]:"기타";
+    regionCount[r]=(regionCount[r]||0)+1;
+  }
+
+  var tbody=document.querySelector("#regionTable2 tbody");
+  if(!tbody) return;
+
+  var order=["광산구","북구","서구","남구","동구"];
+  var sum=0, html="";
+  for(var j=0;j<order.length;j++){
+    var key=order[j], cnt=regionCount[key]||0; sum+=cnt;
+    html += "<tr><td>"+key+"</td><td>"+cnt+"</td><td>"+((cnt/total)*100).toFixed(1)+"</td></tr>";
+  }
+  html += "<tr><td><strong>총 건수</strong></td><td><strong>"+sum+"</strong></td><td></td></tr>";
+  tbody.innerHTML=html;
+
+  // ✅ 지역별 막대그래프
+  drawRegionBarChart(regionCount, sum);
+
+  // ------------------------------
+  // ② 위반유형 통계
+  // ------------------------------
+  var typeCount = { "헬멧 미착용": 0, "2인 탑승": 0 };
+  for(var i=0;i<list.length;i++){
+    var t=(list[i].type||"");
+    if(typeCount.hasOwnProperty(t)) typeCount[t]++;
+  }
+  var totalType = typeCount["헬멧 미착용"] + typeCount["2인 탑승"];
+
+  var typeTable=document.querySelector("#sec-4 .tbl tbody");
+  if(typeTable){
+    var typeHtml="";
+    typeHtml += "<tr><td class='left'>헬멧 미착용</td><td>"+typeCount["헬멧 미착용"]+"</td></tr>";
+    typeHtml += "<tr><td class='left'>2인 탑승</td><td>"+typeCount["2인 탑승"]+"</td></tr>";
+    typeHtml += "<tr><td class='left'><strong>총 건수</strong></td><td><strong>"+totalType+"</strong></td></tr>";
+    typeTable.innerHTML=typeHtml;
+  }
+
+  // ✅ 위반유형 도넛 그래프
+  drawTypeDonutChart(typeCount);
+
+  // ------------------------------
+  // ③ 시간대별 통계
+  // ------------------------------
+  var hourly=[0,0,0,0,0,0,0,0];
+  for(var i=0;i<list.length;i++){
+    var dt=(list[i].date||"");
+    var hm=dt.match(/(\d{2}):(\d{2}):/);
+    if(hm){
+      var h=parseInt(hm[1],10);
+      var idx=Math.floor(h/3);
+      if(idx>=0 && idx<8) hourly[idx]++;
+    }
+  }
+
+  var ranges=[
+    "00:00 ~ 03:00","03:00 ~ 06:00","06:00 ~ 09:00","09:00 ~ 12:00",
+    "12:00 ~ 15:00","15:00 ~ 18:00","18:00 ~ 21:00","21:00 ~ 24:00"
+  ];
+
+  var hourTable=document.querySelector("#hourlyTable tbody");
+  if(hourTable){
+    var hourHtml="", totalHour=0;
+    for(var i=0;i<ranges.length;i++){
+      hourHtml += "<tr><td>"+ranges[i]+"</td><td>"+hourly[i]+"</td></tr>";
+      totalHour += hourly[i];
+    }
+    hourHtml += "<tr><td><strong>총 건수</strong></td><td><strong>"+totalHour+"</strong></td></tr>";
+    hourTable.innerHTML=hourHtml;
+  }
+
+  // ✅ 시간대별 라인그래프
+  drawHourlyLineChart(ranges, hourly);
+
+  // 선택 날짜 표시
+  var label=document.getElementById("selectedDateLabel");
+  if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
+}
+// ------------------------------
+// 지역별 막대그래프
+// ------------------------------
+function drawRegionBarChart(regionCount, total){
+  var ctx=document.getElementById("regionBar2");
+  if(!ctx) return;
+  if(window.regionBarChart) window.regionBarChart.destroy();
+
+  var labels=["광산구","북구","서구","남구","동구"];
+  var data=labels.map(function(r){return regionCount[r]||0;});
+
+  window.regionBarChart=new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels:labels,
+      datasets:[{
+        label:"감지 건수",
+        data:data,
+        backgroundColor:["#2563eb","#3b82f6","#60a5fa","#93c5fd","#bfdbfe"],
+        borderRadius:6
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{y:{beginAtZero:true}}
+    }
+  });
+}
+
+// ------------------------------
+// 위반유형 도넛그래프
+// ------------------------------
+function drawTypeDonutChart(typeCount){
+  var ctx = document.getElementById("typeDonut2");
+  if (!ctx) return;
+  if (window.typeDonutChart) window.typeDonutChart.destroy();
+
+  var labels = ["헬멧 미착용", "2인 탑승"];
+  var data = [typeCount["헬멧 미착용"], typeCount["2인 탑승"]];
+  var total = data.reduce((a,b)=>a+b,0);
+
+  window.typeDonutChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: ["#ef4444", "#facc15"],
+        borderColor: "#fff",
+        borderWidth: 2
+      }]
+    },
+    plugins: [ChartDataLabels], // ✅ 퍼센트 라벨 플러그인 추가
+    options: {
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { font: { size: 13 } }
+        },
+        title: {
+          display: true,
+          text: "위반유형 비율(%)",
+          font: { size: 14, weight: "bold" }
+        },
+        // ✅ 퍼센트 표시 옵션
+        datalabels: {
+          color: "#111827",
+          font: { weight: "bold", size: 18 },
+          formatter: function(value, context) {
+            var percent = total ? (value / total * 100).toFixed(1) + "%" : "0%";
+            return percent;
+          }
+        }
+      },
+      cutout: "20%"
+    }
+  });
+}
+// ------------------------------
+// 시간대별 라인그래프
+// ------------------------------
+function drawHourlyLineChart(labels, data){
+  var ctx=document.getElementById("selectedDayLine");
+  if(!ctx) return;
+  if(window.hourlyLineChart) window.hourlyLineChart.destroy();
+
+  window.hourlyLineChart=new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:labels,
+      datasets:[{
+        label:"감지 건수",
+        data:data,
+        borderColor:"#2563eb",
+        backgroundColor:"rgba(37,99,235,0.15)",
+        tension:0.3,
+        fill:true,
+        pointRadius:5
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{beginAtZero:true, ticks:{stepSize:1}},
+        x:{ticks:{font:{size:12}}}
+      }
+    }
+  });
+}

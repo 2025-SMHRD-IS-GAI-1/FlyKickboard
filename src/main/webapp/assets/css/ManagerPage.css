@@ -70,15 +70,26 @@
   gap: 12px;
   padding: 8px 0;
 }
-/* 관리자 메뉴 버튼 active 시 하얀색 반전 유지 */
-.admin-btn.active {
-    background: #ffffff;
-    color: #0e3ea9;
-    font-weight: 700;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+
+/* 관리자,로그아웃버튼*/
+.admin-btn,
+.login-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
+.admin-btn:hover,
+.login-btn:hover {
+  background: #fff;
+  color: #0e3ea9;
+  transform: translateY(-1px);
+}
 
 
 /* 검색 입력 박스 */
