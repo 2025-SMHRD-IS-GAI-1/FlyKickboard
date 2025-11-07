@@ -151,10 +151,7 @@
               <div class="chart donut">
                 <canvas id="typeDonut2" height="220" aria-label="위반유형 도넛차트"></canvas>
               </div>
-              <div class="legend-row" style="margin-top:10px;">
-                <span class="legend">헬멧 미착용 <strong>—%</strong></span>
-                <span class="legend">2인 탑승 <strong>—%</strong></span>
-              </div>
+              
             </div>
           </article>
 
@@ -169,9 +166,9 @@
                   <tr><th>감지유형</th><th>건수</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td class="left">헬멧 미착용</td><td>—</td></tr>
-                  <tr><td class="left">2인 탑승</td><td>—</td></tr>
-                  <tr><td class="left"><strong>총 건수</strong></td><td><strong>—</strong></td></tr>
+                  <tr><td class="left">헬멧 미착용</td><td></td></tr>
+                  <tr><td class="left">2인 탑승</td><td></td></tr>
+                  <tr><td class="left"><strong>총 건수</strong></td><td><strong></strong></td></tr>
                 </tbody>
               </table>
             </div>
@@ -236,7 +233,7 @@
 </div>
     <button type="button" class="btn blue" id="btnSend">전송</button>
 
-    <button type="button" class="btn blue" id="btnPr">출력</button>
+    
     <button type="button" class="btn red" id="btnDel">삭제</button>
 
   </div>
@@ -304,7 +301,9 @@
       </section>
     </main>
   </div>
-
+<!-- Chart.js + DataLabels 플러그인-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="${ctx}/assets/js/Logs.js"></script>
 
 

@@ -79,8 +79,8 @@
               <canvas id="typeDonut2" height="220" aria-label="위반유형 도넛차트"></canvas>
             </div>
             <div class="legend-row" style="margin-top:10px;">
-              <span class="legend">헬멧 미착용 <strong>—%</strong></span>
-              <span class="legend">2인 탑승 <strong>—%</strong></span>
+              <span class="legend">헬멧 미착용 <strong></strong></span>
+              <span class="legend">2인 탑승 <strong></strong></span>
             </div>
           </div>
         </article>
@@ -96,9 +96,9 @@
                 <tr><th>감지유형</th><th>건수</th></tr>
               </thead>
               <tbody>
-                <tr><td class="left">헬멧 미착용</td><td>—</td></tr>
-                <tr><td class="left">2인 탑승</td><td>—</td></tr>
-                <tr><td class="left"><strong>총 건수</strong></td><td><strong>—</strong></td></tr>
+                <tr><td class="left">헬멧 미착용</td><td></td></tr>
+                <tr><td class="left">2인 탑승</td><td></td></tr>
+                <tr><td class="left"><strong>총 건수</strong></td><td><strong></strong></td></tr>
               </tbody>
             </table>
           </div>

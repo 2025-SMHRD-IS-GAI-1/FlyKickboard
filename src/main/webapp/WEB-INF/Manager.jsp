@@ -30,7 +30,7 @@
     <div class="actions" aria-label="사용자 메뉴">
         <!-- 현재 페이지 표시: aria-current 병행 -->
         <a href="Manager.do">
-           <button class="admin-btn active" type="button" aria-current="page">관리자메뉴</button>
+           <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
         </a>
         <!-- 규약 통일: 로그아웃 버튼 클래스는 .login-btn 사용 -->
         <a href="logout.do">
