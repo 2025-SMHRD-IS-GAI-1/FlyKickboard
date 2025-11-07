@@ -140,7 +140,7 @@
                 <tr><td><strong>총 건수</strong></td><td><strong>—</strong></td></tr>
               </tbody>
             </table>
-          </div>
+          </div>  
         </div>
 
         <!-- 오른쪽: 라인그래프 -->
@@ -153,7 +153,7 @@
               <canvas id="selectedDayLine" height="220" aria-label="선택 일자 시간대별 추이"></canvas>
             </div>
           </div>
-        </div>
+        </div>                                                     
 
       </section>
     </div>
