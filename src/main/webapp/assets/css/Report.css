@@ -80,3 +80,28 @@
   box-shadow: 0 0 0 3px rgba(37, 88, 189, 0.2);
 }
 
+/* =========================================
+   ✅ 추가 수정 (화면비율/높이 통일용)
+   ========================================= */
+
+/* ① Report 모달 내 그리드 영역 높이 자동 맞춤 */
+.report-modal .report-content .ui-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* ✅ 좌우 두 영역 동일 비율 */
+  gap: 16px;
+  align-items: stretch;          /* ✅ 내부 카드 높이 자동 맞춤 */
+}
+
+/* ② 카드 내부 body 높이 통일 */
+.report-modal .report-content .ui-grid > .card > .card-body {
+  height: 100%;        /* ✅ 카드 내부 높이 동일화 */
+  overflow: auto;      /* ✅ 내용 많을 시 내부 스크롤 */
+}
+
+/* ③ 지역별·유형별 섹션 높이 동일화 */
+.report-modal .report-content #sec-3 .ui-grid > .card > .card-body { 
+  min-height: 360px;   /* ✅ 그래프쪽 기준으로 통일 */
+}
+.report-modal .report-content #sec-4 .ui-grid > .card > .card-body { 
+  min-height: 360px;   /* ✅ 표쪽도 같은 높이 */
+}

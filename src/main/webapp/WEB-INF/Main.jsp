@@ -74,6 +74,7 @@
 
         <ul id="historyList">
           <!-- JS에서 자동으로 li 추가됨 -->
+          <li></li>
         </ul>
       </section>
 
