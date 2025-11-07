@@ -198,7 +198,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   padding: 12px 20px;
   width: 100%;
-  max-width: 400px;            /* 전체 가로폭 제한 */
+  max-width: 420px;            /* 전체 가로폭 제한 */
   margin: 12px 0;
   align-self: flex-start;      /* 부모 flex일 때 왼쪽 정렬 */
 }

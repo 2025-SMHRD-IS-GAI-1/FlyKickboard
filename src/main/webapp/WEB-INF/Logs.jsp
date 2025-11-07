@@ -257,14 +257,14 @@
       </thead>
       <tbody id="LogTable">
       <c:forEach var="log" items="${alllog}">
-        <tr data-id="${log.det_id}">
-          <td><input type="checkbox" /></td>
-          <td>${log.date}</td>
-          <td>${log.loc}</td>
-          <td>${log.type}</td>
-          <td>${log.prog}</td>
-        </tr>
-     </c:forEach>     
+		  <tr data-id="${log.det_id}">
+		    <td><input type="checkbox" /></td>
+		    <td>${log.date}</td>
+		    <td>${log.loc}</td>
+		    <td>${log.type}</td>
+		    <td>${log.prog}</td>
+		  </tr>
+	  </c:forEach>     
 
       </tbody>
       </table>
@@ -307,7 +307,7 @@
 <script src="${ctx}/assets/js/Logs.js"></script>
 
 
- 
+
 
 
 

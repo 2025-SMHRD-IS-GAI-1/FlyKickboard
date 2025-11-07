@@ -1,7 +1,3 @@
-// ==============================
-// Logs.js (버튼 안먹는 이슈 보강: 선택자 통일 + 방어 로깅 + 페이징/필터 연동)
-// ==============================
-
 var ctx = (document.body && document.body.getAttribute("data-ctx")) || "";
 
 // 전역 상태
@@ -12,8 +8,8 @@ var PAGE_SIZE = 10;
 
 document.addEventListener("DOMContentLoaded", function () {
   try {
-    // --- 필수 DOM
-    var tableBody = document.getElementById("LogTable");             // ✅ tbody id=LogTable
+    // --- 주요 DOM 캐싱
+    var tableBody = document.getElementById("LogTable");
     var prevBtn   = document.querySelector(".page-btn.prev");
     var nextBtn   = document.querySelector(".page-btn.next");
     var pageNo    = document.querySelector(".page-no");
@@ -23,25 +19,16 @@ document.addEventListener("DOMContentLoaded", function () {
     var statsBtn  = document.getElementById("btnStats");
     var modal     = document.getElementById("reportModal");
     var closeBtn  = document.getElementById("closeReportBtn");
+    var btnSend   = document.getElementById("btnSend");
+    var btnDel    = document.getElementById("btnDel");
 
-    // 존재 로깅 (개발 단계에서 콘솔 확인)
-    [
-      ["#LogTable", tableBody],
-      [".page-btn.prev", prevBtn],
-      [".page-btn.next", nextBtn],
-      [".page-no", pageNo],
-      [".btn-search", searchBtn],
-      ["#btnFilter", filterBtn],
-      ["#filterPanel", filterPanel],
-      ["#btnStats", statsBtn],
-      ["#reportModal", modal],
-      ["#closeReportBtn", closeBtn],
-    ].forEach(function (p){ if(!p[1]) console.warn("[Logs.js] Missing:", p[0]); });
+    // 초기화 로그
+    console.log("✅ Logs.js initialized");
 
-    // 모달 안전 초기화(덮어씌우는 이슈 방지)
+    // 모달 초기화
     if (modal) modal.classList.remove("show");
 
-    // 초기 데이터 적재
+    // 초기 데이터
     window.LAST_LOGS = readLogsFromDom();
     FILTERED_LOGS = window.LAST_LOGS.slice();
     renderTable(CURRENT_PAGE);
@@ -59,8 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
           alert("조회할 날짜를 선택하세요.");
           return;
         }
+
         CURRENT_FILTER.start = startDate ? new Date(startDate + "T00:00:00") : null;
-        CURRENT_FILTER.end   = endDate   ? new Date(endDate   + "T23:59:59") : null;
+        CURRENT_FILTER.end   = endDate   ? new Date(endDate + "T23:59:59") : null;
         CURRENT_PAGE = 1;
         applyAllFilters();
       });
@@ -124,16 +112,78 @@ document.addEventListener("DOMContentLoaded", function () {
       if (CURRENT_PAGE < maxPage) { CURRENT_PAGE++; renderTable(CURRENT_PAGE); }
     });
 
+    // ============ ✅ 전송 버튼 ============
+    if (btnSend) {
+      btnSend.addEventListener("click", function () {
+        var ids = getCheckedRows();
+        if (!ids.length) return alert("전송할 항목을 선택하세요.");
+
+        // 실제 서버 전송 예시
+        fetch(ctx + "/SendLog.do", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(ids.map(i => Number(i.id)))
+        })
+          .then(res => res.text())
+          .then(msg => {
+            alert(msg || "전송 완료되었습니다.");
+            location.reload();
+          })
+          .catch(err => {
+            console.error("전송 오류:", err);
+            alert("전송 중 오류 발생");
+          });
+      });
+    }
+
+    // ============ ✅ 삭제 버튼 ============
+    if (btnDel) {
+      btnDel.addEventListener("click", function () {
+        var rows = getCheckedRows();
+        if (!rows.length) return alert("삭제할 항목을 선택하세요.");
+        if (!confirm("정말 삭제하시겠습니까?")) return;
+
+        fetch(ctx + "/DeleteLog.do", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(rows.map(r => Number(r.id)))
+        })
+          .then(res => res.text())
+          .then(msg => {
+            alert(msg || "삭제 완료되었습니다.");
+            location.reload();
+          })
+          .catch(err => console.error("삭제 오류:", err));
+      });
+    }
+
   } catch (err) {
     console.error("[Logs.js] 초기화 중 에러:", err);
   }
 });
 
-// ---------- 공통 util ----------
+// ------------------------------
+// 체크된 행 가져오기
+// ------------------------------
+function getCheckedRows() {
+  var checked = document.querySelectorAll("#LogTable input[type='checkbox']:checked");
+  var selected = [];
+  checked.forEach(function (chk) {
+    var row = chk.closest("tr");
+    if (row && row.dataset.id) selected.push({ id: row.dataset.id });
+  });
+  return selected;
+}
+
+// ------------------------------
+// 공통 유틸
+// ------------------------------
 function closest(el, sel){ while (el && el.nodeType===1){ if (el.matches ? el.matches(sel) : el.msMatchesSelector(sel)) return el; el=el.parentElement; } return null; }
 function setText(id, v){ var el=document.getElementById(id); if (el) el.textContent=v; }
 
-// ---------- 날짜 파서 ----------
+// ------------------------------
+// 날짜 파서
+// ------------------------------
 function parseDateForFilter(str){
   if(!str) return null;
   var m1=str.match(/(\d{4})-(\d{2})-(\d{2})/); // yyyy-mm-dd
@@ -143,7 +193,9 @@ function parseDateForFilter(str){
   return null;
 }
 
-// ---------- 상태 정규화 ----------
+// ------------------------------
+// 상태 정규화
+// ------------------------------
 function normalizeProg(s){
   var v=String(s||"").trim().toLowerCase();
   if(["대기","처리전","pending","new","todo","준비중"].indexOf(v)>-1) return "처리전";
@@ -153,7 +205,9 @@ function normalizeProg(s){
 }
 function statusClass(st){ if(st==="처리전") return "pending"; if(st==="처리중") return "progress"; if(st==="처리완료") return "complete"; return ""; }
 
-// ---------- 필터 읽기 ----------
+// ------------------------------
+// 필터 읽기
+// ------------------------------
 function getActiveFilters(){
   var f={status:null, dtype:null};
   var panel=document.getElementById("filterPanel");
@@ -171,7 +225,9 @@ function getActiveFilters(){
   return f;
 }
 
-// ---------- DOM → 배열 ----------
+// ------------------------------
+// DOM → 배열
+// ------------------------------
 function readLogsFromDom(){
   var tbody=document.getElementById("LogTable");
   var out=[];
@@ -183,13 +239,16 @@ function readLogsFromDom(){
       date: tds[1]? tds[1].textContent.trim() : "",
       loc : tds[2]? tds[2].textContent.trim() : "",
       type: tds[3]? tds[3].textContent.trim() : "",
-      prog: tds[4]? tds[4].textContent.trim() : ""
+      prog: tds[4]? tds[4].textContent.trim() : "",
+      id  : rows[i].dataset.id || ""
     });
   }
   return out;
 }
 
-// ---------- 통합필터 & 렌더 ----------
+// ------------------------------
+// 통합필터 & 렌더
+// ------------------------------
 function applyAllFilters(){
   if(!Array.isArray(window.LAST_LOGS)) return;
   FILTERED_LOGS = window.LAST_LOGS.filter(function (log){
@@ -210,6 +269,9 @@ function applyAllFilters(){
   renderTable(CURRENT_PAGE);
 }
 
+// ------------------------------
+// 테이블 렌더링 + 통계 갱신
+// ------------------------------
 function renderTable(page){
   var tbody=document.getElementById("LogTable");
   if(!tbody) return;
@@ -226,6 +288,7 @@ function renderTable(page){
       var log=pageData[i];
       var st = normalizeProg(log.prog);
       var tr=document.createElement("tr");
+      tr.dataset.id=log.id;
       tr.innerHTML =
         "<td><input type='checkbox' class='row-check' /></td>"+
         "<td>"+(log.date||"-")+"</td>"+
@@ -243,7 +306,9 @@ function renderTable(page){
   updateStats(FILTERED_LOGS);
 }
 
-// ---------- 통계 ----------
+// ------------------------------
+// 통계
+// ------------------------------
 function updateStats(list){
   var total=list.length, p=0, g=0, c=0;
   for(var i=0;i<list.length;i++){
@@ -258,13 +323,13 @@ function updateStats(list){
   setText("completeCount", c+"건");
 }
 
-// ---------- 통계 모달 ----------
+// ------------------------------
+// 통계 모달 (차트 포함)
+// ------------------------------
 function updateReportModal(list){
   if(!list || !list.length) return;
 
-  // ------------------------------
-  // ① 지역별 통계
-  // ------------------------------
+  // --- ① 지역별 통계 ---
   var regionCount={}, total=list.length;
   for(var i=0;i<list.length;i++){
     var m=(list[i].loc||"").match(/(광산구|북구|서구|남구|동구)/);
@@ -284,34 +349,17 @@ function updateReportModal(list){
   html += "<tr><td><strong>총 건수</strong></td><td><strong>"+sum+"</strong></td><td></td></tr>";
   tbody.innerHTML=html;
 
-  // ✅ 지역별 막대그래프
   drawRegionBarChart(regionCount, sum);
 
-  // ------------------------------
-  // ② 위반유형 통계
-  // ------------------------------
+  // --- ② 위반유형 통계 ---
   var typeCount = { "헬멧 미착용": 0, "2인 탑승": 0 };
   for(var i=0;i<list.length;i++){
     var t=(list[i].type||"");
     if(typeCount.hasOwnProperty(t)) typeCount[t]++;
   }
-  var totalType = typeCount["헬멧 미착용"] + typeCount["2인 탑승"];
-
-  var typeTable=document.querySelector("#sec-4 .tbl tbody");
-  if(typeTable){
-    var typeHtml="";
-    typeHtml += "<tr><td class='left'>헬멧 미착용</td><td>"+typeCount["헬멧 미착용"]+"</td></tr>";
-    typeHtml += "<tr><td class='left'>2인 탑승</td><td>"+typeCount["2인 탑승"]+"</td></tr>";
-    typeHtml += "<tr><td class='left'><strong>총 건수</strong></td><td><strong>"+totalType+"</strong></td></tr>";
-    typeTable.innerHTML=typeHtml;
-  }
-
-  // ✅ 위반유형 도넛 그래프
   drawTypeDonutChart(typeCount);
 
-  // ------------------------------
-  // ③ 시간대별 통계
-  // ------------------------------
+  // --- ③ 시간대별 통계 ---
   var hourly=[0,0,0,0,0,0,0,0];
   for(var i=0;i<list.length;i++){
     var dt=(list[i].date||"");
@@ -322,30 +370,19 @@ function updateReportModal(list){
       if(idx>=0 && idx<8) hourly[idx]++;
     }
   }
-
   var ranges=[
     "00:00 ~ 03:00","03:00 ~ 06:00","06:00 ~ 09:00","09:00 ~ 12:00",
     "12:00 ~ 15:00","15:00 ~ 18:00","18:00 ~ 21:00","21:00 ~ 24:00"
   ];
-
-  var hourTable=document.querySelector("#hourlyTable tbody");
-  if(hourTable){
-    var hourHtml="", totalHour=0;
-    for(var i=0;i<ranges.length;i++){
-      hourHtml += "<tr><td>"+ranges[i]+"</td><td>"+hourly[i]+"</td></tr>";
-      totalHour += hourly[i];
-    }
-    hourHtml += "<tr><td><strong>총 건수</strong></td><td><strong>"+totalHour+"</strong></td></tr>";
-    hourTable.innerHTML=hourHtml;
-  }
-
-  // ✅ 시간대별 라인그래프
   drawHourlyLineChart(ranges, hourly);
 
-  // 선택 날짜 표시
   var label=document.getElementById("selectedDateLabel");
   if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
 }
+
+// ------------------------------
+// Chart.js 그래프들
+// ------------------------------
 // ------------------------------
 // 지역별 막대그래프
 // ------------------------------
@@ -380,51 +417,34 @@ function drawRegionBarChart(regionCount, total){
 // 위반유형 도넛그래프
 // ------------------------------
 function drawTypeDonutChart(typeCount){
-  var ctx = document.getElementById("typeDonut2");
-  if (!ctx) return;
-  if (window.typeDonutChart) window.typeDonutChart.destroy();
+  var ctx=document.getElementById("typeDonut2");
+  if(!ctx) return;
+  if(window.typeDonutChart) window.typeDonutChart.destroy();
 
-  var labels = ["헬멧 미착용", "2인 탑승"];
-  var data = [typeCount["헬멧 미착용"], typeCount["2인 탑승"]];
-  var total = data.reduce((a,b)=>a+b,0);
+  var labels=["헬멧 미착용","2인 탑승"];
+  var data=[typeCount["헬멧 미착용"], typeCount["2인 탑승"]];
 
-  window.typeDonutChart = new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: ["#ef4444", "#facc15"],
-        borderColor: "#fff",
-        borderWidth: 2
+  window.typeDonutChart=new Chart(ctx,{
+    type:"doughnut",
+    data:{
+      labels:labels,
+      datasets:[{
+        data:data,
+        backgroundColor:["#ef4444","#facc15"],
+        borderColor:"#fff",
+        borderWidth:2
       }]
     },
-    plugins: [ChartDataLabels], // ✅ 퍼센트 라벨 플러그인 추가
-    options: {
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: { font: { size: 13 } }
-        },
-        title: {
-          display: true,
-          text: "위반유형 비율(%)",
-          font: { size: 14, weight: "bold" }
-        },
-        // ✅ 퍼센트 표시 옵션
-        datalabels: {
-          color: "#111827",
-          font: { weight: "bold", size: 18 },
-          formatter: function(value, context) {
-            var percent = total ? (value / total * 100).toFixed(1) + "%" : "0%";
-            return percent;
-          }
-        }
+    options:{
+      plugins:{
+        legend:{position:"bottom"},
+        title:{display:true,text:"위반유형 비율(%)"}
       },
-      cutout: "20%"
+      cutout:"65%"
     }
   });
 }
+
 // ------------------------------
 // 시간대별 라인그래프
 // ------------------------------
