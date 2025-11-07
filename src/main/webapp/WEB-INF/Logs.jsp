@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
   <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> 
   <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
+  <link rel="stylesheet" href="${ctx}/assets/css/Report.css" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
@@ -78,8 +79,162 @@
 
         <!-- 동작기능 버튼 -->
   <div class="toolbar-right">
+   <button type="button" class="btn blue" id="btnStats">통계</button>
+   <!-- ✅ Report 모달 -->
+<div id="reportModal" class="report-modal">
+  <div class="report-content">
+    <button type="button" class="close-btn" id="closeReportBtn">×</button>
+    
+    <!-- 표지 -->
+    <h2>📊 통계 보고서</h2>
+
+    <!-- ① 지역별 통계 -->
+    <section class="card" id="sec-3">
+      <header class="card-header">
+        <h3 class="card-title">지역별 통계</h3>
+      </header>
+      <div class="card-body">
+        <section class="ui-grid" style="grid-template-columns:1fr 1fr; gap:16px;">
+          
+          <!-- 왼쪽: 그래프 -->
+          <article class="card">
+            <header class="card-header">
+              <h4 class="card-title">지역별 감지건수</h4>
+            </header>
+            <div class="card-body">
+              <div class="chart bar">
+                <canvas id="regionBar2" height="240" aria-label="지역별 막대그래프"></canvas>
+              </div>
+            </div>
+          </article>
+
+          <!-- 오른쪽: 표 -->
+          <article class="card">
+            <header class="card-header">
+              <h4 class="card-title">지역별 위반 통계</h4>
+            </header>
+            <div class="card-body">
+              <table class="tbl region-table" id="regionTable2">
+                <thead>
+                  <tr><th>지역</th><th>건수</th><th>비율(%)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>광산구</td><td>—</td><td>—</td></tr>
+                  <tr><td>북구</td><td>—</td><td>—</td></tr>
+                  <tr><td>서구</td><td>—</td><td>—</td></tr>
+                  <tr><td>남구</td><td>—</td><td>—</td></tr>
+                  <tr><td>동구</td><td>—</td><td>—</td></tr>
+                  <tr><td><strong>총 건수</strong></td><td>—</td><td></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+        </section>
+      </div>
+    </section>
+
+    <!-- ② 위반 유형 통계 -->
+    <section class="card" id="sec-4">
+      <header class="card-header">
+        <h3 class="card-title">위반 유형 통계</h3>
+      </header>
+      <div class="card-body">
+        <section class="ui-grid" style="grid-template-columns:1fr 1fr; gap:16px;">
+          
+          <!-- 왼쪽: 도넛 -->
+          <article class="card">
+            <header class="card-header">
+              <h4 class="card-title">위반유형별 비율(도넛)</h4>
+            </header>
+            <div class="card-body">
+              <div class="chart donut">
+                <canvas id="typeDonut2" height="220" aria-label="위반유형 도넛차트"></canvas>
+              </div>
+              <div class="legend-row" style="margin-top:10px;">
+                <span class="legend">헬멧 미착용 <strong>—%</strong></span>
+                <span class="legend">2인 탑승 <strong>—%</strong></span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 오른쪽: 감지유형별 건수 -->
+          <article class="card">
+            <header class="card-header">
+              <h4 class="card-title">감지유형별 건수</h4>
+            </header>
+            <div class="card-body">
+              <table class="tbl compact">
+                <thead>
+                  <tr><th>감지유형</th><th>건수</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="left">헬멧 미착용</td><td>—</td></tr>
+                  <tr><td class="left">2인 탑승</td><td>—</td></tr>
+                  <tr><td class="left"><strong>총 건수</strong></td><td><strong>—</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+        </section>
+      </div>
+    </section>
+
+    <!-- ③ 선택 일자 시간대별 추이 -->
+    <article class="card" id="selectedDayHourly">
+      <header class="card-header">
+        <h4 class="card-title">선택 일자 · 시간대별 감지 추이</h4>
+      </header>
+      <div class="card-body">
+        <p id="selectedDateLabel" class="muted" style="margin:0 0 8px 0;">선택 일자: YYYY-MM-DD</p>
+
+        <section class="ui-grid" style="grid-template-columns: 320px 1fr; gap:16px;">
+
+          <!-- 왼쪽: 표 -->
+          <div class="card" style="margin:0;">
+            <header class="card-header">
+              <h4 class="card-title">시간대별 건수</h4>
+            </header>
+            <div class="card-body">
+              <table class="tbl compact" id="hourlyTable">
+                <thead>
+                  <tr><th>시간대</th><th>건수</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>00:00 ~ 03:00</td><td>—</td></tr>
+                  <tr><td>03:00 ~ 06:00</td><td>—</td></tr>
+                  <tr><td>06:00 ~ 09:00</td><td>—</td></tr>
+                  <tr><td>09:00 ~ 12:00</td><td>—</td></tr>
+                  <tr><td>12:00 ~ 15:00</td><td>—</td></tr>
+                  <tr><td>15:00 ~ 18:00</td><td>—</td></tr>
+                  <tr><td>18:00 ~ 21:00</td><td>—</td></tr>
+                  <tr><td>21:00 ~ 24:00</td><td>—</td></tr>
+                  <tr><td><strong>총 건수</strong></td><td><strong>—</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 오른쪽: 라인그래프 -->
+          <div class="card" style="margin:0;">
+            <header class="card-header">
+              <h4 class="card-title">시간대 추이 그래프</h4>
+            </header>
+            <div class="card-body">
+              <div class="chart line">
+                <canvas id="selectedDayLine" height="220" aria-label="선택 일자 시간대별 추이"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </section>
+      </div>
+    </article>
+
+  </div>
+</div>
     <button type="button" class="btn blue" id="btnSend">전송</button>
-    <button type="button" class="btn blue" id="btnPrint">출력</button>
     <button type="button" class="btn red" id="btnDelete">삭제</button>
   </div>
 </div>
@@ -163,142 +318,215 @@ var ctx = (document.body && document.body.getAttribute('data-ctx')) || "";
 // DOM 로드
 // ------------------------------
 document.addEventListener("DOMContentLoaded", function () {
-  // 0) 상단 메뉴/로그아웃
-  var realtimeBtn = document.querySelector(".nav-btn[data-route='main']");
-  if (realtimeBtn) realtimeBtn.addEventListener("click", function () { window.location.href = ctx + "/Main.jsp"; });
+	// ------------------------------
+	  // 0) 상단 메뉴/로그아웃
+	  // ------------------------------
+	  var realtimeBtn = document.querySelector(".nav-btn[data-route='main']");
+	  if (realtimeBtn)
+	    realtimeBtn.addEventListener("click", function () {
+	      window.location.href = ctx + "/Main.jsp";
+	    });
 
-  var logsBtn = document.querySelector(".nav-btn[data-route='logs']");
-  if (logsBtn) logsBtn.addEventListener("click", function () { window.location.href = ctx + "/Logs.jsp"; });
+	  var logsBtn = document.querySelector(".nav-btn[data-route='logs']");
+	  if (logsBtn)
+	    logsBtn.addEventListener("click", function () {
+	      window.location.href = ctx + "/Logs.jsp";
+	    });
 
-  var adminBtn = document.querySelector(".admin-btn");
-  if (adminBtn) adminBtn.addEventListener("click", function () { window.location.href = ctx + "/Manager.jsp"; });
+	  var adminBtn = document.querySelector(".admin-btn");
+	  if (adminBtn)
+	    adminBtn.addEventListener("click", function () {
+	      window.location.href = ctx + "/Manager.jsp";
+	    });
 
-  var logoutBtn = document.querySelector(".login-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function () {
-      alert("로그아웃 되었습니다."); window.location.href = ctx + "/Login.jsp";
-    });
-  }
-  //===============================
-  // ✅ 날짜 검색 (LAST_LOGS 기반)
-  // ===============================
-  var searchBtn = document.querySelector(".btn-search");
-  if (searchBtn) {
-    searchBtn.addEventListener("click", function () {
-      var startInput = document.getElementById("startDate");
-      var endInput   = document.getElementById("endDate");
-      var startDate = startInput ? startInput.value : "";
-      var endDate   = endInput ? endInput.value : "";
+	  var logoutBtn = document.querySelector(".login-btn");
+	  if (logoutBtn) {
+	    logoutBtn.addEventListener("click", function () {
+	      alert("로그아웃 되었습니다.");
+	      window.location.href = ctx + "/Login.jsp";
+	    });
+	  }
 
-      if (!startDate && !endDate) {
-        alert("조회할 날짜를 선택하세요.");
-        return;
-      }
-      if (!window.LAST_LOGS || !Array.isArray(window.LAST_LOGS) || window.LAST_LOGS.length === 0) {
-        alert("조회할 데이터가 없습니다.");
-        return;
-      }
+	  // ===============================
+	  // ✅ 날짜 검색 (LAST_LOGS 기반)
+	  // ===============================
+	  var searchBtn = document.querySelector(".btn-search");
+	  if (searchBtn) {
+	    searchBtn.addEventListener("click", function () {
+	      var startInput = document.getElementById("startDate");
+	      var endInput = document.getElementById("endDate");
+	      var startDate = startInput ? startInput.value : "";
+	      var endDate = endInput ? endInput.value : "";
 
-      // 날짜 범위 세팅
-      var s = startDate ? new Date(startDate + "T00:00:00") : new Date("2000-01-01T00:00:00");
-      var e = endDate ? new Date(endDate + "T23:59:59") : new Date();
+	      if (!startDate && !endDate) {
+	        alert("조회할 날짜를 선택하세요.");
+	        return;
+	      }
+	      if (
+	        !window.LAST_LOGS ||
+	        !Array.isArray(window.LAST_LOGS) ||
+	        window.LAST_LOGS.length === 0
+	      ) {
+	        alert("조회할 데이터가 없습니다.");
+	        return;
+	      }
 
-      // 날짜 필터링
-      var filtered = window.LAST_LOGS.filter(function (log) {
-        var timeStr = (log.time || "").trim();
-        if (!timeStr) return false;
-        var datePart = timeStr.split(" ")[0];
-        var parts = datePart.split("-");
-        if (parts.length < 3) return false;
-        var y = parseInt(parts[0], 10);
-        var m = parseInt(parts[1], 10);
-        var d = parseInt(parts[2], 10);
-        var t = new Date(y, m - 1, d);
-        return t >= s && t <= e;
-      });
+	      // 날짜 범위 세팅
+	      var s = startDate
+	        ? new Date(startDate + "T00:00:00")
+	        : new Date("2000-01-01T00:00:00");
+	      var e = endDate
+	        ? new Date(endDate + "T23:59:59")
+	        : new Date();
 
-      updateLogsTable(filtered);
-      updateStats(filtered);
-      syncHeaderState();
+	      // 날짜 필터링
+	      var filtered = window.LAST_LOGS.filter(function (log) {
+	        var timeStr = (log.time || "").trim();
+	        if (!timeStr) return false;
+	        var datePart = timeStr.split(" ")[0];
+	        var parts = datePart.split("-");
+	        if (parts.length < 3) return false;
+	        var y = parseInt(parts[0], 10);
+	        var m = parseInt(parts[1], 10);
+	        var d = parseInt(parts[2], 10);
+	        var t = new Date(y, m - 1, d);
+	        return t >= s && t <= e;
+	      });
 
-      console.log("[날짜 검색결과] " + filtered.length + "건 (" + (startDate || "-") + " ~ " + (endDate || "-") + ")");
-    });
-  }
-  
-  // 1) 분류 모달
-  var filterBtn = document.getElementById("btnFilter");
-  var filterPanel = document.getElementById("filterPanel");
-  if (filterBtn && filterPanel) {
-    var backdrop = document.getElementById("filterBackdrop");
-    if (!backdrop) {
-      backdrop = document.createElement("div");
-      backdrop.id = "filterBackdrop";
-      backdrop.className = "filter-modal-backdrop";
-      document.body.appendChild(backdrop);
-    }
-    function openModal() {
-      backdrop.classList.add("show");
-      backdrop.appendChild(filterPanel);
-      filterPanel.classList.add("as-modal");
-    }
-    function closeModal() {
-      backdrop.classList.remove("show");
-      var wrapper = document.querySelector(".filter-wrapper");
-      if (wrapper) wrapper.appendChild(filterPanel);
-      filterPanel.classList.remove("as-modal");
-    }
-    filterBtn.addEventListener("click", function (e) { e.preventDefault(); openModal(); });
-    backdrop.addEventListener("click", function (e) { if (!filterPanel.contains(e.target)) closeModal(); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && backdrop.classList.contains("show")) closeModal(); });
+	      updateLogsTable(filtered);
+	      updateStats(filtered);
+	      syncHeaderState();
 
-    var opts = filterPanel.querySelectorAll(".filter-option");
-    for (var i = 0; i < opts.length; i++) {
-      opts[i].addEventListener("click", function () {
-        var group = closest(this, ".filter-group");
-        var all = group ? group.querySelectorAll(".filter-option") : [];
-        for (var j = 0; j < all.length; j++) all[j].classList.remove("active");
-        this.classList.add("active");
-        // 필터 클릭 즉시 적용 (원본 배열 기준)
-        applyActiveFilters();
-      });
-    }
-  }
+	      console.log(
+	        "[날짜 검색결과] " +
+	          filtered.length +
+	          "건 (" +
+	          (startDate || "-") +
+	          " ~ " +
+	          (endDate || "-") +
+	          ")"
+	      );
+	    });
+	  }
 
-  // 2) 체크박스/테이블 초기화
-  ensureRowCheckboxes();
+	  // ------------------------------
+	  // 1) 분류 모달
+	  // ------------------------------
+	  var filterBtn = document.getElementById("btnFilter");
+	  var filterPanel = document.getElementById("filterPanel");
+	  if (filterBtn && filterPanel) {
+	    var backdrop = document.getElementById("filterBackdrop");
+	    if (!backdrop) {
+	      backdrop = document.createElement("div");
+	      backdrop.id = "filterBackdrop";
+	      backdrop.className = "filter-modal-backdrop";
+	      document.body.appendChild(backdrop);
+	    }
+	    function openModal() {
+	      backdrop.classList.add("show");
+	      backdrop.appendChild(filterPanel);
+	      filterPanel.classList.add("as-modal");
+	    }
+	    function closeModal() {
+	      backdrop.classList.remove("show");
+	      var wrapper = document.querySelector(".filter-wrapper");
+	      if (wrapper) wrapper.appendChild(filterPanel);
+	      filterPanel.classList.remove("as-modal");
+	    }
+	    filterBtn.addEventListener("click", function (e) {
+	      e.preventDefault();
+	      openModal();
+	    });
+	    backdrop.addEventListener("click", function (e) {
+	      if (!filterPanel.contains(e.target)) closeModal();
+	    });
+	    document.addEventListener("keydown", function (e) {
+	      if (e.key === "Escape" && backdrop.classList.contains("show"))
+	        closeModal();
+	    });
 
-  var table = document.querySelector(".logs-table");
-  var tbody = table ? table.tBodies[0] : null;
-  var checkAll = table ? table.querySelector("#checkAll") : null;
+	    var opts = filterPanel.querySelectorAll(".filter-option");
+	    for (var i = 0; i < opts.length; i++) {
+	      opts[i].addEventListener("click", function () {
+	        var group = closest(this, ".filter-group");
+	        var all = group ? group.querySelectorAll(".filter-option") : [];
+	        for (var j = 0; j < all.length; j++) all[j].classList.remove("active");
+	        this.classList.add("active");
+	        // 필터 클릭 즉시 적용
+	        applyActiveFilters();
+	      });
+	    }
+	  }
 
-  if (checkAll) {
-    checkAll.addEventListener("change", function () {
-      var cbs = table.querySelectorAll("tbody .row-check");
-      for (var i = 0; i < cbs.length; i++) cbs[i].checked = checkAll.checked;
-      checkAll.indeterminate = false;
-    });
-  }
+	  // ------------------------------
+	  // 2) 통계 모달
+	  // ------------------------------
+	  var statsBtn = document.getElementById("btnStats");
+	  var modal = document.getElementById("reportModal");
+	  var closeBtn = document.getElementById("closeReportBtn");
 
-  if (tbody) {
-    tbody.addEventListener("change", function (e) {
-      var t = e.target || e.srcElement;
-      if (t && hasClass(t, "row-check")) syncHeaderState();
-    });
-    var mo = new MutationObserver(function () { ensureRowCheckboxes(); });
-    mo.observe(tbody, { childList: true });
-  }
+	  if (modal) modal.classList.remove("show");
 
-  bindActionButtons();
+	  if (statsBtn && modal) {
+	    statsBtn.addEventListener("click", function () {
+	      modal.classList.add("show");
+	      // drawCharts(); // 현재는 주석
+	    });
+	  }
 
-  // 3) 초기 원본 배열 확보 + 통계 갱신 + 상태 뱃지 스타일 주입
-  //    (JSP가 단순 텍스트로 렌더링해도 여기서 span.status로 감쌈)
-  applyStatusBadgeToCurrentRows();  // <-- 현재 DOM의 상태 셀을 <span class="status ...">로 변환
-  var initLogs = map(readLogsFromDom(), function (l) {
-    l.status = normalizeStatus(l.status); return l;
-  });
-  window.LAST_LOGS = initLogs;
-  updateStats(initLogs);
-});
+	  if (closeBtn) {
+	    closeBtn.addEventListener("click", function () {
+	      modal.classList.remove("show");
+	    });
+	  }
+
+	  if (modal) {
+	    modal.addEventListener("click", function (e) {
+	      if (e.target === modal) modal.classList.remove("show");
+	    });
+	  }
+
+	  // ------------------------------
+	  // 3) 테이블/체크박스 초기화
+	  // ------------------------------
+	  ensureRowCheckboxes();
+
+	  var table = document.querySelector(".logs-table");
+	  var tbody = table ? table.tBodies[0] : null;
+	  var checkAll = table ? table.querySelector("#checkAll") : null;
+
+	  if (checkAll) {
+	    checkAll.addEventListener("change", function () {
+	      var cbs = table.querySelectorAll("tbody .row-check");
+	      for (var i = 0; i < cbs.length; i++) cbs[i].checked = checkAll.checked;
+	      checkAll.indeterminate = false;
+	    });
+	  }
+
+	  if (tbody) {
+	    tbody.addEventListener("change", function (e) {
+	      var t = e.target || e.srcElement;
+	      if (t && hasClass(t, "row-check")) syncHeaderState();
+	    });
+	    var mo = new MutationObserver(function () {
+	      ensureRowCheckboxes();
+	    });
+	    mo.observe(tbody, { childList: true });
+	  }
+
+	  bindActionButtons();
+
+	  // ------------------------------
+	  // 4) 초기 로그 데이터 세팅
+	  // ------------------------------
+	  applyStatusBadgeToCurrentRows();
+	  var initLogs = map(readLogsFromDom(), function (l) {
+	    l.status = normalizeStatus(l.status);
+	    return l;
+	  });
+	  window.LAST_LOGS = initLogs;
+	  updateStats(initLogs);
+	});
 
 // ------------------------------
 // 유틸
