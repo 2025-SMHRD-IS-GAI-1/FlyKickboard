@@ -169,7 +169,7 @@ body {
   display: block !important;    /* flex → block으로 덮어써 세로 흐름으로 변경 */
   height: auto !important;      /* calc(...) 무시 */
   min-height: 100vh;            /* 화면보다 커질 수 있음 */
-  padding-bottom: 40px;         /* 바닥 여백 여유 */
+  padding-bottom: 80px;         /* 바닥 여백 여유 */
 }
 
 /* 지도 섹션, 감지 섹션 모두 자동 높이로 확장 */
@@ -202,8 +202,8 @@ body {
 .main-content > * { min-width: 0; }  /* 넘침 방지 */
 
 /* 왼쪽 지도, 오른쪽 이력 비율 */
-.map-section     { flex: 2 1 0; min-width: 0; }
-.history-section { flex: 1 1 0; min-width: 300px; } /* 필요하면 280~360px로 조정 */
+.map-section     { flex: 1.6 1 0; min-width: 0; }
+.history-section { flex: 1 1 0; min-width: 280px; } /* 필요하면 280~360px로 조정 */
 
 /* 좁은 화면에서도 억지로 아래로 안 떨어지게 하려면(선택) */
 @media (max-width: 640px) {
@@ -268,8 +268,8 @@ body {
 /* 위반유형 박스  */
 .map-legend {
   position: absolute;
-  bottom: 16px;         /* 지도 안쪽 여백 살짝 늘림 */
-  left: 16px;
+  bottom: 60px;         /* 지도 안쪽 여백 살짝 늘림 */
+  left: 60px;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid #d1d5db;
   border-radius: 10px;  /* 모서리 둥글게 */
@@ -382,3 +382,5 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
+

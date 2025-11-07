@@ -261,7 +261,7 @@
       <c:forEach var="log" items="${alllog}">
 		  <tr data-id="${log.det_id}">
 		    <td><input type="checkbox" /></td>
-		    <td>${log.date}</td>
+		    <td>${fn:substring(log.date, 0, 16)}</td>
 		    <td>${log.loc}</td>
 		    <td>${log.type}</td>
 		    <td>${log.prog}</td>
