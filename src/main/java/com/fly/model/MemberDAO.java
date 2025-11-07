@@ -104,5 +104,15 @@ public class MemberDAO {
 	    System.out.println(4);
 	    return row;
 	}
+	// 메인화면 헬멧미착용 / 2인탑승 분류
+	public List<MemberVO> LogType(MemberVO mvo) {
+		SqlSession sqlSession = factory.openSession(true);
+		
+		List<MemberVO> vo = sqlSession.selectList("logtype", mvo);
+		
+		sqlSession.close();
+		
+		return vo;
+	}
 }
 	
