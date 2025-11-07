@@ -102,5 +102,9 @@ public class MemberDAO {
 	    System.out.println(4);
 	    return row;
 	}
+	// 감지이력 분류
+	public void FilterLogs() {
+		
+	}
 }
 	

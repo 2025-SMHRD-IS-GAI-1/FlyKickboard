@@ -35,7 +35,7 @@ public class DeleteLogService implements Command {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "fetch:/삭제 실패";
+            return "fetch:/삭제 실패";                                                
         }
     }
 }
