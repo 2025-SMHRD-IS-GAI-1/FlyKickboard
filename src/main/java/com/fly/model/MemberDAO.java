@@ -1,6 +1,8 @@
 package com.fly.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -78,8 +80,8 @@ public class MemberDAO {
 		sqlSession.close();
 		
 		return vo;
-	}
-	
+	}	
+	// 감지이력 조회
 	public List<MemberVO> AllLog(MemberVO mvo) {
 		SqlSession sqlSession = factory.openSession(true);
 		
@@ -88,6 +90,19 @@ public class MemberDAO {
 		sqlSession.close();
 		
 		return vo;
+	}
+	// 감지이력 삭제
+	public int DeleteLog(List<Integer> ids) {
+	    System.out.println(1);
+	    SqlSession sqlSession = factory.openSession(true);
+	    System.out.println(2);
+
+	    int row = sqlSession.delete("deleteLogs", ids); // ★ namespace 포함
+
+	    System.out.println(3);
+	    sqlSession.close();
+	    System.out.println(4);
+	    return row;
 	}
 }
 	

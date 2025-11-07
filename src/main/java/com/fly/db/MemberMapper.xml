@@ -75,8 +75,18 @@
     SELECT REG_DT AS "date",
     DETECT_TYPE AS "type",
         CAMERA_LOC AS "loc",
-        PROG_STATUS AS "prog"
+        PROG_STATUS AS "prog",
+        DETECT_ID AS "det_id"
 	FROM T_DETECTION
 	</select>
+	
+	<!-- 선택 감지기록 삭제   -->
+	<delete id="deleteLogs" parameterType="java.util.List">
+  		DELETE FROM T_DETECTION
+  		WHERE DETECT_ID IN
+  		<foreach collection="list" item="id" open="(" separator="," close=")">
+    		#{id}
+  		</foreach>
+	</delete>
 	
 </mapper>
