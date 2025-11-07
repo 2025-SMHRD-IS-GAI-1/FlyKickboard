@@ -80,8 +80,8 @@
     </main>
   </div>
 
-  <!-- ✅ main.js 연결 -->
-  <script src="${ctx}/assets/js/Main.js"></script>
-
+<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=azilk7tpsg"></script>
+<script src="${ctx}/assets/js/Main.js"></script>
 </body>
 </html>
+
