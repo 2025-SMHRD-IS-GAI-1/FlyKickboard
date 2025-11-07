@@ -69,7 +69,7 @@
         <div class="filter-group">
           <span class="filter-label">감지 유형</span>
           <button class="filter-option">전체</button>
-          <button class="filter-option">2인 탑승</button>
+          <button class="filter-option">2인이상 탑승</button>
           <button class="filter-option">헬멧 미착용</button>
         </div>
       </div>
@@ -167,7 +167,7 @@
                 </thead>
                 <tbody>
                   <tr><td class="left">헬멧 미착용</td><td></td></tr>
-                  <tr><td class="left">2인 탑승</td><td></td></tr>
+                  <tr><td class="left">2인이상 탑승</td><td></td></tr>
                   <tr><td class="left"><strong>총 건수</strong></td><td><strong></strong></td></tr>
                 </tbody>
               </table>
@@ -249,10 +249,10 @@
       <th scope="col">
         <input type="checkbox" id="checkAll" aria-label="전체 선택" />
       </th>
-      <th scope="col">날짜</th>
-      <th scope="col">위치</th>
-      <th scope="col">감지 유형</th>
-      <th scope="col">상태</th>
+      <th data-sort="date" scope="col">날짜</th>
+      <th data-sort="loc" scope="col">위치</th>
+      <th data-sort="type" scope="col">감지 유형</th>
+      <th data-sort="prog" scope="col">상태</th>
     </tr>
       </thead>
       <tbody id="LogTable">
@@ -302,8 +302,9 @@
     </main>
   </div>
 <!-- Chart.js + DataLabels 플러그인-->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
 <script src="${ctx}/assets/js/Logs.js"></script>
 
 

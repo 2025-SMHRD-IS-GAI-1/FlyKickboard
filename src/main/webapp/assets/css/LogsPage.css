@@ -573,3 +573,10 @@ body.report-active {
 .report-content::-webkit-scrollbar-track {
   background: #eef1fa;
 }
+.logs-table th[data-sort] {
+  cursor: pointer;
+  user-select: none;
+}
+.logs-table th[data-sort]:hover {
+  background-color: #eef3ff;
+}
