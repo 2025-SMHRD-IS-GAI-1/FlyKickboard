@@ -1,149 +1,109 @@
 
-/* --- Theme --- */
-:root{
-  --blue:#1846f0;          /* 상단 파랑 */
-  --blue2:#0e35cc;
-  --bg:#f6f8fb;            /* 페이지 배경 */
-  --card:#ffffff;          /* 카드 바탕 */
-  --line:#e5e9f4;          /* 기본 선 */
-  --ink:#111827;           /* 본문 글색 */
-  --muted:#6b7280;         /* 보조 글색 */
+/* 📊 모달 및 카드 스타일 */
+.report-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
 }
+.report-modal.show { display: flex; }
 
-/* --- Base --- */
-*{ box-sizing:border-box }
-html,body{ height:100% }
-body{
-  margin:0;
-  padding:36px 18px;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:"Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Helv,Arial,sans-serif;
+.report-content {
+  background: #fff;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
 }
-h2{
-  max-width:1120px;
-  margin:0 auto 20px;
-  text-align:center;
-  font-size:26px;
-  font-weight:800;
-  color:var(--blue);
+.close-btn {
+  position: absolute;
+  right: 20px; top: 15px;
+  border: none;
+  background: none;
+  font-size: 26px;
+  font-weight: 700;
+  cursor: pointer;
 }
-
-/* --- Card  --- */
-.card{
-  max-width:1120px;
-  margin:0 auto 22px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:14px;
-  box-shadow:0 10px 24px rgba(17,24,39,.06);
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
-.card-header{
-  padding:14px 18px;
-  background:linear-gradient(90deg,var(--blue),var(--blue2));
+.btn-stats {
+  background: #1552d6;
   color:#fff;
-}
-.card-title{ margin:0; font-size:18px; font-weight:800 }
-
-/* 섹션 본문 */
-.card-body{ padding:18px }
-
-/* --- 내부 2단 그리드 --- */
-.ui-grid{
-  display:grid;
-  grid-auto-rows:1fr;         
-  gap:16px;
-  align-items:stretch;
-}
-
-
-.ui-grid > .card{
-  margin:0;
-  border:0;
-  box-shadow:none;
-  background:transparent;
-}
-.ui-grid > .card > .card-header{
-  background:linear-gradient(90deg,#1f55ff,#1950f2);
-  color:#fff;
+  font-weight:700;
+  border:none;
   border-radius:10px;
-  padding:12px 14px;
-  margin:0 0 10px 0;
+  padding:10px 18px;
+  cursor:pointer;
+  transition:background .25s;
 }
-.ui-grid > .card > .card-body{
-  background:#fff;
-  border:1px solid var(--line);
+.btn-stats:hover { background:#0e3ea9; }
+
+/* 카드 스타일 */
+.card {
+  border:1px solid #e3e6f0;
   border-radius:10px;
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  min-height:0;                   /* 내부 스크롤로 밀림 방지 */
+  margin-bottom:20px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
-
-/* 섹션별 기본 높이(좌/우 동일하게 보이도록) */
-#sec-3 .ui-grid > .card > .card-body{ min-height:360px; }
-#sec-4 .ui-grid > .card > .card-body{ min-height:280px; }
-#selectedDayHourly .ui-grid > .card > .card-body{ min-height:300px; }
-
-/* --- 차트 박스 --- */
-.chart{
-  flex:1 1 auto;
-  min-height:260px;            
-  border:1px dashed #c8d6ff;
-  background:#f7f9ff;
-  border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
-  color:#6f7fb2; text-align:center;
-}
-.chart canvas{ width:100% !important; height:auto !important; display:block }
-
-/* --- 표 --- */
-.tbl{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14.5px;
-  background:#fff;
-}
-.tbl th,.tbl td{
-  border:1px solid #e1e6f2;
-  padding:10px 12px;
-}
-.tbl thead th{
-  background:#eff2f7;         
-  color:#1b2a52;
-  font-weight:800;
-}
-.tbl tbody tr:nth-child(odd) td{ background:#fafbfd }  
-.tbl td.left{ text-align:left }
-.tbl :is(th,td):nth-child(n+2){ text-align:right }    
-.tbl tfoot td,
-.tbl tbody tr:last-child td{
-  background:#f4f6fb;
+.card-header {
+  background:#f8f9fc;
+  padding:10px 16px;
   font-weight:700;
 }
+.card-body { padding:16px; }
 
-/* --- 보조 텍스트 --- */
-.muted{ color:var(--muted) }
+/* 🔹 모달 기본 숨김 */
+.report-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.report-modal.show {
+  display: flex; /* 버튼 클릭 시 표시 */
+}
 
-/* --- 반응형 --- */
-@media (max-width: 900px){
-  .ui-grid{ grid-template-columns:1fr !important; }
-  #sec-3 .ui-grid > .card > .card-body{ min-height:300px; }
-  .chart{ min-height:220px; }
-}
-@media (max-width:640px){
-  h2{ font-size:22px }
-  .card-title{ font-size:16px }
-  .tbl{ font-size:13.5px }
+/* 🔹 모달 내용 */
+.report-content {
+  background: #fff;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
 }
 
-/* --- 인쇄 --- */
-@media print{
-  body{ background:#fff; padding:0 }
-  .card{ box-shadow:none; border-color:#d6dbe6; }
-  .card-header{ -webkit-print-color-adjust:exact; print-color-adjust:exact }
+/* 🔹 닫기 버튼 */
+.close-btn {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  border: none;
+  background: none;
+  font-size: 26px;
+  font-weight: 700;
+  cursor: pointer;
 }
+
+/* 🔹 카드 디자인 */
+.card {
+  border: 1px solid #e3e6f0;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.card-header {
+  background: #f8f9fc;
+  padding: 10px 16px;
+  font-weight: 700;
+}
+.card-body { padding: 16px; }

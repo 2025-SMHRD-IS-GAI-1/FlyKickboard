@@ -23,20 +23,20 @@
      <header class="header">
       <div class="logo">날아라킥보드</div>
       <nav class="nav" aria-label="주요 탭">
-      	<a href="Main.do">
-      		<button class="nav-btn" type="button">실시간</button>
-      	</a>
-      	<a href="Logs.do">
-      		<button class="nav-btn" type="button">감지 이력 조회</button>
-      	</a>      
+         <a href="Main.do">
+            <button class="nav-btn" type="button">실시간</button>
+         </a>
+         <a href="Logs.do">
+            <button class="nav-btn" type="button">감지 이력 조회</button>
+         </a>      
       </nav>
       
       <div class="actions" aria-label="사용자 메뉴">
       <a href="Manager.do">
-      	<button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
+         <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
       </a>
       <a href="Logout.do">
-      	<button class="login-btn" type="button" data-action="logout">로그아웃</button>
+         <button class="login-btn" type="button" data-action="logout">로그아웃</button>
       </a>
         
       </div>
@@ -110,6 +110,7 @@
 		    <td>${log.prog}</td>
 		  </tr>
 	  </c:forEach>     
+
       </tbody>
       </table>
 
@@ -147,6 +148,9 @@
   </div>
 
 <script src="${ctx}/assets/js/Logs.js"></script>
+
+
+
 
 </body>
 </html>
