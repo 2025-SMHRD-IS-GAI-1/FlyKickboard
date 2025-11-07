@@ -12,6 +12,7 @@ public class LoginService implements Command {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
+		String moveUrl = "";
 		String id = request.getParameter("id");
 		String pw = request.getParameter("pw");
 		
@@ -32,10 +33,12 @@ public class LoginService implements Command {
 			session.setAttribute("login", login);
 			System.out.println(login.getId());
 			dao.LastLogin(login.getId());
+			return "redirect:/GoMain.do";
 		} else {
-			System.out.println("실패151");
+			System.out.println("실패");
+			return "Login.jsp";
 		}
-		return "redirect:/GoMain.do";
+		
 	}
 
 }

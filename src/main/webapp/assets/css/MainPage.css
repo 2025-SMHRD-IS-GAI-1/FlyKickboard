@@ -299,71 +299,115 @@ body {
 }
 
 .map-legend .dot {
-  width: 14px;  /* 점 크기 확대 */
-  height: 14px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
 }
 
+.map-legend .dot.helmet {
+  background-color: #3a46ff !important;
+}
+.map-legend .dot.double {
+  background-color: #12c06a !important;
+}
 
 
 
 /* 감지 이력 리스트 */
-.history-list {
+#historyList {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px; /* 보기 좋게 간격 살짝 확대 */
+  max-height: 640px;   
+  overflow-y: auto;         /* 넘칠 때만 스크롤 */
+  padding-right: 6px;
+  scrollbar-width: thin;
 }
 
-.history-list li {
-  background: #f9f9f9;
-  border-radius: 6px;
-  padding: 10px 12px;
-  display: flex;
+/* 스크롤바 디자인 */
+#historyList::-webkit-scrollbar {
+  width: 6px;
+}
+#historyList::-webkit-scrollbar-thumb {
+  background-color: rgba(14, 62, 169, 0.3);
+  border-radius: 4px;
+}
+#historyList::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(14, 62, 169, 0.5);
+}
+
+
+
+#historyList li {
+  /* 카드형 + 3열(점 / 본문 / 시간) */
+  display: grid !important;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
+
+  padding: 14px 18px;
+  background: #f6f7fb;
+  border: 1px solid #eef2ff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   font-size: 14px;
+
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+#historyList li:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
+/* 왼쪽 점 */
+#historyList .dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
-  margin-right: 6px;
+  margin-right: 0;          /* grid 사용이라 불필요 */
+}
+#historyList .dot.helmet { background: #3a46ff; }
+#historyList .dot.double { background: #12c06a; }
+
+/* 유형: dot 다음 요소 굵게(클래스 없어도 적용) */
+#historyList .type,
+#historyList li .dot + * {
+  font-weight: 700;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.dot.helmet {
-  background: #4e5cff;
+/* 지역/시간 */
+#historyList .region {
+  justify-self: start;
+  color: #566;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.dot.double {
-  background: #2bc26b;
-}
-
-.region {
-  flex: 1;
-  text-align: right;
-  color: #555;
-}
-
-.time {
-  margin-left: 8px;
-  font-size: 12px;
-  color: #999;
+#historyList .time {
+  justify-self: end;
+  font-size: 13px;
+  color: #7a7f8c;
+  margin-left: 0;           /* 기존 여백 제거 */
 }
 
-/* 내부요소 방지 */
+/* 내부 이중 스크롤 방지 */
 .main-content,
 .map-section,
 .history-section {
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: visible;       /* auto -> visible */
   min-width: 0;
 }
 
-
-/*최근 감지 이력 제목 + 새로고침 버튼 줄 */
+/* 최근 감지 이력 제목 + 새로고침 버튼 줄 */
 .history-header {
   display: flex;
   align-items: center;
@@ -382,5 +426,4 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 

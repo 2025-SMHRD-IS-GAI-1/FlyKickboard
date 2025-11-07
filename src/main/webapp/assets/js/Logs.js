@@ -21,19 +21,20 @@ document.addEventListener("DOMContentLoaded", function () {
     var closeBtn  = document.getElementById("closeReportBtn");
     var btnSend   = document.getElementById("btnSend");
     var btnDel    = document.getElementById("btnDel");
-
-    // 초기화 로그
+	var CURRENT_SORT = { key: null, asc: true };
     console.log("✅ Logs.js initialized");
 
-    // 모달 초기화
     if (modal) modal.classList.remove("show");
 
     // 초기 데이터
     window.LAST_LOGS = readLogsFromDom();
     FILTERED_LOGS = window.LAST_LOGS.slice();
     renderTable(CURRENT_PAGE);
+	setupSorting();   // ✅ 정렬 이벤트 연결
 
-    // ============ 날짜 검색 ============
+    // ==============================
+    // ✅ 날짜 검색
+    // ==============================
     if (searchBtn) {
       searchBtn.addEventListener("click", function (e) {
         e.preventDefault();
@@ -42,19 +43,18 @@ document.addEventListener("DOMContentLoaded", function () {
         var startDate  = startInput ? startInput.value : "";
         var endDate    = endInput ? endInput.value : "";
 
-        if (!startDate && !endDate) {
-          alert("조회할 날짜를 선택하세요.");
-          return;
-        }
+        if (!startDate && !endDate) return alert("조회할 날짜를 선택하세요.");
 
         CURRENT_FILTER.start = startDate ? new Date(startDate + "T00:00:00") : null;
-        CURRENT_FILTER.end   = endDate   ? new Date(endDate + "T23:59:59") : null;
+        CURRENT_FILTER.end   = endDate   ? new Date(endDate   + "T23:59:59") : null;
         CURRENT_PAGE = 1;
         applyAllFilters();
       });
     }
 
-    // ============ 분류 모달 ============
+    // ==============================
+    // ✅ 분류 모달
+    // ==============================
     if (filterBtn && filterPanel) {
       var backdrop = document.createElement("div");
       backdrop.id = "filterBackdrop";
@@ -72,16 +72,17 @@ document.addEventListener("DOMContentLoaded", function () {
         if (wrap) wrap.appendChild(filterPanel);
         filterPanel.classList.remove("as-modal");
       }
-      filterBtn.addEventListener("click", function (e){ e.preventDefault(); openFilter(); });
-      backdrop.addEventListener("click", function (e){ if (!filterPanel.contains(e.target)) closeFilter(); });
-      document.addEventListener("keydown", function (e){ if (e.key === "Escape" && backdrop.classList.contains("show")) closeFilter(); });
+
+      filterBtn.addEventListener("click", e => { e.preventDefault(); openFilter(); });
+      backdrop.addEventListener("click", e => { if (!filterPanel.contains(e.target)) closeFilter(); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape" && backdrop.classList.contains("show")) closeFilter(); });
 
       var opts = filterPanel.querySelectorAll(".filter-option");
-      for (var i=0; i<opts.length; i++) {
+      for (var i = 0; i < opts.length; i++) {
         opts[i].addEventListener("click", function () {
           var group = closest(this, ".filter-group");
           var all = group ? group.querySelectorAll(".filter-option") : [];
-          for (var j=0; j<all.length; j++) all[j].classList.remove("active");
+          all.forEach(o => o.classList.remove("active"));
           this.classList.add("active");
 
           var f = getActiveFilters();
@@ -93,17 +94,38 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // ============ 통계 모달 ============
-    if (statsBtn && modal) {
-      statsBtn.addEventListener("click", function () {
-        modal.classList.add("show");
-        updateReportModal(FILTERED_LOGS);
-      });
-    }
-    if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
-    if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
+    // ==============================
+    // ✅ 통계 모달
+    // ==============================
+	if (statsBtn && modal) {
+	  statsBtn.addEventListener("click", function () {
+	    // ✅ 1. 선택된 행 가져오기
+	    var checkedRows = getCheckedRows();
 
-    // ============ 페이징 ============
+	    // ✅ 2. 선택된 데이터만 추출
+	    var selectedLogs = [];
+	    if (checkedRows.length > 0) {
+	      var allLogs = FILTERED_LOGS;  // 현재 필터된 전체
+	      checkedRows.forEach(function (row) {
+	        var found = allLogs.find(function (log) {
+	          return String(log.id) === String(row.id);
+	        });
+	        if (found) selectedLogs.push(found);
+	      });
+	    }
+
+	    // ✅ 3. 선택이 없으면 전체로 fallback
+	    var targetList = selectedLogs.length > 0 ? selectedLogs : FILTERED_LOGS;
+
+	    // ✅ 4. 모달 표시 + 통계 갱신
+	    modal.classList.add("show");
+	    updateReportModal(targetList);
+	  });
+	}
+
+    // ==============================
+    // ✅ 페이징
+    // ==============================
     if (prevBtn) prevBtn.addEventListener("click", function () {
       if (CURRENT_PAGE > 1) { CURRENT_PAGE--; renderTable(CURRENT_PAGE); }
     });
@@ -112,13 +134,14 @@ document.addEventListener("DOMContentLoaded", function () {
       if (CURRENT_PAGE < maxPage) { CURRENT_PAGE++; renderTable(CURRENT_PAGE); }
     });
 
-    // ============ ✅ 전송 버튼 ============
+    // ==============================
+    // ✅ 전송 버튼
+    // ==============================
     if (btnSend) {
       btnSend.addEventListener("click", function () {
         var ids = getCheckedRows();
         if (!ids.length) return alert("전송할 항목을 선택하세요.");
 
-        // 실제 서버 전송 예시
         fetch(ctx + "/SendLog.do", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -136,7 +159,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    // ============ ✅ 삭제 버튼 ============
+    // ==============================
+    // ✅ 삭제 버튼
+    // ==============================
     if (btnDel) {
       btnDel.addEventListener("click", function () {
         var rows = getCheckedRows();
@@ -155,12 +180,109 @@ document.addEventListener("DOMContentLoaded", function () {
           })
           .catch(err => console.error("삭제 오류:", err));
       });
+    } // ✅ ← 이 중괄호가 삭제 기능의 정확한 끝입니다!
+
+    // ==============================
+    // ✅ 전체선택 체크박스 기능
+    // ==============================
+    const checkAll = document.getElementById("checkAll");
+    if (checkAll && tableBody) {
+      checkAll.addEventListener("change", function () {
+        const allChecks = tableBody.querySelectorAll("input[type='checkbox']");
+        allChecks.forEach(chk => chk.checked = checkAll.checked);
+      });
+
+      tableBody.addEventListener("change", function (e) {
+        if (!e.target.matches("input[type='checkbox']")) return;
+        const allChecks = tableBody.querySelectorAll("input[type='checkbox']");
+        const checkedCount = Array.from(allChecks).filter(chk => chk.checked).length;
+
+        if (checkedCount === 0) {
+          checkAll.indeterminate = false;
+          checkAll.checked = false;
+        } else if (checkedCount === allChecks.length) {
+          checkAll.indeterminate = false;
+          checkAll.checked = true;
+        } else {
+          checkAll.indeterminate = true;
+        }
+      });
     }
+
+	// ✅ 날짜 문자열을 Date로 (yyyy-mm-dd 또는 yy/mm/dd)
+	function toDateSafe(str){
+	  if(!str) return null;
+	  var m1 = str.match(/(\d{4})-(\d{2})-(\d{2})/);       // 2025-12-24
+	  if(m1) return new Date(+m1[1], m1[2]-1, +m1[3]);
+	  var m2 = str.match(/(\d{2})\/(\d{2})\/(\d{2})/);     // 25/12/24
+	  if(m2) return new Date(2000 + +m2[1], +m2[2]-1, +m2[3]);
+	  return new Date(str); // fallback (브라우저 파서)
+	}
+
+	// ✅ 상태 정렬용 우선순위
+	function progOrder(p){
+	  var n = normalizeProg(p);
+	  return (n === "처리전") ? 1 : (n === "처리중") ? 2 : (n === "처리완료") ? 3 : 99;
+	}
+
+	// ✅ 실제 정렬 로직 (FILTERED_LOGS를 정렬)
+	function sortLogsByKey(key, asc){
+	  if(!Array.isArray(FILTERED_LOGS)) return;
+	  FILTERED_LOGS.sort(function(a,b){
+	    var A = (a[key] || "").trim();
+	    var B = (b[key] || "").trim();
+
+	    if(key === "date"){
+	      A = toDateSafe(A); B = toDateSafe(B);
+	      var at = A ? A.getTime() : 0, bt = B ? B.getTime() : 0;
+	      return asc ? (at - bt) : (bt - at);
+	    }
+	    if(key === "prog"){
+	      var ap = progOrder(a.prog), bp = progOrder(b.prog);
+	      return asc ? (ap - bp) : (bp - ap);
+	    }
+	    // 문자열 기본 비교 (한글 정렬 안정화)
+	    var cmp = String(A).localeCompare(String(B), "ko");
+	    return asc ? cmp : -cmp;
+	  });
+	}
+
+	// ✅ 정렬 헤더 화살표 표시
+	function highlightSortedColumn(key, asc){
+	  var ths = document.querySelectorAll(".logs-table th[data-sort]");
+	  for(var i=0;i<ths.length;i++){
+	    var t = ths[i];
+	    t.textContent = t.textContent.replace(/\s*[↑↓]$/,"");
+	    if(t.getAttribute("data-sort") === key){
+	      t.textContent += asc ? " ↑" : " ↓";
+	    }
+	  }
+	}
+
+	// ✅ 헤더 클릭 바인딩 (DOMContentLoaded 안 최상위에서 한 번만 호출)
+	function setupSorting(){
+	  var ths = document.querySelectorAll(".logs-table th[data-sort]");
+	  for(var i=0;i<ths.length;i++){
+	    (function(th){
+	      th.style.cursor = "pointer";
+	      th.addEventListener("click", function(){
+	        var key = th.getAttribute("data-sort");
+	        if(CURRENT_SORT.key === key) CURRENT_SORT.asc = !CURRENT_SORT.asc;
+	        else { CURRENT_SORT.key = key; CURRENT_SORT.asc = true; }
+	        sortLogsByKey(key, CURRENT_SORT.asc);
+	        CURRENT_PAGE = 1;           // 첫 페이지로
+	        renderTable(CURRENT_PAGE);  // 다시 그리기
+	        highlightSortedColumn(key, CURRENT_SORT.asc);
+	      });
+	    })(ths[i]);
+	  }
+	}
 
   } catch (err) {
     console.error("[Logs.js] 초기화 중 에러:", err);
   }
 });
+
 
 // ------------------------------
 // 체크된 행 가져오기
@@ -267,6 +389,7 @@ function applyAllFilters(){
   });
   CURRENT_PAGE=1;
   renderTable(CURRENT_PAGE);
+  setupSorting();
 }
 
 // ------------------------------
@@ -351,13 +474,30 @@ function updateReportModal(list){
 
   drawRegionBarChart(regionCount, sum);
 
-  // --- ② 위반유형 통계 ---
-  var typeCount = { "헬멧 미착용": 0, "2인 탑승": 0 };
-  for(var i=0;i<list.length;i++){
-    var t=(list[i].type||"");
-    if(typeCount.hasOwnProperty(t)) typeCount[t]++;
+  // --- ② 위반유형 통계 (표 + 도넛그래프 통합 버전) ---
+  var typeCount = { "헬멧 미착용": 0, "2인이상 탑승": 0 };
+  for (var i = 0; i < list.length; i++) {
+    var t = (list[i].type || "").trim();
+    if (typeCount.hasOwnProperty(t)) typeCount[t]++;
   }
-  drawTypeDonutChart(typeCount);
+
+  // ✅ 총 건수, 퍼센트 계산
+  var totalType = typeCount["헬멧 미착용"] + typeCount["2인이상 탑승"];
+  var pctHelmet = totalType ? ((typeCount["헬멧 미착용"] / totalType) * 100).toFixed(1) : 0;
+  var pctDouble = totalType ? ((typeCount["2인이상 탑승"] / totalType) * 100).toFixed(1) : 0;
+
+  // ✅ 표 갱신
+  var typeTable = document.querySelector("#sec-4 .tbl tbody");
+  if (typeTable) {
+    var typeHtml = "";
+    typeHtml += "<tr><td class='left'>헬멧 미착용</td><td>" + typeCount["헬멧 미착용"] + "건 (" + pctHelmet + "%)</td></tr>";
+    typeHtml += "<tr><td class='left'>2인이상 탑승</td><td>" + typeCount["2인이상 탑승"] + "건 (" + pctDouble + "%)</td></tr>";
+    typeHtml += "<tr><td class='left'><strong>총 건수</strong></td><td><strong>" + totalType + "</strong></td></tr>";
+    typeTable.innerHTML = typeHtml;
+  }
+
+  // ✅ 도넛 그래프 생성
+  drawTypeDonutChart(typeCount, totalType);
 
   // --- ③ 시간대별 통계 ---
   var hourly=[0,0,0,0,0,0,0,0];
@@ -375,7 +515,19 @@ function updateReportModal(list){
     "12:00 ~ 15:00","15:00 ~ 18:00","18:00 ~ 21:00","21:00 ~ 24:00"
   ];
   drawHourlyLineChart(ranges, hourly);
+  var hourTable=document.querySelector("#hourlyTable tbody");
+    if(hourTable){
+      var hourHtml="", totalHour=0;
+      for(var i=0;i<ranges.length;i++){
+        hourHtml += `<tr><td>${ranges[i]}</td><td>${hourly[i]}</td></tr>`;
+        totalHour += hourly[i];
+      }
+      hourHtml += `<tr><td><strong>총 건수</strong></td><td><strong>${totalHour}</strong></td></tr>`;
+      hourTable.innerHTML=hourHtml;
+    }
 
+    var label=document.getElementById("selectedDateLabel");
+    if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
   var label=document.getElementById("selectedDateLabel");
   if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
 }
@@ -416,32 +568,49 @@ function drawRegionBarChart(regionCount, total){
 // ------------------------------
 // 위반유형 도넛그래프
 // ------------------------------
-function drawTypeDonutChart(typeCount){
-  var ctx=document.getElementById("typeDonut2");
-  if(!ctx) return;
-  if(window.typeDonutChart) window.typeDonutChart.destroy();
+function drawTypeDonutChart(typeCount, totalType){
+	var ctx = document.getElementById("typeDonut2");
+	  if (!ctx) return;
+	  if (window.typeDonutChart) window.typeDonutChart.destroy();
 
-  var labels=["헬멧 미착용","2인 탑승"];
-  var data=[typeCount["헬멧 미착용"], typeCount["2인 탑승"]];
-
-  window.typeDonutChart=new Chart(ctx,{
-    type:"doughnut",
-    data:{
-      labels:labels,
-      datasets:[{
-        data:data,
-        backgroundColor:["#ef4444","#facc15"],
-        borderColor:"#fff",
-        borderWidth:2
-      }]
-    },
-    options:{
-      plugins:{
-        legend:{position:"bottom"},
-        title:{display:true,text:"위반유형 비율(%)"}
+	  var labels = ["헬멧 미착용", "2인이상 탑승"];
+	  var data = [typeCount["헬멧 미착용"], typeCount["2인이상 탑승"]];
+	  var total = totalType || data.reduce(function (a, b) { return a + b; }, 0);
+  	window.typeDonutChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: ["#ef4444", "#facc15"],
+          borderColor: "#fff",
+          borderWidth: 2
+        }]
       },
-      cutout:"65%"
-    }
+      plugins: [ChartDataLabels], // ✅ 퍼센트 라벨 플러그인 추가
+      options: {
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: { font: { size: 13 } }
+          },
+          title: {
+            display: true,
+            text: "위반유형 비율(%)",
+            font: { size: 14, weight: "bold" }
+          },
+          // ✅ 퍼센트 표시 옵션
+          datalabels: {
+            color: "#111827",
+            font: { weight: "bold", size: 18 },
+            formatter: function(value, context) {
+              var percent = total ? (value / total * 100).toFixed(1) + "%" : "0%";
+              return percent;
+            }
+          }
+        },
+        cutout: "25%"
+      }
   });
 }
 
