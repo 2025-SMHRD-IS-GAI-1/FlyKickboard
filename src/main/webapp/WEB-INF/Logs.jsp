@@ -23,20 +23,20 @@
      <header class="header">
       <div class="logo">날아라킥보드</div>
       <nav class="nav" aria-label="주요 탭">
-      	<a href="Main.do">
-      		<button class="nav-btn" type="button">실시간</button>
-      	</a>
-      	<a href="Logs.do">
-      		<button class="nav-btn" type="button">감지 이력 조회</button>
-      	</a>      
+         <a href="Main.do">
+            <button class="nav-btn" type="button">실시간</button>
+         </a>
+         <a href="Logs.do">
+            <button class="nav-btn" type="button">감지 이력 조회</button>
+         </a>      
       </nav>
       
       <div class="actions" aria-label="사용자 메뉴">
       <a href="Manager.do">
-      	<button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
+         <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
       </a>
       <a href="Logout.do">
-      	<button class="login-btn" type="button" data-action="logout">로그아웃</button>
+         <button class="login-btn" type="button" data-action="logout">로그아웃</button>
       </a>
         
       </div>
@@ -102,10 +102,10 @@
       </thead>
       <tbody>
       <c:forEach var="log" items="${alllog}">
-	      <tr>
-	      	<td><input type="checkbox" /></td>
-	      	<td>${log.date}</td><td>${log.loc}</td><td>${log.type}</td><td>${log.prog}</td>
-	      </tr>
+         <tr>
+            <td><input type="checkbox" /></td>
+            <td>${log.date}</td><td>${log.loc}</td><td>${log.type}</td><td>${log.prog}</td>
+         </tr>
       </c:forEach>
             <tr>
          <!-- 
@@ -153,45 +153,79 @@
 
 <script type="text/javascript">
 // ==============================
-// Eclipse / JSP 환경 + ES5 호환
+// Eclipse / JSP 환경 + ES5 호환 통합본
 // ==============================
 
 // JSP에서 <body data-ctx="${pageContext.request.contextPath}">
 var ctx = (document.body && document.body.getAttribute('data-ctx')) || "";
 
+// ------------------------------
 // DOM 로드
+// ------------------------------
 document.addEventListener("DOMContentLoaded", function () {
-  // 상단 메뉴/로그아웃
+  // 0) 상단 메뉴/로그아웃
   var realtimeBtn = document.querySelector(".nav-btn[data-route='main']");
-  if (realtimeBtn) realtimeBtn.addEventListener("click", function () {
-    window.location.href = ctx + "/Main.jsp";
-  });
+  if (realtimeBtn) realtimeBtn.addEventListener("click", function () { window.location.href = ctx + "/Main.jsp"; });
 
   var logsBtn = document.querySelector(".nav-btn[data-route='logs']");
-  if (logsBtn) logsBtn.addEventListener("click", function () {
-    window.location.href = ctx + "/Logs.jsp";
-  });
+  if (logsBtn) logsBtn.addEventListener("click", function () { window.location.href = ctx + "/Logs.jsp"; });
 
   var adminBtn = document.querySelector(".admin-btn");
-  if (adminBtn) adminBtn.addEventListener("click", function () {
-    window.location.href = ctx + "/Manager.jsp";
-  });
+  if (adminBtn) adminBtn.addEventListener("click", function () { window.location.href = ctx + "/Manager.jsp"; });
 
   var logoutBtn = document.querySelector(".login-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function () {
-      alert("로그아웃 되었습니다.");
-      window.location.href = ctx + "/Login.jsp";
+      alert("로그아웃 되었습니다."); window.location.href = ctx + "/Login.jsp";
     });
   }
   //===============================
-  //✅ 날짜 검색 (LAST_LOGS 기반 필터링)
-  //===============================
-  	  
+  // ✅ 날짜 검색 (LAST_LOGS 기반)
+  // ===============================
+  var searchBtn = document.querySelector(".btn-search");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", function () {
+      var startInput = document.getElementById("startDate");
+      var endInput   = document.getElementById("endDate");
+      var startDate = startInput ? startInput.value : "";
+      var endDate   = endInput ? endInput.value : "";
 
-  // ===============================
-  // 필터 모달 (분류 버튼)
-  // ===============================
+      if (!startDate && !endDate) {
+        alert("조회할 날짜를 선택하세요.");
+        return;
+      }
+      if (!window.LAST_LOGS || !Array.isArray(window.LAST_LOGS) || window.LAST_LOGS.length === 0) {
+        alert("조회할 데이터가 없습니다.");
+        return;
+      }
+
+      // 날짜 범위 세팅
+      var s = startDate ? new Date(startDate + "T00:00:00") : new Date("2000-01-01T00:00:00");
+      var e = endDate ? new Date(endDate + "T23:59:59") : new Date();
+
+      // 날짜 필터링
+      var filtered = window.LAST_LOGS.filter(function (log) {
+        var timeStr = (log.time || "").trim();
+        if (!timeStr) return false;
+        var datePart = timeStr.split(" ")[0];
+        var parts = datePart.split("-");
+        if (parts.length < 3) return false;
+        var y = parseInt(parts[0], 10);
+        var m = parseInt(parts[1], 10);
+        var d = parseInt(parts[2], 10);
+        var t = new Date(y, m - 1, d);
+        return t >= s && t <= e;
+      });
+
+      updateLogsTable(filtered);
+      updateStats(filtered);
+      syncHeaderState();
+
+      console.log("[날짜 검색결과] " + filtered.length + "건 (" + (startDate || "-") + " ~ " + (endDate || "-") + ")");
+    });
+  }
+  
+  // 1) 분류 모달
   var filterBtn = document.getElementById("btnFilter");
   var filterPanel = document.getElementById("filterPanel");
   if (filterBtn && filterPanel) {
@@ -202,32 +236,20 @@ document.addEventListener("DOMContentLoaded", function () {
       backdrop.className = "filter-modal-backdrop";
       document.body.appendChild(backdrop);
     }
-
     function openModal() {
       backdrop.classList.add("show");
       backdrop.appendChild(filterPanel);
       filterPanel.classList.add("as-modal");
     }
-
     function closeModal() {
       backdrop.classList.remove("show");
       var wrapper = document.querySelector(".filter-wrapper");
       if (wrapper) wrapper.appendChild(filterPanel);
       filterPanel.classList.remove("as-modal");
     }
-
-    filterBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      openModal();
-    });
-
-    backdrop.addEventListener("click", function (e) {
-      if (!filterPanel.contains(e.target)) closeModal();
-    });
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && backdrop.classList.contains("show")) closeModal();
-    });
+    filterBtn.addEventListener("click", function (e) { e.preventDefault(); openModal(); });
+    backdrop.addEventListener("click", function (e) { if (!filterPanel.contains(e.target)) closeModal(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && backdrop.classList.contains("show")) closeModal(); });
 
     var opts = filterPanel.querySelectorAll(".filter-option");
     for (var i = 0; i < opts.length; i++) {
@@ -236,14 +258,13 @@ document.addEventListener("DOMContentLoaded", function () {
         var all = group ? group.querySelectorAll(".filter-option") : [];
         for (var j = 0; j < all.length; j++) all[j].classList.remove("active");
         this.classList.add("active");
-
-        // 🔹 [추가] 필터 선택 시 즉시 테이블 갱신
+        // 필터 클릭 즉시 적용 (원본 배열 기준)
         applyActiveFilters();
       });
     }
   }
 
-  // 체크박스/테이블
+  // 2) 체크박스/테이블 초기화
   ensureRowCheckboxes();
 
   var table = document.querySelector(".logs-table");
@@ -263,59 +284,48 @@ document.addEventListener("DOMContentLoaded", function () {
       var t = e.target || e.srcElement;
       if (t && hasClass(t, "row-check")) syncHeaderState();
     });
-
     var mo = new MutationObserver(function () { ensureRowCheckboxes(); });
     mo.observe(tbody, { childList: true });
   }
 
   bindActionButtons();
 
-  // 초기 통계 채우기
+  // 3) 초기 원본 배열 확보 + 통계 갱신 + 상태 뱃지 스타일 주입
+  //    (JSP가 단순 텍스트로 렌더링해도 여기서 span.status로 감쌈)
+  applyStatusBadgeToCurrentRows();  // <-- 현재 DOM의 상태 셀을 <span class="status ...">로 변환
   var initLogs = map(readLogsFromDom(), function (l) {
-    l.status = normalizeStatus(l.status);
-    return l;
+    l.status = normalizeStatus(l.status); return l;
   });
   window.LAST_LOGS = initLogs;
   updateStats(initLogs);
 });
 
-// ===============================
-// 유틸 함수
-// ===============================
+// ------------------------------
+// 유틸
+// ------------------------------
 function hasClass(el, c) { return el && (' ' + el.className + ' ').indexOf(' ' + c + ' ') > -1; }
-function closest(el, sel) {
-  while (el && el.nodeType === 1) {
-    if (matches(el, sel)) return el;
-    el = el.parentElement;
-  }
-  return null;
-}
+function closest(el, sel) { while (el && el.nodeType === 1) { if (matches(el, sel)) return el; el = el.parentElement; } return null; }
 function matches(el, sel) {
   var p = Element.prototype;
   var f = p.matches || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector;
   return f.call(el, sel);
 }
-function map(arr, fn) {
-  var out = [];
-  for (var i = 0; i < arr.length; i++) out.push(fn(arr[i], i));
-  return out;
-}
+function map(arr, fn) { var out = []; for (var i = 0; i < arr.length; i++) out.push(fn(arr[i], i)); return out; }
 
-// ===============================
+// ------------------------------
 // 상태 정규화
-// ===============================
+// ------------------------------
 function normalizeStatus(s) {
   var v = String(s || "").trim().toLowerCase();
   if (["대기","처리전","pending","new","todo","준비중"].indexOf(v) > -1) return "처리전";
   if (["진행","처리중","in_progress","progress","processing","working"].indexOf(v) > -1) return "처리중";
   if (["완료","처리완료","done","complete","completed","success"].indexOf(v) > -1) return "처리완료";
-  
   return s || "-";
 }
 
-// ===============================
+// ------------------------------
 // 통계
-// ===============================
+// ------------------------------
 function updateStats(logs) {
   var i, norm = [];
   for (i = 0; i < (logs || []).length; i++) {
@@ -332,14 +342,11 @@ function updateStats(logs) {
   setText("progressCount", progress + "건");
   setText("completeCount", complete + "건");
 }
-function setText(id, v) {
-  var el = document.getElementById(id);
-  if (el) el.textContent = v;
-}
+function setText(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
 
-// ===============================
+// ------------------------------
 // 체크박스
-// ===============================
+// ------------------------------
 function ensureRowCheckboxes() {
   var table = document.querySelector(".logs-table");
   if (!table) return;
@@ -363,16 +370,17 @@ function syncHeaderState() {
   var checkAll = table.querySelector("#checkAll");
   var cbs = table.querySelectorAll("tbody .row-check");
   if (!checkAll || cbs.length === 0) return;
+
   var checked = 0;
   for (var i = 0; i < cbs.length; i++) if (cbs[i].checked) checked++;
-  if (checked === 0)      { checkAll.checked = false; checkAll.indeterminate = false; }
-  else if (checked === cbs.length) { checkAll.checked = true;  checkAll.indeterminate = false; }
-  else                    { checkAll.checked = false; checkAll.indeterminate = true;  }
+  if (checked === 0) { checkAll.checked = false; checkAll.indeterminate = false; }
+  else if (checked === cbs.length) { checkAll.checked = true; checkAll.indeterminate = false; }
+  else { checkAll.checked = false; checkAll.indeterminate = true; }
 }
 
-// ===============================
+// ------------------------------
 // 버튼
-// ===============================
+// ------------------------------
 function bindActionButtons() {
   var btnSend   = document.getElementById("btnSend");
   var btnPrint  = document.getElementById("btnPrint");
@@ -398,9 +406,9 @@ function bindActionButtons() {
   });
 }
 
-// ===============================
+// ------------------------------
 // 행 선택 / 삭제 / 읽기
-// ===============================
+// ------------------------------
 function getSelectedLogIds() {
   var cbs = document.querySelectorAll(".logs-table tbody .row-check:checked");
   var out = [];
@@ -429,12 +437,30 @@ function readLogsFromDom() {
   return out;
 }
 
-// ===============================
-// 필터 로직 (기존 + 자동 필터링 포함)
-// ===============================
+// ------------------------------
+// 상태 뱃지 적용(초기 DOM용)
+// ------------------------------
+function applyStatusBadgeToCurrentRows() {
+  var rows = document.querySelectorAll(".logs-table tbody tr");
+  for (var i = 0; i < rows.length; i++) {
+    var statusCell = rows[i].cells[4];
+    if (!statusCell) continue;
+    var text = (statusCell.textContent || "").trim();
+    if (statusCell.querySelector("span.status")) continue; // 이미 변환됨
+
+    var span = document.createElement("span");
+    span.className = "status " + statusClass(normalizeStatus(text));
+    span.textContent = normalizeStatus(text);
+    statusCell.innerHTML = "";
+    statusCell.appendChild(span);
+  }
+}
+
+// ------------------------------
+// 필터 로직 (원본 배열 기준)
+// ------------------------------
 window.LAST_LOGS = window.LAST_LOGS || [];
 
-// 조건 필터링
 function filterLogs(logs, f) {
   var out = [];
   for (var i = 0; i < logs.length; i++) {
@@ -447,7 +473,6 @@ function filterLogs(logs, f) {
   return out;
 }
 
-// ✅ 현재 활성 필터 읽기
 function getActiveFilters() {
   var f = { status: null, dtype: null };
   var panel = document.getElementById("filterPanel");
@@ -465,7 +490,6 @@ function getActiveFilters() {
   return f;
 }
 
-// ✅ 필터 적용 및 테이블 갱신
 function applyActiveFilters() {
   var filters = getActiveFilters();
   var baseLogs = window.LAST_LOGS || [];
@@ -475,53 +499,34 @@ function applyActiveFilters() {
   syncHeaderState();
 }
 
-// ✅ 테이블 갱신 함수
+// 테이블 갱신 (상태 뱃지 포함)
 function updateLogsTable(filteredLogs) {
   var tbody = document.querySelector(".logs-table tbody");
   if (!tbody) return;
   tbody.innerHTML = "";
   for (var i = 0; i < filteredLogs.length; i++) {
     var log = filteredLogs[i];
+    var normStatus = normalizeStatus(log.status);
     var tr = document.createElement("tr");
     tr.innerHTML =
       "<td>" + (i + 1) + "</td>" +
       "<td>" + (log.time || "-") + "</td>" +
       "<td>" + (log.location || "-") + "</td>" +
       "<td>" + (log.type || "-") + "</td>" +
-      "<td><span class='status " + statusClass(log.status) + "'>" + log.status + "</span></td>";
+      "<td><span class='status " + statusClass(normStatus) + "'>" + normStatus + "</span></td>";
     tbody.appendChild(tr);
   }
   ensureRowCheckboxes();
 }
 
-// ✅ 상태별 클래스
 function statusClass(status) {
   if (status === "처리전") return "pending";
   if (status === "처리중") return "progress";
   if (status === "처리완료") return "complete";
   return "";
 }
-var rows = document.querySelectorAll(".logs-table tbody tr");
-for (var i = 0; i < rows.length; i++) {
-  var statusCell = rows[i].cells[4];
-  if (!statusCell) continue;
-  var text = (statusCell.textContent || "").trim();
-
-  // 이미 span이 있으면 건너뛰기
-  if (statusCell.querySelector("span.status")) continue;
-
-  var span = document.createElement("span");
-  span.classList.add("status");
-
-  if (text === "처리완료") span.classList.add("complete");
-  else if (text === "처리중") span.classList.add("progress");
-  else if (text === "처리전") span.classList.add("pending");
-
-  span.textContent = text;
-  statusCell.innerHTML = "";
-  statusCell.appendChild(span);
-}
 </script>
+
 
 </body>
 </html>
