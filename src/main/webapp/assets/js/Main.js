@@ -1,6 +1,4 @@
-/*************************************************
- * 페이지 로드 시 초기 실행
- *************************************************/
+/*페이지 로드 시 초기 실행*/
 window.addEventListener("load", () => {
   setupLogout();
   initNaverMap();
@@ -9,9 +7,7 @@ window.addEventListener("load", () => {
 });
 
 
-/*************************************************
- * 로그아웃 버튼 클릭 알림
- *************************************************/
+/*로그아웃 버튼 클릭 알림*/
 function setupLogout() {
   const logoutBtn = document.querySelector(".login-btn");
   if (logoutBtn) {
@@ -20,9 +16,7 @@ function setupLogout() {
 }
 
 
-/*************************************************
- * ✅ 네이버 지도 + 붉은 반경 표시
- *************************************************/
+/* 네이버 지도 + 붉은 반경 표시*/
 async function initNaverMap() {
   const mapElement = document.getElementById("map");
   if (!mapElement) return;
@@ -67,9 +61,7 @@ async function initNaverMap() {
 }
 
 
-/*************************************************
- * 범례 표시
- *************************************************/
+/* 범례 표시*/
 function showMapLegend() {
   const legendEl = document.getElementById("mapLegend");
   if (!(legendEl && window.map && naver.maps)) return;
@@ -78,9 +70,7 @@ function showMapLegend() {
 }
 
 
-/*************************************************
- * ✅ 감지 로그 데이터 로드
- *************************************************/
+/*감지 로그 데이터 로드*/
 let allLogs = [];
 let noHelmet = [];
 let doublepl = [];
@@ -103,9 +93,7 @@ function loadLogs() {
 }
 
 
-/*************************************************
- * ✅ 감지 목록 화면에 표시
- *************************************************/
+/* 감지 목록 화면에 표시*/
 function renderLogs(logs) {
   const historyList = document.getElementById("historyList");
   if (!historyList) return;
@@ -132,9 +120,7 @@ function renderLogs(logs) {
 }
 
 
-/*************************************************
- * ✅ 감지 건수 UI 업데이트
- *************************************************/
+/*감지 건수 UI 업데이트*/
 function updateCounts(logs) {
   document.getElementById("cntHelmet").textContent =
     logs.filter(l => l.type.includes("미착용")).length;
@@ -144,9 +130,7 @@ function updateCounts(logs) {
 }
 
 
-/*************************************************
- * ✅ 버튼 토글(헬멧 / 2인탑승)
- *************************************************/
+/* 버튼 토글(헬멧 / 2인탑승)*/
 let isHelmetFilter = false;
 let isDoubleFilter = false;
 

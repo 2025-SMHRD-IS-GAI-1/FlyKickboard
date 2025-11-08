@@ -1,6 +1,4 @@
-/* =========================
-   감지 이력 페이지 스타일
-   ========================= */
+/* 감지 이력 페이지 스타일 */
 .logs-section {
   flex: 1;
   width: 100%;
@@ -23,9 +21,7 @@
   letter-spacing: -0.3px;
 }
 
-/* -------------------------
-   검색 / 필터 영역
-   ------------------------- */
+/* 검색 / 필터 영역*/
 .logs-section .toolbar {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
@@ -80,11 +76,9 @@
   box-shadow: 0 0 0 3px rgba(37, 88, 189, 0.2);
 }
 
-/* =========================================
-   ✅ 추가 수정 (화면비율/높이 통일용)
-   ========================================= */
+/* 추가 수정 (화면비율/높이 통일용) */
 
-/* ① Report 모달 내 그리드 영역 높이 자동 맞춤 */
+/* Report 모달 내 그리드 영역 높이 자동 맞춤 */
 .report-modal .report-content .ui-grid {
   display: grid;
   grid-template-columns: 1fr 1fr; /* ✅ 좌우 두 영역 동일 비율 */
@@ -92,16 +86,166 @@
   align-items: stretch;          /* ✅ 내부 카드 높이 자동 맞춤 */
 }
 
-/* ② 카드 내부 body 높이 통일 */
+/*  카드 내부 body 높이 통일 */
 .report-modal .report-content .ui-grid > .card > .card-body {
   height: 100%;        /* ✅ 카드 내부 높이 동일화 */
   overflow: auto;      /* ✅ 내용 많을 시 내부 스크롤 */
 }
 
-/* ③ 지역별·유형별 섹션 높이 동일화 */
+/* 지역별·유형별 섹션 높이 동일화 */
 .report-modal .report-content #sec-3 .ui-grid > .card > .card-body { 
   min-height: 360px;   /* ✅ 그래프쪽 기준으로 통일 */
 }
 .report-modal .report-content #sec-4 .ui-grid > .card > .card-body { 
   min-height: 360px;   /* ✅ 표쪽도 같은 높이 */
 }
+
+/* 통계 보고서 - 하단 버튼영역 */
+.report-actions {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  z-index: 100;
+}
+
+/* 공통 버튼 스타일 */
+.report-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+
+/* 출력/닫기버튼 생성*/
+
+/* 출력 버튼 (메인 파랑) */
+.report-actions .btn-primary {
+  background: #0e3ea9;
+  color: #fff;
+  border-color: #0e3ea9;
+}
+.report-actions .btn-primary:hover {
+  background: #1552d6;
+  box-shadow: 0 3px 10px rgba(14, 62, 169, 0.25);
+  transform: translateY(-1px);
+}
+
+/* 닫기 버튼 (테두리형) */
+.report-actions .btn-outline {
+  background: #fff;
+  color: #0e3ea9;
+  border: 1px solid rgba(14, 62, 169, 0.35);
+}
+.report-actions .btn-outline:hover {
+  background: #0e3ea9;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(14, 62, 169, 0.15);
+  transform: translateY(-1px);
+}
+
+/* 시간추이 섹션 밑, 오른쪽 하단 고정 */
+.report-modal .report-content {
+  position: relative;
+}
+
+/* 출력/닫기 버튼  */
+.report-modal .report-actions {
+  position: absolute;
+  right: 30px;
+  bottom: -1160px; 
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+
+  /* 불필요한 배경/테두리 제거 */
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* 공통 버튼 스타일 */
+.report-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  min-width: 90px;
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s ease;
+  border: 1px solid transparent;
+}
+
+/* 출력 버튼 (파랑 메인) */
+.report-actions .btn-primary {
+  background: linear-gradient(180deg, #1761ff 0%, #0e3ea9 100%);
+  color: #fff;
+}
+.report-actions .btn-primary:hover {
+  background: linear-gradient(180deg, #2b6dff 0%, #1552d6 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(14, 62, 169, 0.35);
+}
+
+/* 닫기 버튼 (얇은 테두리형) */
+.report-actions .btn-outline {
+  background: transparent;
+  color: #0e3ea9;
+  border: 1px solid rgba(14, 62, 169, 0.45);
+}
+.report-actions .btn-outline:hover {
+  background: rgba(14, 62, 169, 0.08);
+  transform: translateY(-1px);
+}
+
+/* 아이콘 추가 (선택사항) */
+#btnPrint::before {
+  content: "⎙";
+  margin-right: 6px;
+}
+#btnClose::before {
+  content: "✕";
+  margin-right: 6px;
+}
+
+/* 반응형 대응 */
+@media (max-width: 560px) {
+  .report-modal .report-actions {
+    right: 16px;
+    bottom: -1150px;
+    gap: 8px;
+  }
+  .report-actions .btn {
+    min-width: 80px;
+    height: 36px;
+    font-size: 13px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

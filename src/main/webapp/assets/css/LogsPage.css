@@ -524,9 +524,7 @@ body.report-active {
   .card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
-/* =========================================================
-   ✅ 모달 구조 전용 스타일 (Logs.jsp)
-   ========================================================= */
+/* 모달 구조 전용 스타일 (Logs.jsp) */
 .report-modal {
   position: fixed;
   inset: 0;
@@ -580,3 +578,226 @@ body.report-active {
 .logs-table th[data-sort]:hover {
   background-color: #eef3ff;
 }
+
+
+/* NO 상세보긴 버튼*/
+
+/* 체크박스 뒤에 No 표시 */
+.logs-table {
+  counter-reset: rownum;
+}
+.logs-table tbody tr {
+  counter-increment: rownum;
+}
+
+/* 헤더 No */
+.logs-table thead th:first-child::after {
+  content: "No";
+  margin-left: 24px; /* ← 기존 8px → 24px로 넓힘 */
+  font-weight: 700;
+  color: #ffffff;
+}
+.logs-table thead th:first-child::after {
+  content: "No";
+  margin-left: 8px; /* 체크박스와 간격 */
+  font-weight: 700;
+  color: #ffffff; /* 헤더는 흰색 */
+}
+
+
+/* 본문 자동번호 */
+.logs-table tbody td:first-child::after {
+  content: counter(rownum);
+  margin-left: 24px; /* ← 기존 8px → 24px로 넓힘 */
+  font-weight: 600;
+  color: #334155;
+}
+
+.logs-table tbody td:first-child input[type="checkbox"] {
+  margin-right: 8px; /* 체크박스와 숫자 사이 간격 */
+}
+.logs-table tbody td:first-child::after {
+  content: counter(rownum);
+  margin-left: 8px;
+  font-weight: 600;
+  color: #334155;
+}
+
+
+
+/* ============================
+   🚀 초넓은 시원형 테이블 레이아웃 (XXL)
+   ============================ */
+:root {
+  --cell-pad-y: 14px;    /* 위아래 여백 */
+  --cell-pad-x: 28px;    /* 좌우 여백 */
+  --gap-cb-no: 18px;     /* 체크박스 ↔ No 간격 */
+  --w-col-1: 160px;      /* 1열(체크박스+No) */
+  --w-col-2: 180px;      /* 날짜 */
+  --w-col-3: 260px;      /* 위치 */
+  --w-col-4: 200px;      /* 감지유형 */
+  --w-col-5: 180px;      /* 상태 */
+  --w-col-6: 160px;      /* 상세보기 */
+}
+
+/* 공통 셀 여백 */
+.logs-table th {
+  padding: var(--cell-pad-y) var(--cell-pad-x) !important;
+}
+.logs-table td {
+  padding: calc(var(--cell-pad-y) - 2px) var(--cell-pad-x) !important;
+}
+
+/* 1열: 체크박스 + No */
+.logs-table th:nth-child(1),
+.logs-table td:nth-child(1) {
+  width: var(--w-col-1) !important;
+  text-align: left !important;
+}
+.logs-table tbody td:first-child input[type="checkbox"] {
+  margin-right: var(--gap-cb-no) !important;
+  transform: scale(1.2); /* 체크박스 크기도 살짝 키움 */
+}
+.logs-table tbody td:first-child::after {
+  margin-left: var(--gap-cb-no) !important;
+  display: inline-block;
+  min-width: 30px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* 2열: 날짜 */
+.logs-table th:nth-child(2),
+.logs-table td:nth-child(2) {
+  width: var(--w-col-2) !important;
+  text-align: center !important;
+}
+
+/* 3열: 위치 */
+.logs-table th:nth-child(3),
+.logs-table td:nth-child(3) {
+  width: var(--w-col-3) !important;
+  text-align: center !important; 
+}
+
+/* 4열: 감지유형 */
+.logs-table th:nth-child(4),
+.logs-table td:nth-child(4) {
+  width: var(--w-col-4) !important;
+  text-align: center !important;
+}
+
+/* 상태(5열) */
+.logs-table th:nth-child(5),
+.logs-table td:nth-child(5) {
+  width: 120px;
+  text-align: center !important;
+}
+
+/* 상세보기(6열) */
+.logs-table th:nth-child(6),
+.logs-table td:nth-child(6) {
+  width: 100px;              /* 필요시 조정 */
+  text-align: center !important;
+  white-space: nowrap;       /* 버튼 줄바꿈 방지 */
+}
+
+
+/* 버튼도 살짝 키움 */
+.btn-detail {
+  padding: 8px 18px !important;
+  font-size: 15px !important;
+}
+
+
+/* 테이블 레이아웃 고정: 각 열 폭/정렬이 흔들리지 않게 */
+.logs-table {
+  table-layout: fixed;  /* 셀 내용 길어도 폭 유지 */
+}
+
+/* 1열(체크박스+No) 왼쪽 정렬 유지 */
+.logs-table thead th:nth-child(1),
+.logs-table tbody td:nth-child(1) {
+  text-align: left !important;
+}
+
+/* 3열: 위치 - 정확한 가운데 정렬 강제 */
+.logs-table thead th[data-sort="loc"],
+.logs-table tbody td:nth-child(3) {
+  text-align: center !important;
+  vertical-align: middle !important;
+  /* 긴 위치명 줄바꿈 허용(필요 시) */
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 6열: 상세보기 - 중복 규칙 하나로 합치기 */
+.logs-table thead th:nth-child(6),
+.logs-table tbody td:nth-child(6) {
+  width: 120px !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  white-space: nowrap;
+}
+
+/* 상세보기 버튼*/
+.btn-detail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1e4ba8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,.12);
+  transition: all .25s ease;
+  white-space: nowrap;
+}
+.btn-detail:hover {
+  background: #2558bd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,.18);
+}
+.btn-detail:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ✅ 헤더만 간격 넓히기 */
+.logs-table thead th:first-child {
+  position: relative;
+  text-align: left;
+  padding-left: 16px;
+}
+
+.logs-table thead th:first-child::after {
+  content: "No";
+  margin-left: 47px; /* ✅ 체크박스와 No 간격 넓힘 */
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ✅ 본문 숫자는 기존 유지 */
+.logs-table tbody td:first-child {
+  position: relative;
+  text-align: left;
+  padding-left: 16px;
+}
+
+.logs-table tbody td:first-child input[type="checkbox"] {
+  margin-right: 8px; /* 기존 그대로 */
+}
+
+.logs-table tbody td:first-child::after {
+  content: counter(rownum);
+  margin-left: 8px; /* ✅ 숫자 간격은 그대로 */
+  font-weight: 600;
+  color: #334155;
+}
+

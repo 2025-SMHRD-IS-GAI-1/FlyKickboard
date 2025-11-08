@@ -81,8 +81,9 @@
             <div class="legend-row" style="margin-top:10px;">
               <span class="legend">헬멧 미착용 <strong></strong></span>
               <span class="legend">2인 탑승 <strong></strong></span>
-          </div>
-        </article>
+            </div>
+          </div> <!-- ✅ FIX: 빠졌던 card-body 닫기 -->
+        </article> <!-- ✅ FIX: 빠졌던 article 닫기 -->
 
         <!-- 오른쪽: 감지유형별 건수 -->
         <article class="card">
@@ -157,6 +158,6 @@
       </section>
     </div>
   </article>
-
+  
 </body>
 </html>
