@@ -186,34 +186,64 @@
 }
 
 
-
-/* 통계 박스 */
+/* ===== 애플 대시보드형 통계 박스 (처리 상태만 포인트 강조, 정리버전) ===== */
 .stats-box {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4등분 */
-  gap: 10px;
-  background: #f8faff;
-  border: 1px solid #dce3ff;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  padding: 12px 20px;
+  display: flex;
+  gap: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e7ebf3;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  padding: 18px 26px;
   width: 100%;
-  max-width: 420px;            /* 전체 가로폭 제한 */
-  margin: 12px 0;
-  align-self: flex-start;      /* 부모 flex일 때 왼쪽 정렬 */
+  max-width: 540px;
+  align-items: center;
+  justify-content: space-around;
+  transition: all 0.3s ease;
 }
 
 .stat-item {
+  flex: 1;
   text-align: center;
-  font-weight: 700;
+  padding-top: 2px;             /* 숫자 들뜸 방지 */
 }
 
+/* 라벨 기본 */
 .stat-item .label {
   display: block;
-  font-size: 14px;
-  color: #555;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
   margin-bottom: 6px;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
 }
+
+/* 숫자 */
+.stat-item .value {
+  font-size: 23px;
+  font-weight: 900;
+  color: #111827;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 🎨 처리 상태 포인트 강조 */
+.stat-item:nth-child(2) .label { color: #1e3a8a; }   /* 처리전 */
+.stat-item:nth-child(3) .label { color: #b45309; }   /* 처리중 */
+.stat-item:nth-child(4) .label { color: #15803d; }   /* 처리완료 */
+
+.stat-item:nth-child(2) .value { color: #2563eb; }   /* 파랑 */
+.stat-item:nth-child(3) .value { color: #f59e0b; }   /* 노랑 */
+.stat-item:nth-child(4) .value { color: #16a34a; }   /* 초록 */
+
+/* hover 효과 */
+.stats-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
+}
+
+
 
 /* 페이지네이션 */
 .pagination {
@@ -617,7 +647,7 @@ body.report-active {
 .logs-table th:nth-child(1),
 .logs-table td:nth-child(1) {
   width: var(--w-col-1);
-  text-align: left;
+  text-align: center;
 }
 .logs-table thead th:first-child {
   position: relative;
@@ -625,31 +655,32 @@ body.report-active {
 }
 .logs-table thead th:first-child::after {
   content: "No";
-  margin-left: 47px;
+  margin-left: 18px;
   font-weight: 700;
   color: #ffffff;
 }
 
 /* 본문 No 자동번호 */
-.logs-table tbody td:first-child {
-  position: relative;
-  text-align: left;
-  padding-left: 16px;
+.logs-table tbody td:first-child::after {
+  content: counter(rownum);
+  margin-left: var(--gap-cb-no);
 }
+
 .logs-table tbody td:first-child input[type="checkbox"] {
   margin-right: var(--gap-cb-no);
   transform: scale(1.2);
 }
 .logs-table tbody td:first-child::after {
   content: counter(rownum);
-  margin-left: var(--gap-cb-no);
+  margin-left: 0; /* ← 왼쪽 간격 제거 */
   font-weight: 700;
   color: #334155;
   display: inline-block;
   min-width: 30px;
-  text-align: right;
+  text-align: center; /* ← 가운데 정렬로 변경 */
   font-size: 15px;
 }
+
 
 /* --- 2~6열 공통 폭 지정 --- */
 .logs-table th:nth-child(2),
@@ -731,7 +762,3 @@ body.report-active {
   background: #0e3ea9;
   color: #ffffff;
 }
-
-
-
-
