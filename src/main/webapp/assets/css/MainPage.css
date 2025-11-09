@@ -382,15 +382,19 @@ body {
   text-overflow: ellipsis;
 }
 
-/* 지역/시간 */
+/*지역시간*/
 #historyList .region {
-  justify-self: start;
+  justify-self: center;     /* 변경: start → center */
+  text-align: center;       /* 추가 */
   color: #566;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+
 #historyList .time {
   justify-self: end;
   font-size: 13px;
@@ -407,23 +411,6 @@ body {
   min-width: 0;
 }
 
-/* 최근 감지 이력 제목 + 새로고침 버튼 줄 */
-.history-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* 제목 왼쪽, 버튼 오른쪽 */
-  margin-bottom: 12px;
-}
 
-/* 새로고침 버튼 스타일 */
-.refresh-btn {
-  background: #f1f4ff;
-  border: 1px solid #c8d4ff;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 16px;
-  color: #0e3ea9;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+
 
