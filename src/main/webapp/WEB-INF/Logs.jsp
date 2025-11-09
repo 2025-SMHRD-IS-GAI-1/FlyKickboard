@@ -145,7 +145,7 @@
           <!-- 왼쪽: 도넛 -->
           <article class="card">
             <header class="card-header">
-              <h4 class="card-title">위반유형별 비율(도넛)</h4>
+              <h4 class="card-title">위반유형별 비율</h4>
             </header>
             <div class="card-body">
               <div class="chart donut">
@@ -228,6 +228,11 @@
         </section>
       </div>
     </article>
+			<!-- 출력/닫기버튼 -->
+			<footer class="report-actions" aria-label="보고서 동작">
+ 			 <button type="button" class="btn btn-primary" id="btnPrintReport">출력</button>
+  			<button type="button" class="btn btn-outline" id="btnCloseReport">닫기</button>
+			</footer>
 
   </div>
 </div>
@@ -241,11 +246,10 @@
 
 
 
-
-      <!-- 감지이력 테이블 -->
-      <table class="logs-table" aria-label="감지 이력 테이블">
-    <thead>
-       <tr>
+<!-- 감지이력 테이블 -->
+<table class="logs-table" aria-label="감지 이력 테이블">
+  <thead>
+    <tr>
       <th scope="col">
         <input type="checkbox" id="checkAll" aria-label="전체 선택" />
       </th>
@@ -253,21 +257,28 @@
       <th data-sort="loc" scope="col">위치</th>
       <th data-sort="type" scope="col">감지 유형</th>
       <th data-sort="prog" scope="col">상태</th>
+      <th scope="col">상세보기</th>
+      <!-- ✅ 상세보기 열 추가 -->
     </tr>
-      </thead>
-      <tbody id="LogTable">
-      <c:forEach var="log" items="${alllog}">
-		  <tr data-id="${log.det_id}">
-		    <td><input type="checkbox" /></td>
-		    <td>${log.date}</td>
-		    <td>${log.loc}</td>
-		    <td>${log.type}</td>
-		    <td>${log.prog}</td>
-		  </tr>
-	  </c:forEach>     
+  </thead>
 
-      </tbody>
-      </table>
+  <tbody id="LogTable">
+    <c:forEach var="log" items="${alllog}">
+      <tr data-id="${log.det_id}">
+        <td><input type="checkbox" /></td>
+        <td>${log.date}</td>
+        <td>${log.loc}</td>
+        <td>${log.type}</td>
+        <td>${log.prog}</td>
+        <!-- ✅ 상세보기 버튼 추가 -->
+        <td>
+          <button type="button" class="btn-detail" data-id="${log.det_id}">보기</button>
+        </td>
+      </tr>
+    </c:forEach>
+  </tbody>
+</table>
+
 
 
            <!-- 통계 박스 -->

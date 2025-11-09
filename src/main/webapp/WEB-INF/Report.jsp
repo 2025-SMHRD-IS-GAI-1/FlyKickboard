@@ -72,7 +72,7 @@
         <!-- 왼쪽: 도넛 -->
         <article class="card">
           <header class="card-header">
-            <h4 class="card-title">위반유형별 비율(도넛)</h4>
+            <h4 class="card-title">위반유형별 비율</h4>
           </header>
           <div class="card-body">
             <div class="chart donut">
@@ -82,8 +82,8 @@
               <span class="legend">헬멧 미착용 <strong></strong></span>
               <span class="legend">2인 탑승 <strong></strong></span>
             </div>
-          </div>
-        </article>
+          </div> <!-- ✅ FIX: 빠졌던 card-body 닫기 -->
+        </article> <!-- ✅ FIX: 빠졌던 article 닫기 -->
 
         <!-- 오른쪽: 감지유형별 건수 -->
         <article class="card">
@@ -158,6 +158,6 @@
       </section>
     </div>
   </article>
-
+  
 </body>
 </html>

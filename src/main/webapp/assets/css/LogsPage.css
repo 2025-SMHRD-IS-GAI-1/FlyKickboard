@@ -524,9 +524,7 @@ body.report-active {
   .card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
-/* =========================================================
-   ✅ 모달 구조 전용 스타일 (Logs.jsp)
-   ========================================================= */
+/* 모달 구조 전용 스타일 (Logs.jsp) */
 .report-modal {
   position: fixed;
   inset: 0;
@@ -580,3 +578,137 @@ body.report-active {
 .logs-table th[data-sort]:hover {
   background-color: #eef3ff;
 }
+
+
+/*감지 이력 테이블 */
+
+/* 행 번호 초기화 */
+.logs-table {
+  counter-reset: rownum;
+  table-layout: fixed; /* 셀 폭 고정 */
+  width: 100%;
+}
+.logs-table tbody tr {
+  counter-increment: rownum;
+}
+
+/* --- 1열: 체크박스 + No --- */
+:root {
+  --cell-pad-y: 14px;    /* 위아래 여백 */
+  --cell-pad-x: 28px;    /* 좌우 여백 */
+  --gap-cb-no: 18px;     /* 체크박스 ↔ No 간격 */
+  --w-col-1: 160px;      /* 체크박스+No */
+  --w-col-2: 180px;      /* 날짜 */
+  --w-col-3: 260px;      /* 위치 */
+  --w-col-4: 200px;      /* 감지유형 */
+  --w-col-5: 180px;      /* 상태 */
+  --w-col-6: 160px;      /* 상세보기 */
+}
+
+/* 셀 여백 통일 */
+.logs-table th {
+  padding: var(--cell-pad-y) var(--cell-pad-x);
+}
+.logs-table td {
+  padding: calc(var(--cell-pad-y) - 2px) var(--cell-pad-x);
+}
+
+/* 1열(체크박스+No) */
+.logs-table th:nth-child(1),
+.logs-table td:nth-child(1) {
+  width: var(--w-col-1);
+  text-align: left;
+}
+.logs-table thead th:first-child {
+  position: relative;
+  padding-left: 16px;
+}
+.logs-table thead th:first-child::after {
+  content: "No";
+  margin-left: 47px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* 본문 No 자동번호 */
+.logs-table tbody td:first-child {
+  position: relative;
+  text-align: left;
+  padding-left: 16px;
+}
+.logs-table tbody td:first-child input[type="checkbox"] {
+  margin-right: var(--gap-cb-no);
+  transform: scale(1.2);
+}
+.logs-table tbody td:first-child::after {
+  content: counter(rownum);
+  margin-left: var(--gap-cb-no);
+  font-weight: 700;
+  color: #334155;
+  display: inline-block;
+  min-width: 30px;
+  text-align: right;
+  font-size: 15px;
+}
+
+/* --- 2~6열 공통 폭 지정 --- */
+.logs-table th:nth-child(2),
+.logs-table td:nth-child(2) {
+  width: var(--w-col-2);
+  text-align: center;
+}
+.logs-table th:nth-child(3),
+.logs-table td:nth-child(3) {
+  width: var(--w-col-3);
+  text-align: center;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.logs-table th:nth-child(4),
+.logs-table td:nth-child(4) {
+  width: var(--w-col-4);
+  text-align: center;
+}
+.logs-table th:nth-child(5),
+.logs-table td:nth-child(5) {
+  width: var(--w-col-5);
+  text-align: center;
+}
+.logs-table th:nth-child(6),
+.logs-table td:nth-child(6) {
+  width: var(--w-col-6);
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* --- 상세보기 버튼 --- */
+.btn-detail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1e4ba8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.btn-detail:hover {
+  background: #2558bd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+.btn-detail:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
