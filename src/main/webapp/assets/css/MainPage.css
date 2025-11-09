@@ -411,44 +411,6 @@ body {
   min-width: 0;
 }
 
-/* 최근 감지 이력 제목 + 새로고침 버튼 줄 */
-.history-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* 제목 왼쪽, 버튼 오른쪽 */
-  margin-bottom: 12px;
-}
 
-/* 새로고침 버튼 스타일 */
-.refresh-btn {
-  background: #f1f4ff;
-  border: 1px solid #c8d4ff;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 16px;
-  color: #0e3ea9;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* [Logs] 번호(첫 열) 중앙 정렬 */
-.logs-table thead th:first-child,
-.logs-table tbody td:first-child {
-  text-align: center;
-}
-
-/* 체크박스 + 자동번호를 수평 중앙 배치 */
-.logs-table tbody td:first-child {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;              /* 체크박스와 번호 간격 */
-}
-
-/* 기존에 No/번호를 좌측으로 밀던 여백 제거 */
-.logs-table thead th:first-child::after,
-.logs-table tbody td:first-child::after {
-  margin-left: 0 !important;
-}
 
 
