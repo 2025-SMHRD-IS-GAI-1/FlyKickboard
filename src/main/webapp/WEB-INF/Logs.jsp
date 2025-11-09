@@ -272,7 +272,7 @@
         <td>${log.prog}</td>
         <!-- ✅ 상세보기 버튼 추가 -->
         <td>
-   		
+          <button type="button" class="btn-detail" data-id="${log.det_id}">보기</button>
         </td>
       </tr>
     </c:forEach>
