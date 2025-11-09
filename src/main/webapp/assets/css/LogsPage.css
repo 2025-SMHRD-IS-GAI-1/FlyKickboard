@@ -712,3 +712,26 @@ body.report-active {
   box-shadow: none;
 }
 
+.logs-table th:last-child,
+.logs-table td:last-child {
+  display: table-cell !important;
+}
+
+.btn-detail {
+  display: inline-flex !important;
+  background: #ffffff;
+  border: 1px solid rgba(14,62,169,0.35);
+  border-radius: 6px;
+  color: #0e3ea9;
+  font-weight: 700;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.btn-detail:hover {
+  background: #0e3ea9;
+  color: #ffffff;
+}
+
+
+
+
