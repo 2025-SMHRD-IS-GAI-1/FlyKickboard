@@ -769,7 +769,7 @@ body.report-active {
   box-shadow: none;
 }
 
-/* ✅ 헤더만 간격 넓히기 */
+/* 헤더만 간격 넓히기 */
 .logs-table thead th:first-child {
   position: relative;
   text-align: left;
@@ -778,12 +778,12 @@ body.report-active {
 
 .logs-table thead th:first-child::after {
   content: "No";
-  margin-left: 47px; /* ✅ 체크박스와 No 간격 넓힘 */
+  margin-left: 47px; /* 체크박스와 No 간격 넓힘 */
   font-weight: 700;
   color: #ffffff;
 }
 
-/* ✅ 본문 숫자는 기존 유지 */
+/*  본문 숫자는 기존 유지 */
 .logs-table tbody td:first-child {
   position: relative;
   text-align: left;
