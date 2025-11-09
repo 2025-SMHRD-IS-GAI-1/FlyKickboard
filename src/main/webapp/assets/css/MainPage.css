@@ -382,15 +382,19 @@ body {
   text-overflow: ellipsis;
 }
 
-/* 지역/시간 */
+/*지역시간*/
 #historyList .region {
-  justify-self: start;
+  justify-self: center;     /* 변경: start → center */
+  text-align: center;       /* 추가 */
   color: #566;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+
 #historyList .time {
   justify-self: end;
   font-size: 13px;
@@ -426,4 +430,25 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
+/* [Logs] 번호(첫 열) 중앙 정렬 */
+.logs-table thead th:first-child,
+.logs-table tbody td:first-child {
+  text-align: center;
+}
+
+/* 체크박스 + 자동번호를 수평 중앙 배치 */
+.logs-table tbody td:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;              /* 체크박스와 번호 간격 */
+}
+
+/* 기존에 No/번호를 좌측으로 밀던 여백 제거 */
+.logs-table thead th:first-child::after,
+.logs-table tbody td:first-child::after {
+  margin-left: 0 !important;
+}
+
 
