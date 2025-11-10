@@ -41,8 +41,9 @@ async function initNaverMap() {
       zoom: 14,
       mapTypeControl: true
     });
-
+	
     points.forEach(p => {
+		
       new naver.maps.Circle({
         map: window.map,
         center: new naver.maps.LatLng(p.lat, p.lng),
@@ -51,8 +52,11 @@ async function initNaverMap() {
         fillColor: "#ff0000",
         fillOpacity: 0.25
       });
+	  
     });
-
+	
+	
+	
     showMapLegend();
   } catch (err) {
     console.error("지도 데이터 로딩 실패:", err);
