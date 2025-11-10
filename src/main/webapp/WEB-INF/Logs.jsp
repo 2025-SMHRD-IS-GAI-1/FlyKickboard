@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="${ctx}/assets/css/Report.css" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script type="text/javascript">
+  	const session = "${login}";
+  </script>
 </head>
 
   

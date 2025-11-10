@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
   <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" />
   <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
+  <script type="text/javascript">
+  	const session = "${login}";
+  </script>
 </head>
 
 <body>
@@ -111,7 +114,9 @@
  <script type="text/javascript">
 (function(){
   const ctx = '${ctx}';
-
+	if(session == "") {
+		window.location.href = "GoLogin.do";
+	}
   // 로그아웃 알림
   const logoutBtn = document.querySelector(".login-btn");
   if (logoutBtn) logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));

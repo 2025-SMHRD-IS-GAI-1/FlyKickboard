@@ -35,7 +35,7 @@ public class FrontController extends HttpServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		map = new HashMap<String, Command>();
-		map.put("Main.do", new MainService());
+		map.put("GoMain.do", new MainService());
 		map.put("Join.do", new JoinService());
 		map.put("Login.do", new LoginService());
 		map.put("Logout.do", new LogoutService());

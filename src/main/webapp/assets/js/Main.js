@@ -6,7 +6,9 @@ window.addEventListener("load", () => {
   setupFilterButtons();
 });
 
-
+if(session == "") {
+	window.location.href="GoLogin.do";
+} 
 /*로그아웃 버튼 클릭 알림*/
 function setupLogout() {
   const logoutBtn = document.querySelector(".login-btn");

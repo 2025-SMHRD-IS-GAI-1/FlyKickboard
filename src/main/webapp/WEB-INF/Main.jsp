@@ -14,6 +14,9 @@
   <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> 
   <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script type="text/javascript">
+  	const session = "${login}";
+  </script>
 </head>
 
 <body data-ctx="${ctx}"> <!-- ✅ contextPath를 body 속성으로 전달 -->
@@ -39,7 +42,7 @@
         </a>
       </c:if>
         
-        <a href="${ctx}/logout.do">
+        <a href="${ctx}/Logout.do">
           <button class="login-btn" type="button" data-action="logout">로그아웃</button>
         </a>  
       </div>

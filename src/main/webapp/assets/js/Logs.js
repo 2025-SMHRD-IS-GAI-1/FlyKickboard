@@ -1,5 +1,9 @@
 var ctx = (document.body && document.body.getAttribute("data-ctx")) || "";
 
+if (session == "") {
+	window.location.href = "GoLogin.do";
+}
+
 // 전역 상태
 var CURRENT_FILTER = { start:null, end:null, status:null, dtype:null };
 var FILTERED_LOGS = [];
