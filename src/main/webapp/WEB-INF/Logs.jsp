@@ -235,8 +235,8 @@
     </article>
 			<!-- 출력/닫기버튼 -->
 			<footer class="report-actions" aria-label="보고서 동작">
- 			 <button type="button" class="btn btn-primary" id="btnPrintReport">출력</button>
-  			<button type="button" class="btn btn-outline" id="btnCloseReport">닫기</button>
+ 			 <button type="button" class="btn btn-primary" id="btnPrint">출력</button>
+  			<button type="button" class="btn btn-outline" id="btnClose">닫기</button>
 			</footer>
 
   </div>
