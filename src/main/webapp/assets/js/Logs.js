@@ -118,121 +118,166 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==============================
     // ✅ 통계 모달
     // ==============================
-   if (statsBtn && modal) {
-     statsBtn.addEventListener("click", function () {
-       // ✅ 1. 선택된 행 가져오기
-       var checkedRows = getCheckedRows();
+	if (statsBtn && modal) {
+	  statsBtn.addEventListener("click", function () {
+	    // ✅ 1. 선택된 행 가져오기
+	    var checkedRows = getCheckedRows();
 
-       // ✅ 2. 선택된 데이터만 추출
-       var selectedLogs = [];
-       if (checkedRows.length > 0) {
-         var allLogs = FILTERED_LOGS;  // 현재 필터된 전체
-         checkedRows.forEach(function (row) {
-           var found = allLogs.find(function (log) {
-             return String(log.id) === String(row.id);
-           });
-           if (found) selectedLogs.push(found);
-         });
-       }
+	    // ✅ 2. 선택된 데이터만 추출
+	    var selectedLogs = [];
+	    if (checkedRows.length > 0) {
+	      var allLogs = FILTERED_LOGS;  // 현재 필터된 전체
+	      checkedRows.forEach(function (row) {
+	        var found = allLogs.find(function (log) {
+	          return String(log.id) === String(row.id);
+	        });
+	        if (found) selectedLogs.push(found);
+	      });
+	    }
 
-       // ✅ 3. 선택이 없으면 전체로 fallback
-       var targetList = selectedLogs.length > 0 ? selectedLogs : FILTERED_LOGS;
+	    // ✅ 3. 선택이 없으면 전체로 fallback
+	    var targetList = selectedLogs.length > 0 ? selectedLogs : FILTERED_LOGS;
 
-       // ✅ 4. 모달 표시 + 통계 갱신
-       modal.classList.add("show");
-       updateReportModal(targetList);
-      
-      if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
-      if (btnClose) btnClose.addEventListener("click", function () { modal.classList.remove("show"); });
-      if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
-     });
-     // ==============================
-        // ✅ 통계 모달 내부 출력 버튼
-        // ==============================
-        
-        if (btnPrint) {
-          btnPrint.addEventListener("click", async function () {
-            const modal = document.getElementById("reportModal");
-            if (!modal) return alert("통계 모달을 찾을 수 없습니다.");
+	    // ✅ 4. 모달 표시 + 통계 갱신
+	    modal.classList.add("show");
+	    updateReportModal(targetList);
+		
+		
+		if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
+		if (btnClose) btnClose.addEventListener("click", function () { modal.classList.remove("show"); });
+		if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
+	  });
+	  // ==============================
+	  // ✅ 통계 모달 "보고서 형식 인쇄 (페이지 분리 포함)"
+	  // ==============================
+	  if (btnPrint) {
+	    btnPrint.addEventListener("click", async function () {
+	      const modal = document.getElementById("reportModal");
+	      if (!modal) return alert("⚠️ 통계 모달을 찾을 수 없습니다.");
 
-            // ✅ 1. 그래프 캔버스 → 이미지 변환
-            const canvases = modal.querySelectorAll("canvas");
-            const images = [];
-            for (let canvas of canvases) {
-              try {
-                await new Promise(res => setTimeout(res, 300));
-                const imgURL = canvas.toDataURL("image/png");
-                images.push(imgURL);
-              } catch (e) {
-                console.warn("⚠️ 차트 변환 실패:", e);
-              }
-            }
+	      // ✅ 1. 현재 날짜 및 선택 일자 가져오기
+	      const today = new Date().toISOString().slice(0, 10);
+	      const label = document.getElementById("selectedDateLabel");
+	      const selectedDate = label ? label.textContent.replace("선택 일자: ", "") : today;
 
-            // ✅ 2. 모달 내의 모든 테이블 추출
-            const tables = Array.from(modal.querySelectorAll("table")).map(t => t.outerHTML).join("<br><br>");
+	      // ✅ 2. 통계 모달 복사
+	      const printArea = modal.cloneNode(true);
+	      printArea.id = "printAreaClone";
+	      printArea.style.display = "block";
+	      printArea.style.position = "relative";
+	      printArea.style.visibility = "visible";
+	      printArea.style.opacity = "1";
+	      printArea.style.transform = "none";
 
-            // ✅ 3. 인쇄용 HTML 생성
-            const printWindow = window.open("", "_blank");
-            const doc = printWindow.document;
-            const styles = Array.from(document.querySelectorAll("link[rel='stylesheet'], style"))
-              .map(node => node.outerHTML)
-              .join("\n");
+	      // ✅ 3. 캔버스 → 이미지 변환
+	      const canvases = modal.querySelectorAll("canvas");
+	      const clones = printArea.querySelectorAll("canvas");
+	      for (let i = 0; i < canvases.length; i++) {
+	        try {
+	          const imgData = canvases[i].toDataURL("image/png");
+	          const img = document.createElement("img");
+	          img.src = imgData;
+	          img.style.maxWidth = "95%";
+	          img.style.display = "block";
+	          img.style.margin = "15px auto";
+	          clones[i].replaceWith(img);
+	        } catch (e) {
+	          console.warn("⚠️ 차트 변환 실패:", e);
+	        }
+	      }
 
-            // ✅ 4. HTML 작성
-            doc.open();
-            doc.write(`
-              <html lang="ko">
-                <head>
-                  <meta charset="utf-8">
-                  <title>📊 통계 보고서</title>
-                  ${styles}
-                  <style>
-                    body { font-family: 'Noto Sans KR', sans-serif; margin: 25px; background: white; }
-                    h1 { text-align: center; margin-bottom: 25px; font-size: 22px; }
-                    section { margin-bottom: 40px; page-break-inside: avoid; }
-                    img { display: block; margin: 10px auto; max-width: 95%; }
-                    table { width: 90%; border-collapse: collapse; margin: 20px auto; }
-                    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-                    th { background: #e9eef9; font-weight: 600; }
-                    @page { size: A4 portrait; margin: 15mm; }
-                  </style>
-                </head>
-                <body>
-                  <h1>📊 통계 보고서</h1>
+	      // ✅ 4. 인쇄용 헤더 HTML 구성
+	      const reportHeader = `
+	        <header style="text-align:center; margin-bottom:25px;">
+	          <h1 style="font-size:24px; margin-bottom:8px;">📊 공유킥보드 안전 모니터링 통계 보고서</h1>
+	          <p style="font-size:14px; color:#444;">선택 일자: ${selectedDate}</p>
+	          <p style="font-size:13px; color:#777;">보고서 생성일: ${today}</p>
+	          <hr style="margin-top:15px; border:1px solid #ccc;">
+	        </header>
+	      `;
 
-                  <section>
-                    <h2>1️⃣ 지역별 감지건수</h2>
-                    ${images[0] ? `<img src="${images[0]}">` : ""}
-                  </section>
+	      // ✅ 5. 인쇄용 wrapper HTML 생성
+	      const printHTML = `
+	        <html lang="ko">
+	          <head>
+	            <meta charset="utf-8">
+	            <style>
+	              @page { size: A4 portrait; margin: 15mm; }
+	              body {
+	                font-family: 'Noto Sans KR', sans-serif;
+	                background: white;
+	                margin: 0;
+	                padding: 0;
+	              }
+	              h1, h2, h3, h4 { color: #111; margin: 0; }
+	              table {
+	                width: 100%;
+	                border-collapse: collapse;
+	                margin-top: 10px;
+	              }
+	              th, td {
+	                border: 1px solid #ccc;
+	                padding: 6px;
+	                text-align: center;
+	                font-size: 13px;
+	              }
+	              th { background: #f3f4f6; font-weight: 600; }
+	              img { page-break-inside: avoid; }
+	              section, article, .card {
+	                page-break-inside: avoid;
+	                margin-bottom: 25px;
+	              }
+	              /* ✅ 페이지 구분용 */
+	              .page-break {
+	                page-break-before: always;
+	                margin-top: 20mm;
+	              }
+	              /* ✅ 모달 내부 카드 스타일 유지 */
+	              .card {
+	                border: 1px solid #ddd;
+	                border-radius: 8px;
+	                padding: 16px;
+	                box-shadow: none !important;
+	              }
+	              .card-header {
+	                background: #1d4ed8;
+	                color: white;
+	                padding: 8px 12px;
+	                border-radius: 6px 6px 0 0;
+	              }
+	              .card-title {
+	                margin: 0;
+	                font-size: 15px;
+	              }
+	            </style>
+	          </head>
+	          <body>
+	            ${reportHeader}
+	            ${printArea.outerHTML}
 
-                  <section>
-                    <h2>2️⃣ 위반유형별 비율</h2>
-                    ${images[1] ? `<img src="${images[1]}">` : ""}
-                  </section>
+	            <!-- ✅ 페이지 자동 구분 (예: 표가 길 경우 강제 분리) -->
+	            <div class="page-break"></div>
+	            <footer style="text-align:center; margin-top:25px; color:#777; font-size:12px;">
+	              ※ 본 보고서는 시스템 자동생성 문서입니다. (FlyKickboard AI 모니터링)
+	            </footer>
+	          </body>
+	        </html>
+	      `;
 
-                  <section>
-                    <h2>3️⃣ 시간대별 추이 그래프</h2>
-                    ${images[2] ? `<img src="${images[2]}">` : ""}
-                  </section>
+	      // ✅ 6. 새 창 열고 인쇄
+	      const printWindow = window.open("", "_blank");
+	      printWindow.document.open();
+	      printWindow.document.write(printHTML);
+	      printWindow.document.close();
 
-                  <section>
-                    <h2>📋 상세 표 데이터</h2>
-                    ${tables || "<p>표 데이터가 없습니다.</p>"}
-                  </section>
-                </body>
-              </html>
-            `);
-            doc.close();
-
-            // ✅ 5. 인쇄 실행
-            printWindow.focus();
-            setTimeout(() => {
-              printWindow.print();
-              printWindow.close();
-            }, 800);
-          });
-        }
- 
+	      // ✅ 7. 인쇄 실행 (렌더 대기 후)
+	      setTimeout(() => {
+	        printWindow.focus();
+	        printWindow.print();
+	        printWindow.close();
+	      }, 800);
+	    });
+	  } 
    }
 
     // ==============================
@@ -299,17 +344,17 @@ document.addEventListener("DOMContentLoaded", function () {
    if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
    if (!confirm("정말 삭제하시겠습니까?")) return; 
    fetch("DeleteLog.do", { 
-   method: "POST",
-    headers: { "Content-Type": "application/json" },
-     body: JSON.stringify(rows.map(r => Number(r.id))) })
-      .then(res => res.text())
-      .then(msg => { 
-      alert(msg); l
-      ocation.reload(); 
-     }) 
-      .catch(err => console.error("삭제 오류:", err)); 
-     }); 
-   }
+	method: "POST",
+	 headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify(rows.map(r => Number(r.id))) })
+	   .then(res => res.text())
+	   .then(msg => { 
+		alert(msg); 
+		location.reload(); 
+	  }) 
+		.catch(err => console.error("삭제 오류:", err)); 
+	  }); 
+	}
 
     // ==============================
     // ✅ 전체선택 체크박스 기능
@@ -661,11 +706,37 @@ function updateReportModal(list){
       hourHtml += `<tr><td><strong>총 건수</strong></td><td><strong>${totalHour}</strong></td></tr>`;
       hourTable.innerHTML=hourHtml;
     }
+	const label = document.getElementById("selectedDateLabel");
+	let dateLabel = "";
 
-    var label=document.getElementById("selectedDateLabel");
-    if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
-  var label=document.getElementById("selectedDateLabel");
-  if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
+	if (list && list.length > 0) {
+	  // 리스트에서 날짜만 추출
+	  const dates = list
+	    .map(item => (item.date || "").substring(0, 10)) // "YYYY-MM-DD HH:MM:SS" → "YYYY-MM-DD"
+	    .filter(d => d); // 빈 값 제거
+
+	  if (dates.length > 0) {
+	    // 날짜 정렬
+	    const sortedDates = [...new Set(dates)].sort(); // 중복 제거 후 정렬
+	    const first = sortedDates[0];
+	    const last = sortedDates[sortedDates.length - 1];
+
+	    if (first === last) {
+	      dateLabel = `선택 일자: ${first}`;
+	    } else {
+	      dateLabel = `선택 기간: ${first} ~ ${last}`;
+	    }
+	  }
+	} 
+
+	// 아무것도 없으면 오늘 날짜
+	if (!dateLabel) {
+	  const today = new Date().toISOString().slice(0, 10);
+	  dateLabel = `선택 일자: ${today}`;
+	}
+
+	// ✅ 최종 반영
+	if (label) label.textContent = dateLabel;
 }
 
 // ------------------------------
