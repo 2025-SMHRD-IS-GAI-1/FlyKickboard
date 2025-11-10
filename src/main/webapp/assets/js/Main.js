@@ -55,6 +55,7 @@ async function loadLogs() {
 	data.forEach((log) => {
 	  if (log.latitude && log.longitude) addDetectionMarker(log, false);
 	});
+
   } catch (err) {
     console.error("데이터 로드 실패:", err);
   }

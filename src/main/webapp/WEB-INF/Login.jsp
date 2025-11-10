@@ -16,6 +16,16 @@
   <!-- 외부 CSS 연결 -->
   <link rel="stylesheet" href="${ctx}/assets/css/LoginPage.css">
 </head>
+<%
+String error = (String) request.getAttribute("loginError");
+if (error != null) {
+%>
+<script>
+  alert("<%= error %>");
+</script>
+<%
+}
+%>
 <body>
   <div class="wrapper">
     <h1 class="hero">YOLO11 기반 공유 킥보드 헬멧미착용·2인탑승 자동 인식 시스템</h1>

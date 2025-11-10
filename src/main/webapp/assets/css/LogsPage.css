@@ -1,12 +1,9 @@
 /* 감지 이력 페이지 스타일 */
 .logs-section {
-  flex: 1;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 28px 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-wrap: wrap; /* ✅ 자동 줄바꿈 */
+  justify-content: space-between;
+  gap: 10px;
 }
 .logs-section:hover {
   box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
@@ -21,11 +18,7 @@
 
 /* 검색필터 */
 
-/* 섹션 자체를 독립 블록으로 만들어 flex 간섭 제거 */
-.logs-section {
-  width: 100%;
-  display: block !important;
-}
+
 
 /* 검색/분류 라인 전체 */
 .logs-section .toolbar {
