@@ -14,6 +14,9 @@
   <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> 
   <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script type="text/javascript">
+  	const session = "${login}";
+  </script>
 </head>
 
 <body data-ctx="${ctx}"> <!-- ✅ contextPath를 body 속성으로 전달 -->
@@ -33,10 +36,13 @@
       </nav>
       
       <div class="actions" aria-label="사용자 메뉴">
-        <a href="${ctx}/Manager.do">
+      <c:if test="${sessionScope.isAdmin}">
+      	<a href="${ctx}/Manager.do">
           <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
         </a>
-        <a href="${ctx}/logout.do">
+      </c:if>
+        
+        <a href="${ctx}/Logout.do">
           <button class="login-btn" type="button" data-action="logout">로그아웃</button>
         </a>  
       </div>

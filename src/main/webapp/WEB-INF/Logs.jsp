@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="${ctx}/assets/css/Report.css" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script type="text/javascript">
+  	const session = "${login}";
+  </script>
 </head>
 
   
@@ -33,9 +36,11 @@
       </nav>
       
       <div class="actions" aria-label="사용자 메뉴">
-      <a href="Manager.do">
-         <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
-      </a>
+      <c:if test="${sessionScope.isAdmin}">
+      	<a href="${ctx}/Manager.do">
+          <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
+        </a>
+      </c:if>
       <a href="Logout.do">
          <button class="login-btn" type="button" data-action="logout">로그아웃</button>
       </a>

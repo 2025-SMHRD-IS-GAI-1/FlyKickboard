@@ -9,6 +9,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>통계 보고서</title>
   <link rel="stylesheet" href="repot.css" />
+  <script type="text/javascript">
+  	const session = "${login}";
+  	if (session == "") {
+  		window.location.href = "GoLogin.do";
+  	}
+  </script>
 </head>
 <body>
 

@@ -6,7 +6,9 @@ window.addEventListener("load", () => {
   setupFilterButtons();
 });
 
-
+if(session == "") {
+	window.location.href="GoLogin.do";
+} 
 /*로그아웃 버튼 클릭 알림*/
 function setupLogout() {
   const logoutBtn = document.querySelector(".login-btn");
@@ -21,9 +23,9 @@ async function initNaverMap() {
   const mapElement = document.getElementById("map");
   if (!mapElement) return;
 
-  // 네이버 지도 로드 확인
   if (!(window.naver && naver.maps)) {
-    return console.error("❌ 네이버 지도 스크립트가 먼저 로드되어야 합니다.");
+    console.error("❌ 네이버 지도 스크립트 로드가 필요합니다.");
+    return;
   }
 
   try {
@@ -34,14 +36,12 @@ async function initNaverMap() {
       ? new naver.maps.LatLng(points[0].lat, points[0].lng)
       : new naver.maps.LatLng(35.1605, 126.8514);
 
-    // ✅ 전역 map 객체 저장
     window.map = new naver.maps.Map("map", {
       center,
       zoom: 14,
       mapTypeControl: true
     });
 
-    // 🔥 붉은 분포 원 표시
     points.forEach(p => {
       new naver.maps.Circle({
         map: window.map,
@@ -54,7 +54,6 @@ async function initNaverMap() {
     });
 
     showMapLegend();
-
   } catch (err) {
     console.error("지도 데이터 로딩 실패:", err);
   }
@@ -64,7 +63,8 @@ async function initNaverMap() {
 /* 범례 표시*/
 function showMapLegend() {
   const legendEl = document.getElementById("mapLegend");
-  if (!(legendEl && window.map && naver.maps)) return;
+  if (!(legendEl && window.map && naver.maps && naver.maps.Position)) return;
+  
   legendEl.style.display = "block";
   window.map.controls[naver.maps.Position.LEFT_BOTTOM].push(legendEl);
 }
@@ -93,6 +93,9 @@ function loadLogs() {
 }
 
 
+/*************************************************
+ * ✅ 감지 목록 화면 표시
+ *************************************************/
 /* 감지 목록 화면에 표시*/
 function renderLogs(logs) {
   const historyList = document.getElementById("historyList");
