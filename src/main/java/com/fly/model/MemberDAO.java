@@ -114,10 +114,10 @@ public class MemberDAO {
 		
 		return vo;
 	}
-	public int updateStatus(MemberVO mvo) {
+	public int updateStatus(List<Integer> idList) {
 		SqlSession sqlSession = factory.openSession(true);
 		
-		int row = sqlSession.update("updatestatus", mvo);
+		int row = sqlSession.update("updatestatus", idList);
 		
 		sqlSession.close();
 		
