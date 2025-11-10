@@ -6,68 +6,53 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI기반 킥보드 위반 감지 대시보드</title>
+  <title>AI 기반 킥보드 위반 감지 대시보드</title>
 
-  <!-- CSS -->
+  <!-- ✅ 스타일 -->
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
-  <link rel="stylesheet" href="${ctx}/assets/css/ManagerPage.css" /> 
   <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ✅ 전역 변수 정의 (JS에서 사용) -->
   <script type="text/javascript">
-  	const session = "${login}";
+    // contextPath 및 세션 정보를 JS 전역 변수로 전달
+    window.ctx = "${ctx}";
+    window.session = "${login}";
   </script>
 </head>
 
-<body data-ctx="${ctx}"> <!-- ✅ contextPath를 body 속성으로 전달 -->
-
+<body data-ctx="${ctx}">
   <div class="container">
-
-    <!-- 상단 헤더 -->
+    <!-- ✅ 헤더 영역 -->
     <header class="header">
       <div class="logo">날아라킥보드</div>
-      <nav class="nav" aria-label="주요 탭">
-        <a href="${ctx}/Main.do">
-          <button class="nav-btn" type="button">실시간</button>
-        </a>
-        <a href="${ctx}/Logs.do">
-          <button class="nav-btn" type="button">감지 이력 조회</button>
-        </a>      
+      <nav class="nav">
+        <a href="${ctx}/Main.do"><button class="nav-btn">실시간</button></a>
+        <a href="${ctx}/Logs.do"><button class="nav-btn">감지 이력</button></a>
       </nav>
-      
-      <div class="actions" aria-label="사용자 메뉴">
-      <c:if test="${sessionScope.isAdmin}">
-      	<a href="${ctx}/Manager.do">
-          <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
-        </a>
-      </c:if>
-        
-        <a href="${ctx}/Logout.do">
-          <button class="login-btn" type="button" data-action="logout">로그아웃</button>
-        </a>  
+      <div class="actions">
+        <a href="${ctx}/Logout.do"><button class="login-btn">로그아웃</button></a>
       </div>
     </header>
 
-    <!-- 메인 콘텐츠 -->
+    <!-- ✅ 메인 콘텐츠 -->
     <main class="main-content">
-      
       <!-- 지도 영역 -->
-      <section class="map-section" aria-labelledby="mapTitle">
-        <h2 id="mapTitle">감지 위치</h2>
-        <div id="map" style="position:relative; overflow:hidden; width:100%; height:700px; border-radius:12px;"></div>
+      <section class="map-section">
+        <h2>감지 위치</h2>
+        <div id="map" style="width:100%;height:700px;border-radius:12px;"></div>
 
+        <!-- 범례 -->
         <div id="mapLegend" class="map-legend" style="display:none">
-          <strong class="legend-title">위반유형</strong>
-          <div class="legend-item"><span class="dot helmet"></span> 헬멧 미착용</div>
-          <div class="legend-item"><span class="dot double"></span> 2인 이상 탑승</div>
-        </div>    
+          <strong>위반유형</strong>
+          <div><span class="dot helmet"></span> 헬멧 미착용</div>
+          <div><span class="dot double"></span> 2인 탑승</div>
+        </div>
       </section>
 
       <!-- 최근 감지 이력 -->
-      <section class="history-section" aria-labelledby="historyTitle">
-        <h2 id="historyTitle">최근 감지 이력</h2>
-
-        <div class="summary-box" role="group" aria-label="감지 요약">
+      <section class="history-section">
+        <h2>최근 감지 이력</h2>
+        <div class="summary-box">
           <div class="summary-card helmet" id="btnHelmet">
             <div class="count" id="cntHelmet">0</div>
             <p>헬멧 미착용</p>
@@ -77,17 +62,18 @@
             <p>2인 탑승</p>
           </div>
         </div>
-
-        <ul id="historyList">
-          <!-- JS에서 자동으로 li 추가됨 -->
-        </ul>
+        <ul id="historyList"></ul>
       </section>
-
     </main>
   </div>
 
-<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=azilk7tpsg"></script>
-<script src="${ctx}/assets/js/Main.js"></script>
+  <!-- ✅ 네이버 지도 SDK -->
+  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=azilk7tpsg"></script>
+
+  <!-- ✅ JS 로드 순서 매우 중요 -->
+  <!-- 1️⃣ 지도 관련 기능 -->
+  <script type="module" src="${ctx}/assets/js/MapHandler.js"></script>
+  <!-- 2️⃣ 메인 기능 (로그 불러오기, 이벤트 등) -->
+  <script type="module" src="${ctx}/assets/js/Main.js"></script>
 </body>
 </html>
-
