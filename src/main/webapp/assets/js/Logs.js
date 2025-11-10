@@ -1,7 +1,3 @@
-// ==============================
-// Logs.js (전송/삭제/필터/페이징/통계/그래프 통합버전)
-// ==============================
-
 var ctx = (document.body && document.body.getAttribute("data-ctx")) || "";
 
 if (session == "") {
@@ -29,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
     var closeBtn  = document.getElementById("closeReportBtn");
     var btnSend   = document.getElementById("btnSend");
     var btnDel    = document.getElementById("btnDel");
-	const btnPrint = document.getElementById("btnPrint");
 	var CURRENT_SORT = { key: null, asc: true };
     console.log("✅ Logs.js initialized");
 
@@ -143,96 +138,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	    updateReportModal(targetList);
 		
 		if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
-		if (btnPrint) btnPrint.addEventListener("click", function () { modal.classList.remove("show"); });
 		if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
 	  });
-	  // ==============================
-	  	// ✅ 통계 모달 내부 출력 버튼
-	  	// ==============================
-	  	
-	  	if (btnPrint) {
-	  	  btnPrint.addEventListener("click", async function () {
-	  	    const modal = document.getElementById("reportModal");
-	  	    if (!modal) return alert("통계 모달을 찾을 수 없습니다.");
-
-	  	    // ✅ 1. 그래프 캔버스 → 이미지 변환
-	  	    const canvases = modal.querySelectorAll("canvas");
-	  	    const images = [];
-	  	    for (let canvas of canvases) {
-	  	      try {
-	  	        await new Promise(res => setTimeout(res, 300));
-	  	        const imgURL = canvas.toDataURL("image/png");
-	  	        images.push(imgURL);
-	  	      } catch (e) {
-	  	        console.warn("⚠️ 차트 변환 실패:", e);
-	  	      }
-	  	    }
-
-	  	    // ✅ 2. 모달 내의 모든 테이블 추출
-	  	    const tables = Array.from(modal.querySelectorAll("table")).map(t => t.outerHTML).join("<br><br>");
-
-	  	    // ✅ 3. 인쇄용 HTML 생성
-	  	    const printWindow = window.open("", "_blank");
-	  	    const doc = printWindow.document;
-	  	    const styles = Array.from(document.querySelectorAll("link[rel='stylesheet'], style"))
-	  	      .map(node => node.outerHTML)
-	  	      .join("\n");
-
-	  	    // ✅ 4. HTML 작성
-	  	    doc.open();
-	  	    doc.write(`
-	  	      <html lang="ko">
-	  	        <head>
-	  	          <meta charset="utf-8">
-	  	          <title>📊 통계 보고서</title>
-	  	          ${styles}
-	  	          <style>
-	  	            body { font-family: 'Noto Sans KR', sans-serif; margin: 25px; background: white; }
-	  	            h1 { text-align: center; margin-bottom: 25px; font-size: 22px; }
-	  	            section { margin-bottom: 40px; page-break-inside: avoid; }
-	  	            img { display: block; margin: 10px auto; max-width: 95%; }
-	  	            table { width: 90%; border-collapse: collapse; margin: 20px auto; }
-	  	            th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-	  	            th { background: #e9eef9; font-weight: 600; }
-	  	            @page { size: A4 portrait; margin: 15mm; }
-	  	          </style>
-	  	        </head>
-	  	        <body>
-	  	          <h1>📊 통계 보고서</h1>
-
-	  	          <section>
-	  	            <h2>1️⃣ 지역별 감지건수</h2>
-	  	            ${images[0] ? `<img src="${images[0]}">` : ""}
-	  	          </section>
-
-	  	          <section>
-	  	            <h2>2️⃣ 위반유형별 비율</h2>
-	  	            ${images[1] ? `<img src="${images[1]}">` : ""}
-	  	          </section>
-
-	  	          <section>
-	  	            <h2>3️⃣ 시간대별 추이 그래프</h2>
-	  	            ${images[2] ? `<img src="${images[2]}">` : ""}
-	  	          </section>
-
-	  	          <section>
-	  	            <h2>📋 상세 표 데이터</h2>
-	  	            ${tables || "<p>표 데이터가 없습니다.</p>"}
-	  	          </section>
-	  	        </body>
-	  	      </html>
-	  	    `);
-	  	    doc.close();
-
-	  	    // ✅ 5. 인쇄 실행
-	  	    printWindow.focus();
-	  	    setTimeout(() => {
-	  	      printWindow.print();
-	  	      printWindow.close();
-	  	    }, 800);
-	  	  });
-	  	}
- 
+	  
 	}
 
     // ==============================
@@ -794,3 +702,57 @@ function drawHourlyLineChart(labels, data){
 	document.getElementById('detailCloseBtn').addEventListener('click', () => {
   	document.getElementById('detailModal').classList.remove('show');
 	});
+
+	// ------------------------------
+	// ✅ 보기 버튼 클릭 시 상태를 '처리중'으로 변경 (단, '처리전'만 해당)
+	// ------------------------------
+	document.addEventListener("click", function(e) {
+	  if (e.target.classList.contains("btn-detail")) {
+	    const tr = e.target.closest("tr"); // 클릭한 버튼의 행 찾기
+	    if (!tr) return;
+
+	    const statusSpan = tr.querySelector("td:nth-child(5) span.status");
+	    if (!statusSpan) return;
+
+	    const currentStatus = statusSpan.textContent.trim();
+
+	    // ✅ '처리전'인 경우만 '처리중'으로 변경
+	    if (currentStatus === "처리전") {
+	      statusSpan.textContent = "처리중";
+	      statusSpan.className = "status progress"; // 스타일 변경
+
+	      const id = tr.dataset.id;
+
+	      // ✅ 내부 데이터 배열에서도 상태 변경
+	      if (id && Array.isArray(window.LAST_LOGS)) {
+	        const found = window.LAST_LOGS.find(l => String(l.id) === String(id));
+	        if (found) found.prog = "처리중";
+	      }
+
+	      // ✅ 서버에도 상태 업데이트 요청
+	      fetch(ctx + "/UpdateStatus.do", {
+	        method: "POST",
+	        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	        body: "id=" + encodeURIComponent(id) + "&status=처리중"
+	      })
+	      .then(res => res.text())
+	      .then(msg => console.log("서버 응답:", msg))
+	      .catch(err => console.error("서버 반영 실패:", err));
+
+	      // ✅ 통계 실시간 갱신
+	      updateStats(window.LAST_LOGS);
+
+	      console.log(`▶ 로그 ${id} 상태가 '처리전' → '처리중' 으로 변경됨`);
+	    } else {
+	      console.log(`ℹ️ '${currentStatus}' 상태는 변경되지 않음`);
+	    }
+	  }
+	});
+	
+	
+	
+	
+	
+	
+	
+	

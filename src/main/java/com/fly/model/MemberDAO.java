@@ -114,5 +114,14 @@ public class MemberDAO {
 		
 		return vo;
 	}
+	public int updateStatus(MemberVO mvo) {
+		SqlSession sqlSession = factory.openSession(true);
+		
+		int row = sqlSession.update("updatestatus", mvo);
+		
+		sqlSession.close();
+		
+		return row;
+	}
 }
 	

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.fly.controller.ManangerService;
 import com.fly.controller.SearchService;
 import com.fly.controller.UpdateService;
+import com.fly.controller.UpdateStatusService;
 import com.fly.controller.AllLogService;
 import com.fly.controller.AllManagerService;
 import com.fly.controller.DeleteLogService;
@@ -49,6 +50,7 @@ public class FrontController extends HttpServlet {
 		map.put("Logs.do", new AllLogService());
 		map.put("DeleteLog.do", new DeleteLogService());
 		map.put("LogType.do", new LogTypeService());
+		map.put("UpdateStatus.do", new UpdateStatusService());
 	}
 
 	protected void service(HttpServletRequest request, HttpServletResponse response)
