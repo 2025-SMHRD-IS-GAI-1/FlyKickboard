@@ -806,8 +806,8 @@ body.report-active {
 /* 감지유형 배지 */
 .detail-type {
   display: flex;
-  justify-content: center;
-  margin-top: 14px;
+  justify-content: flex-start;
+  margin-top: 16px;
 }
 .badge-type {
   background: #e54848;
@@ -816,6 +816,7 @@ body.report-active {
   font-weight: 700;
   padding: 6px 10px;
   border-radius: 6px;
+   margin-left: 40px; 
 }
 
 /* 이미지 */

@@ -1,9 +1,5 @@
 var ctx = (document.body && document.body.getAttribute("data-ctx")) || "";
 
-if (session == "") {
-	window.location.href = "GoLogin.do";
-}
-
 // 전역 상태
 var CURRENT_FILTER = { start:null, end:null, status:null, dtype:null };
 var FILTERED_LOGS = [];
@@ -35,19 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
     FILTERED_LOGS = window.LAST_LOGS.slice();
     renderTable(CURRENT_PAGE);
 	setupSorting();   // ✅ 정렬 이벤트 연결
-    
-	// ==============================
-	// ✅ 로그아웃 알림
-	// ==============================
-	const logoutBtn = document.querySelector(".login-btn");
-	if (logoutBtn) {
-	  logoutBtn.addEventListener("click", () => {
-	    alert("로그아웃 되었습니다.");
-	    // 원래 페이지 이동 (선택)
-	    window.location.href = "Logout.do";
-	  });
-	}
-	
+
     // ==============================
     // ✅ 날짜 검색
     // ==============================
@@ -136,11 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	    // ✅ 4. 모달 표시 + 통계 갱신
 	    modal.classList.add("show");
 	    updateReportModal(targetList);
-		
-		if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
-		if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
 	  });
-	  
 	}
 
     // ==============================
@@ -157,67 +137,50 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==============================
     // ✅ 전송 버튼
     // ==============================
-	// ==============================
-	// ✅ 전송 버튼 이벤트 (삭제 이벤트와 동일한 구조로 정리)
-	// ==============================
-	if (btnSend) {
-	  btnSend.addEventListener("click", () => {
-	    const rows = getCheckedRows();
-	    if (rows.length === 0) return alert("전송할 항목을 선택하세요.");
-	    if (!confirm(`선택된 ${rows.length}건을 전송하시겠습니까?`)) return;
+    if (btnSend) {
+      btnSend.addEventListener("click", function () {
+        var ids = getCheckedRows();
+        if (!ids.length) return alert("전송할 항목을 선택하세요.");
 
-	    fetch(ctx + "/SendLog.do", {
-	      method: "POST",
-	      headers: { "Content-Type": "application/json" },
-	      body: JSON.stringify(rows.map(r => Number(r.id)))
-	    })
-	      .then(res => res.text())
-	      .then(msg => {
-	        alert(msg || "전송이 완료되었습니다.");
+        fetch(ctx + "/SendLog.do", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(ids.map(i => Number(i.id)))
+        })
+          .then(res => res.text())
+          .then(msg => {
+            alert(msg || "전송 완료되었습니다.");
+            location.reload();
+          })
+          .catch(err => {
+            console.error("전송 오류:", err);
+            alert("전송 중 오류 발생");
+          });
+      });
+    }
 
-	        // ✅ DOM 즉시 반영: 전송된 행의 상태를 '처리중' 으로 변경
-	        rows.forEach(r => {
-	          const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
-	          if (tr) {
-	            const statusCell = tr.querySelector("td:last-child");
-	            if (statusCell) {
-	              statusCell.innerHTML = `<span class="status progress">처리중</span>`;
-	            }
-	          }
-	        });
+    // ==============================
+    // ✅ 삭제 버튼
+    // ==============================
+    if (btnDel) {
+      btnDel.addEventListener("click", function () {
+        var rows = getCheckedRows();
+        if (!rows.length) return alert("삭제할 항목을 선택하세요.");
+        if (!confirm("정말 삭제하시겠습니까?")) return;
 
-	        // ✅ 통계 갱신 (삭제처럼 실시간 반영)
-	        window.LAST_LOGS = readLogsFromDom();
-	        FILTERED_LOGS = window.LAST_LOGS.slice();
-	        updateStats(FILTERED_LOGS);
-	      })
-	      .catch(err => {
-	        console.error("전송 오류:", err);
-	        alert("전송 중 오류가 발생했습니다.");
-	      });
-	  });
-	}
-
-   // ============================== 
-   // 삭제 버튼 이벤트 
-   // ============================== 
-   if (btnDel) { 
-	btnDel.addEventListener("click", () => {
-	const rows = getCheckedRows(); 
-   if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
-   if (!confirm("정말 삭제하시겠습니까?")) return; 
-   fetch("DeleteLog.do", { 
-	method: "POST",
-	 headers: { "Content-Type": "application/json" },
-	  body: JSON.stringify(rows.map(r => Number(r.id))) })
-	   .then(res => res.text())
-	   .then(msg => { 
-		alert(msg); l
-		ocation.reload(); 
-	  }) 
-		.catch(err => console.error("삭제 오류:", err)); 
-	  }); 
-	}
+        fetch(ctx + "/DeleteLog.do", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(rows.map(r => Number(r.id)))
+        })
+          .then(res => res.text())
+          .then(msg => {
+            alert(msg || "삭제 완료되었습니다.");
+            location.reload();
+          })
+          .catch(err => console.error("삭제 오류:", err));
+      });
+    } // ✅ ← 이 중괄호가 삭제 기능의 정확한 끝입니다!
 
     // ==============================
     // ✅ 전체선택 체크박스 기능
@@ -442,34 +405,27 @@ function renderTable(page){
   var pageData=FILTERED_LOGS.slice(start,end);
 
   if(pageData.length===0){
-    // ✅ 데이터가 없을 때 colspan을 6으로 수정 (보기 버튼 열 포함)
-    tbody.innerHTML="<tr><td colspan='6'>데이터가 없습니다.</td></tr>";
+    tbody.innerHTML="<tr><td colspan='5'>데이터가 없습니다.</td></tr>";
   }else{
     for(var i=0;i<pageData.length;i++){
       var log=pageData[i];
       var st = normalizeProg(log.prog);
       var tr=document.createElement("tr");
       tr.dataset.id=log.id;
-
-      // ✅ 보기 버튼 <td> 추가
       tr.innerHTML =
-        "<td><input type='checkbox' class='row-check' /></td>" +       // 체크박스
-        "<td>"+(log.date||"-")+"</td>" +                              // 날짜
-        "<td>"+(log.loc||"-")+"</td>" +                               // 위치
-        "<td>"+(log.type||"-")+"</td>" +                              // 감지유형
-        "<td><span class='status "+statusClass(st)+"'>"+st+"</span></td>" + // 상태
-        "<td><button type='button' class='btn-detail'>보기</button></td>";   // ✅ 상세보기 버튼 추가
-
+        "<td><input type='checkbox' class='row-check' /></td>"+
+        "<td>"+(log.date||"-")+"</td>"+
+        "<td>"+(log.loc||"-")+"</td>"+
+        "<td>"+(log.type||"-")+"</td>"+
+        "<td><span class='status "+statusClass(st)+"'>"+st+"</span></td>";
       tbody.appendChild(tr);
     }
   }
 
-  // ✅ 페이지 번호 업데이트
   var pageNo=document.querySelector(".page-no");
   var maxPage=Math.ceil(FILTERED_LOGS.length/PAGE_SIZE)||1;
   if(pageNo) pageNo.textContent = page + " / " + maxPage;
 
-  // ✅ 통계 갱신
   updateStats(FILTERED_LOGS);
 }
 
@@ -690,15 +646,3 @@ function drawHourlyLineChart(labels, data){
     }
   });
 }
-
-			// 상세보기 모달 열기
-		document.addEventListener('click', e => {
- 		 if (e.target.classList.contains('btn-detail')) {
-    	document.getElementById('detailModal').classList.add('show');
-  		}
-	});
-
-		// 닫기 버튼
-	document.getElementById('detailCloseBtn').addEventListener('click', () => {
-  	document.getElementById('detailModal').classList.remove('show');
-	});

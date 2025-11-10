@@ -298,9 +298,12 @@
     </div>
 
     <!-- 이미지 영역 -->
-    <div class="detail-image">
-      <img id="detailImage" src="${ctx}/assets/img/sample_helmet.jpg" alt="감지 장면" />
-    </div>
+ <div class="detail-image">
+  <img id="detailImage"
+    src="https://search.pstatic.net/common/?src=http%3A%2F%2Fimgnews.naver.net%2Fimage%2F421%2F2021%2F05%2F11%2F0005343279_001_20210511130405447.jpg&type=sc960_832"
+    alt="감지 장면"
+  />
+</div>
 
     <!-- 정보 영역 -->
     <div class="detail-info">
