@@ -257,38 +257,47 @@ document.addEventListener("DOMContentLoaded", function () {
        const rows = getCheckedRows();
        if (rows.length === 0) return alert("전송할 항목을 선택하세요.");
        if (!confirm(`선택된 ${rows.length}건을 전송하시겠습니까?`)) return;
-
-       fetch(ctx + "/SendLog.do", {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify(rows.map(r => Number(r.id)))
-       })
-         .then(res => res.text())
-         .then(msg => {
-           alert(msg || "전송이 완료되었습니다.");
-
-           // ✅ DOM 즉시 반영: 전송된 행의 상태를 '처리중' 으로 변경
-           rows.forEach(r => {
-             const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
-             if (tr) {
-               const statusCell = tr.querySelector("td:last-child");
-               if (statusCell) {
-                 statusCell.innerHTML = `<span class="status progress">처리중</span>`;
-               }
-             }
-           });
-
-           // ✅ 통계 갱신 (삭제처럼 실시간 반영)
-           window.LAST_LOGS = readLogsFromDom();
-           FILTERED_LOGS = window.LAST_LOGS.slice();
-           updateStats(FILTERED_LOGS);
-         })
-         .catch(err => {
-           console.error("전송 오류:", err);
-           alert("전송 중 오류가 발생했습니다.");
-         });
-     });
-   }
+		const targetRows = [];
+		
+		rows.forEach(r => {
+			const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
+			console.log(r.id);
+			if (tr) {
+			        const statusText = tr.querySelector("td:nth-child(5) span.status")?.textContent.trim();
+			        if (statusText === "처리중") targetRows.push(r);
+			      }
+		});
+       fetch(ctx + "/UpdateStatus.do", {
+		method: "POST",
+		headers: { "Content-Type": "application/x-www-form-urlencoded" },
+		body: "ids=" + encodeURIComponent(JSON.stringify(targetRows.map(r => r.id))) + "&status=처리완료"
+		
+	   })
+	   
+	   .then(res => res.text())
+	   .then(msg => {
+		console.log("서버 응답:", msg);
+		alert("선택된 항목이 '처리완료'로 변경되었습니다.");
+		targetRows.forEach(r => {
+			const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
+			if(tr) {
+				const statusSpan = tr.querySelector("td:nth-child(5) span.status");
+				if(statusSpan){
+					statusSpan.textContent = "처리완료";
+					statusSpan.className = "status complete"; // 스타일 클래스 변경
+				}
+			}
+		})
+		window.LAST_LOGS = readLogsFromDom();
+		      FILTERED_LOGS = window.LAST_LOGS.slice();
+		      updateStats(FILTERED_LOGS);
+		    })
+		    .catch(err => {
+		      console.error("전송 오류:", err);
+		      alert("전송 중 오류가 발생했습니다.");
+		    });
+		});
+	   }
 
    // ============================== 
    // 삭제 버튼 이벤트 
