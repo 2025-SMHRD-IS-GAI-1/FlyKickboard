@@ -105,10 +105,10 @@
       ORDER BY REG_DT DESC
   ) sub
   WHERE ROWNUM &lt;= 20
-</select>
+</select> 
 	<update id="updatestatus" parameterType="com.fly.model.MemberVO">
     	UPDATE T_DETECTION
     	SET PROG_STATUS = #{prog}
-    	WHERE DETECT_ID = #{det_id}
+    	WHERE DETECT_ID = TO_NUMBER(#{det_id})  
 	</update>
 </mapper>
