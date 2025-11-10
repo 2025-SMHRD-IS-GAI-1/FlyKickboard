@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	    updateReportModal(targetList);
 		
 		if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
-		if (btnPrint) btnPrint.addEventListener("click", function () { modal.classList.remove("show"); });
+		if (btnClose) btnClose.addEventListener("click", function () { modal.classList.remove("show"); });
 		if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
 	  });
 	  // ==============================
