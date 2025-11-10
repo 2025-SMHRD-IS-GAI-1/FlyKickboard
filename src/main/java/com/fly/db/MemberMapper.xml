@@ -107,8 +107,8 @@
   WHERE ROWNUM &lt;= 20
 </select>
 	<update id="updatestatus" parameterType="com.fly.model.MemberVO">
-	  UPDATE T_DETECT
-	  SET PROG_STATUS = #{status}
-	  WHERE DET_ID = #{id}
+    	UPDATE T_DETECTION
+    	SET PROG_STATUS = #{prog}
+    	WHERE DETECT_ID = #{det_id}
 	</update>
 </mapper>

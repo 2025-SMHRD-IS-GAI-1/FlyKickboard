@@ -22,6 +22,7 @@
 
   
 <body>
+	<body data-ctx="${ctx}">
   <div class="container">
     <!-- 상단 헤더 -->
      <header class="header">
