@@ -190,7 +190,7 @@
       </header>
       <div class="card-body">
         <p id="selectedDateLabel" class="muted" style="margin:0 0 8px 0;">선택 일자: YYYY-MM-DD</p>
-
+		
         <section class="ui-grid" style="grid-template-columns: 320px 1fr; gap:16px;">
 
           <!-- 왼쪽: 표 -->
