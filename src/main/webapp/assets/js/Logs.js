@@ -442,27 +442,34 @@ function renderTable(page){
   var pageData=FILTERED_LOGS.slice(start,end);
 
   if(pageData.length===0){
-    tbody.innerHTML="<tr><td colspan='5'>데이터가 없습니다.</td></tr>";
+    // ✅ 데이터가 없을 때 colspan을 6으로 수정 (보기 버튼 열 포함)
+    tbody.innerHTML="<tr><td colspan='6'>데이터가 없습니다.</td></tr>";
   }else{
     for(var i=0;i<pageData.length;i++){
       var log=pageData[i];
       var st = normalizeProg(log.prog);
       var tr=document.createElement("tr");
       tr.dataset.id=log.id;
+
+      // ✅ 보기 버튼 <td> 추가
       tr.innerHTML =
-        "<td><input type='checkbox' class='row-check' /></td>"+
-        "<td>"+(log.date||"-")+"</td>"+
-        "<td>"+(log.loc||"-")+"</td>"+
-        "<td>"+(log.type||"-")+"</td>"+
-        "<td><span class='status "+statusClass(st)+"'>"+st+"</span></td>";
+        "<td><input type='checkbox' class='row-check' /></td>" +       // 체크박스
+        "<td>"+(log.date||"-")+"</td>" +                              // 날짜
+        "<td>"+(log.loc||"-")+"</td>" +                               // 위치
+        "<td>"+(log.type||"-")+"</td>" +                              // 감지유형
+        "<td><span class='status "+statusClass(st)+"'>"+st+"</span></td>" + // 상태
+        "<td><button type='button' class='btn-detail'>보기</button></td>";   // ✅ 상세보기 버튼 추가
+
       tbody.appendChild(tr);
     }
   }
 
+  // ✅ 페이지 번호 업데이트
   var pageNo=document.querySelector(".page-no");
   var maxPage=Math.ceil(FILTERED_LOGS.length/PAGE_SIZE)||1;
   if(pageNo) pageNo.textContent = page + " / " + maxPage;
 
+  // ✅ 통계 갱신
   updateStats(FILTERED_LOGS);
 }
 
