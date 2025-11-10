@@ -4,6 +4,10 @@
 
 var ctx = (document.body && document.body.getAttribute("data-ctx")) || "";
 
+if (session == "") {
+   window.location.href = "GoLogin.do";
+}
+
 // 전역 상태
 var CURRENT_FILTER = { start:null, end:null, status:null, dtype:null };
 var FILTERED_LOGS = [];
@@ -25,8 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var closeBtn  = document.getElementById("closeReportBtn");
     var btnSend   = document.getElementById("btnSend");
     var btnDel    = document.getElementById("btnDel");
-	const btnPrint = document.getElementById("btnPrint");
-	var CURRENT_SORT = { key: null, asc: true };
+   const btnPrint = document.getElementById("btnPrint");
+   var CURRENT_SORT = { key: null, asc: true };
     console.log("✅ Logs.js initialized");
 
     if (modal) modal.classList.remove("show");
@@ -35,8 +39,20 @@ document.addEventListener("DOMContentLoaded", function () {
     window.LAST_LOGS = readLogsFromDom();
     FILTERED_LOGS = window.LAST_LOGS.slice();
     renderTable(CURRENT_PAGE);
-	setupSorting();   // ✅ 정렬 이벤트 연결
-
+   setupSorting();   // ✅ 정렬 이벤트 연결
+    
+   // ==============================
+   // ✅ 로그아웃 알림
+   // ==============================
+   const logoutBtn = document.querySelector(".login-btn");
+   if (logoutBtn) {
+     logoutBtn.addEventListener("click", () => {
+       alert("로그아웃 되었습니다.");
+       // 원래 페이지 이동 (선택)
+       window.location.href = "Logout.do";
+     });
+   }
+   
     // ==============================
     // ✅ 날짜 검색
     // ==============================
@@ -102,126 +118,122 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==============================
     // ✅ 통계 모달
     // ==============================
-	if (statsBtn && modal) {
-	  statsBtn.addEventListener("click", function () {
-	    // ✅ 1. 선택된 행 가져오기
-	    var checkedRows = getCheckedRows();
+   if (statsBtn && modal) {
+     statsBtn.addEventListener("click", function () {
+       // ✅ 1. 선택된 행 가져오기
+       var checkedRows = getCheckedRows();
 
-	    // ✅ 2. 선택된 데이터만 추출
-	    var selectedLogs = [];
-	    if (checkedRows.length > 0) {
-	      var allLogs = FILTERED_LOGS;  // 현재 필터된 전체
-	      checkedRows.forEach(function (row) {
-	        var found = allLogs.find(function (log) {
-	          return String(log.id) === String(row.id);
-	        });
-	        if (found) selectedLogs.push(found);
-	      });
-	    }
+       // ✅ 2. 선택된 데이터만 추출
+       var selectedLogs = [];
+       if (checkedRows.length > 0) {
+         var allLogs = FILTERED_LOGS;  // 현재 필터된 전체
+         checkedRows.forEach(function (row) {
+           var found = allLogs.find(function (log) {
+             return String(log.id) === String(row.id);
+           });
+           if (found) selectedLogs.push(found);
+         });
+       }
 
-	    // ✅ 3. 선택이 없으면 전체로 fallback
-	    var targetList = selectedLogs.length > 0 ? selectedLogs : FILTERED_LOGS;
+       // ✅ 3. 선택이 없으면 전체로 fallback
+       var targetList = selectedLogs.length > 0 ? selectedLogs : FILTERED_LOGS;
 
-	    // ✅ 4. 모달 표시 + 통계 갱신
-	    modal.classList.add("show");
-	    updateReportModal(targetList);
-<<<<<<< HEAD
-	  });
-=======
-		
-		if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
-		if (btnPrint) btnPrint.addEventListener("click", function () { modal.classList.remove("show"); });
-		if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
-	  });
-	  // ==============================
-	  	// ✅ 통계 모달 내부 출력 버튼
-	  	// ==============================
-	  	
-	  	if (btnPrint) {
-	  	  btnPrint.addEventListener("click", async function () {
-	  	    const modal = document.getElementById("reportModal");
-	  	    if (!modal) return alert("통계 모달을 찾을 수 없습니다.");
+       // ✅ 4. 모달 표시 + 통계 갱신
+       modal.classList.add("show");
+       updateReportModal(targetList);
+      
+      if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
+      if (btnClose) btnClose.addEventListener("click", function () { modal.classList.remove("show"); });
+      if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
+     });
+     // ==============================
+        // ✅ 통계 모달 내부 출력 버튼
+        // ==============================
+        
+        if (btnPrint) {
+          btnPrint.addEventListener("click", async function () {
+            const modal = document.getElementById("reportModal");
+            if (!modal) return alert("통계 모달을 찾을 수 없습니다.");
 
-	  	    // ✅ 1. 그래프 캔버스 → 이미지 변환
-	  	    const canvases = modal.querySelectorAll("canvas");
-	  	    const images = [];
-	  	    for (let canvas of canvases) {
-	  	      try {
-	  	        await new Promise(res => setTimeout(res, 300));
-	  	        const imgURL = canvas.toDataURL("image/png");
-	  	        images.push(imgURL);
-	  	      } catch (e) {
-	  	        console.warn("⚠️ 차트 변환 실패:", e);
-	  	      }
-	  	    }
+            // ✅ 1. 그래프 캔버스 → 이미지 변환
+            const canvases = modal.querySelectorAll("canvas");
+            const images = [];
+            for (let canvas of canvases) {
+              try {
+                await new Promise(res => setTimeout(res, 300));
+                const imgURL = canvas.toDataURL("image/png");
+                images.push(imgURL);
+              } catch (e) {
+                console.warn("⚠️ 차트 변환 실패:", e);
+              }
+            }
 
-	  	    // ✅ 2. 모달 내의 모든 테이블 추출
-	  	    const tables = Array.from(modal.querySelectorAll("table")).map(t => t.outerHTML).join("<br><br>");
+            // ✅ 2. 모달 내의 모든 테이블 추출
+            const tables = Array.from(modal.querySelectorAll("table")).map(t => t.outerHTML).join("<br><br>");
 
-	  	    // ✅ 3. 인쇄용 HTML 생성
-	  	    const printWindow = window.open("", "_blank");
-	  	    const doc = printWindow.document;
-	  	    const styles = Array.from(document.querySelectorAll("link[rel='stylesheet'], style"))
-	  	      .map(node => node.outerHTML)
-	  	      .join("\n");
+            // ✅ 3. 인쇄용 HTML 생성
+            const printWindow = window.open("", "_blank");
+            const doc = printWindow.document;
+            const styles = Array.from(document.querySelectorAll("link[rel='stylesheet'], style"))
+              .map(node => node.outerHTML)
+              .join("\n");
 
-	  	    // ✅ 4. HTML 작성
-	  	    doc.open();
-	  	    doc.write(`
-	  	      <html lang="ko">
-	  	        <head>
-	  	          <meta charset="utf-8">
-	  	          <title>📊 통계 보고서</title>
-	  	          ${styles}
-	  	          <style>
-	  	            body { font-family: 'Noto Sans KR', sans-serif; margin: 25px; background: white; }
-	  	            h1 { text-align: center; margin-bottom: 25px; font-size: 22px; }
-	  	            section { margin-bottom: 40px; page-break-inside: avoid; }
-	  	            img { display: block; margin: 10px auto; max-width: 95%; }
-	  	            table { width: 90%; border-collapse: collapse; margin: 20px auto; }
-	  	            th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-	  	            th { background: #e9eef9; font-weight: 600; }
-	  	            @page { size: A4 portrait; margin: 15mm; }
-	  	          </style>
-	  	        </head>
-	  	        <body>
-	  	          <h1>📊 통계 보고서</h1>
+            // ✅ 4. HTML 작성
+            doc.open();
+            doc.write(`
+              <html lang="ko">
+                <head>
+                  <meta charset="utf-8">
+                  <title>📊 통계 보고서</title>
+                  ${styles}
+                  <style>
+                    body { font-family: 'Noto Sans KR', sans-serif; margin: 25px; background: white; }
+                    h1 { text-align: center; margin-bottom: 25px; font-size: 22px; }
+                    section { margin-bottom: 40px; page-break-inside: avoid; }
+                    img { display: block; margin: 10px auto; max-width: 95%; }
+                    table { width: 90%; border-collapse: collapse; margin: 20px auto; }
+                    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+                    th { background: #e9eef9; font-weight: 600; }
+                    @page { size: A4 portrait; margin: 15mm; }
+                  </style>
+                </head>
+                <body>
+                  <h1>📊 통계 보고서</h1>
 
-	  	          <section>
-	  	            <h2>1️⃣ 지역별 감지건수</h2>
-	  	            ${images[0] ? `<img src="${images[0]}">` : ""}
-	  	          </section>
+                  <section>
+                    <h2>1️⃣ 지역별 감지건수</h2>
+                    ${images[0] ? `<img src="${images[0]}">` : ""}
+                  </section>
 
-	  	          <section>
-	  	            <h2>2️⃣ 위반유형별 비율</h2>
-	  	            ${images[1] ? `<img src="${images[1]}">` : ""}
-	  	          </section>
+                  <section>
+                    <h2>2️⃣ 위반유형별 비율</h2>
+                    ${images[1] ? `<img src="${images[1]}">` : ""}
+                  </section>
 
-	  	          <section>
-	  	            <h2>3️⃣ 시간대별 추이 그래프</h2>
-	  	            ${images[2] ? `<img src="${images[2]}">` : ""}
-	  	          </section>
+                  <section>
+                    <h2>3️⃣ 시간대별 추이 그래프</h2>
+                    ${images[2] ? `<img src="${images[2]}">` : ""}
+                  </section>
 
-	  	          <section>
-	  	            <h2>📋 상세 표 데이터</h2>
-	  	            ${tables || "<p>표 데이터가 없습니다.</p>"}
-	  	          </section>
-	  	        </body>
-	  	      </html>
-	  	    `);
-	  	    doc.close();
+                  <section>
+                    <h2>📋 상세 표 데이터</h2>
+                    ${tables || "<p>표 데이터가 없습니다.</p>"}
+                  </section>
+                </body>
+              </html>
+            `);
+            doc.close();
 
-	  	    // ✅ 5. 인쇄 실행
-	  	    printWindow.focus();
-	  	    setTimeout(() => {
-	  	      printWindow.print();
-	  	      printWindow.close();
-	  	    }, 800);
-	  	  });
-	  	}
+            // ✅ 5. 인쇄 실행
+            printWindow.focus();
+            setTimeout(() => {
+              printWindow.print();
+              printWindow.close();
+            }, 800);
+          });
+        }
  
->>>>>>> 1c751849fb21685eb73215eb46722163ad5f95d3
-	}
+   }
 
     // ==============================
     // ✅ 페이징
@@ -237,50 +249,67 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==============================
     // ✅ 전송 버튼
     // ==============================
-    if (btnSend) {
-      btnSend.addEventListener("click", function () {
-        var ids = getCheckedRows();
-        if (!ids.length) return alert("전송할 항목을 선택하세요.");
+   // ==============================
+   // ✅ 전송 버튼 이벤트 (삭제 이벤트와 동일한 구조로 정리)
+   // ==============================
+   if (btnSend) {
+     btnSend.addEventListener("click", () => {
+       const rows = getCheckedRows();
+       if (rows.length === 0) return alert("전송할 항목을 선택하세요.");
+       if (!confirm(`선택된 ${rows.length}건을 전송하시겠습니까?`)) return;
 
-        fetch(ctx + "/SendLog.do", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(ids.map(i => Number(i.id)))
-        })
-          .then(res => res.text())
-          .then(msg => {
-            alert(msg || "전송 완료되었습니다.");
-            location.reload();
-          })
-          .catch(err => {
-            console.error("전송 오류:", err);
-            alert("전송 중 오류 발생");
-          });
-      });
-    }
+       fetch(ctx + "/SendLog.do", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify(rows.map(r => Number(r.id)))
+       })
+         .then(res => res.text())
+         .then(msg => {
+           alert(msg || "전송이 완료되었습니다.");
 
-    // ==============================
-    // ✅ 삭제 버튼
-    // ==============================
-    if (btnDel) {
-      btnDel.addEventListener("click", function () {
-        var rows = getCheckedRows();
-        if (!rows.length) return alert("삭제할 항목을 선택하세요.");
-        if (!confirm("정말 삭제하시겠습니까?")) return;
+           // ✅ DOM 즉시 반영: 전송된 행의 상태를 '처리중' 으로 변경
+           rows.forEach(r => {
+             const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
+             if (tr) {
+               const statusCell = tr.querySelector("td:last-child");
+               if (statusCell) {
+                 statusCell.innerHTML = `<span class="status progress">처리중</span>`;
+               }
+             }
+           });
 
-        fetch(ctx + "/DeleteLog.do", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(rows.map(r => Number(r.id)))
-        })
-          .then(res => res.text())
-          .then(msg => {
-            alert(msg || "삭제 완료되었습니다.");
-            location.reload();
-          })
-          .catch(err => console.error("삭제 오류:", err));
-      });
-    } // ✅ ← 이 중괄호가 삭제 기능의 정확한 끝입니다!
+           // ✅ 통계 갱신 (삭제처럼 실시간 반영)
+           window.LAST_LOGS = readLogsFromDom();
+           FILTERED_LOGS = window.LAST_LOGS.slice();
+           updateStats(FILTERED_LOGS);
+         })
+         .catch(err => {
+           console.error("전송 오류:", err);
+           alert("전송 중 오류가 발생했습니다.");
+         });
+     });
+   }
+
+   // ============================== 
+   // 삭제 버튼 이벤트 
+   // ============================== 
+   if (btnDel) { 
+   btnDel.addEventListener("click", () => {
+   const rows = getCheckedRows(); 
+   if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
+   if (!confirm("정말 삭제하시겠습니까?")) return; 
+   fetch("DeleteLog.do", { 
+   method: "POST",
+    headers: { "Content-Type": "application/json" },
+     body: JSON.stringify(rows.map(r => Number(r.id))) })
+      .then(res => res.text())
+      .then(msg => { 
+      alert(msg); l
+      ocation.reload(); 
+     }) 
+      .catch(err => console.error("삭제 오류:", err)); 
+     }); 
+   }
 
     // ==============================
     // ✅ 전체선택 체크박스 기능
@@ -309,74 +338,74 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-	// ✅ 날짜 문자열을 Date로 (yyyy-mm-dd 또는 yy/mm/dd)
-	function toDateSafe(str){
-	  if(!str) return null;
-	  var m1 = str.match(/(\d{4})-(\d{2})-(\d{2})/);       // 2025-12-24
-	  if(m1) return new Date(+m1[1], m1[2]-1, +m1[3]);
-	  var m2 = str.match(/(\d{2})\/(\d{2})\/(\d{2})/);     // 25/12/24
-	  if(m2) return new Date(2000 + +m2[1], +m2[2]-1, +m2[3]);
-	  return new Date(str); // fallback (브라우저 파서)
-	}
+   // ✅ 날짜 문자열을 Date로 (yyyy-mm-dd 또는 yy/mm/dd)
+   function toDateSafe(str){
+     if(!str) return null;
+     var m1 = str.match(/(\d{4})-(\d{2})-(\d{2})/);       // 2025-12-24
+     if(m1) return new Date(+m1[1], m1[2]-1, +m1[3]);
+     var m2 = str.match(/(\d{2})\/(\d{2})\/(\d{2})/);     // 25/12/24
+     if(m2) return new Date(2000 + +m2[1], +m2[2]-1, +m2[3]);
+     return new Date(str); // fallback (브라우저 파서)
+   }
 
-	// ✅ 상태 정렬용 우선순위
-	function progOrder(p){
-	  var n = normalizeProg(p);
-	  return (n === "처리전") ? 1 : (n === "처리중") ? 2 : (n === "처리완료") ? 3 : 99;
-	}
+   // ✅ 상태 정렬용 우선순위
+   function progOrder(p){
+     var n = normalizeProg(p);
+     return (n === "처리전") ? 1 : (n === "처리중") ? 2 : (n === "처리완료") ? 3 : 99;
+   }
 
-	// ✅ 실제 정렬 로직 (FILTERED_LOGS를 정렬)
-	function sortLogsByKey(key, asc){
-	  if(!Array.isArray(FILTERED_LOGS)) return;
-	  FILTERED_LOGS.sort(function(a,b){
-	    var A = (a[key] || "").trim();
-	    var B = (b[key] || "").trim();
+   // ✅ 실제 정렬 로직 (FILTERED_LOGS를 정렬)
+   function sortLogsByKey(key, asc){
+     if(!Array.isArray(FILTERED_LOGS)) return;
+     FILTERED_LOGS.sort(function(a,b){
+       var A = (a[key] || "").trim();
+       var B = (b[key] || "").trim();
 
-	    if(key === "date"){
-	      A = toDateSafe(A); B = toDateSafe(B);
-	      var at = A ? A.getTime() : 0, bt = B ? B.getTime() : 0;
-	      return asc ? (at - bt) : (bt - at);
-	    }
-	    if(key === "prog"){
-	      var ap = progOrder(a.prog), bp = progOrder(b.prog);
-	      return asc ? (ap - bp) : (bp - ap);
-	    }
-	    // 문자열 기본 비교 (한글 정렬 안정화)
-	    var cmp = String(A).localeCompare(String(B), "ko");
-	    return asc ? cmp : -cmp;
-	  });
-	}
+       if(key === "date"){
+         A = toDateSafe(A); B = toDateSafe(B);
+         var at = A ? A.getTime() : 0, bt = B ? B.getTime() : 0;
+         return asc ? (at - bt) : (bt - at);
+       }
+       if(key === "prog"){
+         var ap = progOrder(a.prog), bp = progOrder(b.prog);
+         return asc ? (ap - bp) : (bp - ap);
+       }
+       // 문자열 기본 비교 (한글 정렬 안정화)
+       var cmp = String(A).localeCompare(String(B), "ko");
+       return asc ? cmp : -cmp;
+     });
+   }
 
-	// ✅ 정렬 헤더 화살표 표시
-	function highlightSortedColumn(key, asc){
-	  var ths = document.querySelectorAll(".logs-table th[data-sort]");
-	  for(var i=0;i<ths.length;i++){
-	    var t = ths[i];
-	    t.textContent = t.textContent.replace(/\s*[↑↓]$/,"");
-	    if(t.getAttribute("data-sort") === key){
-	      t.textContent += asc ? " ↑" : " ↓";
-	    }
-	  }
-	}
+   // ✅ 정렬 헤더 화살표 표시
+   function highlightSortedColumn(key, asc){
+     var ths = document.querySelectorAll(".logs-table th[data-sort]");
+     for(var i=0;i<ths.length;i++){
+       var t = ths[i];
+       t.textContent = t.textContent.replace(/\s*[↑↓]$/,"");
+       if(t.getAttribute("data-sort") === key){
+         t.textContent += asc ? " ↑" : " ↓";
+       }
+     }
+   }
 
-	// ✅ 헤더 클릭 바인딩 (DOMContentLoaded 안 최상위에서 한 번만 호출)
-	function setupSorting(){
-	  var ths = document.querySelectorAll(".logs-table th[data-sort]");
-	  for(var i=0;i<ths.length;i++){
-	    (function(th){
-	      th.style.cursor = "pointer";
-	      th.addEventListener("click", function(){
-	        var key = th.getAttribute("data-sort");
-	        if(CURRENT_SORT.key === key) CURRENT_SORT.asc = !CURRENT_SORT.asc;
-	        else { CURRENT_SORT.key = key; CURRENT_SORT.asc = true; }
-	        sortLogsByKey(key, CURRENT_SORT.asc);
-	        CURRENT_PAGE = 1;           // 첫 페이지로
-	        renderTable(CURRENT_PAGE);  // 다시 그리기
-	        highlightSortedColumn(key, CURRENT_SORT.asc);
-	      });
-	    })(ths[i]);
-	  }
-	}
+   // ✅ 헤더 클릭 바인딩 (DOMContentLoaded 안 최상위에서 한 번만 호출)
+   function setupSorting(){
+     var ths = document.querySelectorAll(".logs-table th[data-sort]");
+     for(var i=0;i<ths.length;i++){
+       (function(th){
+         th.style.cursor = "pointer";
+         th.addEventListener("click", function(){
+           var key = th.getAttribute("data-sort");
+           if(CURRENT_SORT.key === key) CURRENT_SORT.asc = !CURRENT_SORT.asc;
+           else { CURRENT_SORT.key = key; CURRENT_SORT.asc = true; }
+           sortLogsByKey(key, CURRENT_SORT.asc);
+           CURRENT_PAGE = 1;           // 첫 페이지로
+           renderTable(CURRENT_PAGE);  // 다시 그리기
+           highlightSortedColumn(key, CURRENT_SORT.asc);
+         });
+       })(ths[i]);
+     }
+   }
 
   } catch (err) {
     console.error("[Logs.js] 초기화 중 에러:", err);
@@ -505,27 +534,34 @@ function renderTable(page){
   var pageData=FILTERED_LOGS.slice(start,end);
 
   if(pageData.length===0){
-    tbody.innerHTML="<tr><td colspan='5'>데이터가 없습니다.</td></tr>";
+    // ✅ 데이터가 없을 때 colspan을 6으로 수정 (보기 버튼 열 포함)
+    tbody.innerHTML="<tr><td colspan='6'>데이터가 없습니다.</td></tr>";
   }else{
     for(var i=0;i<pageData.length;i++){
       var log=pageData[i];
       var st = normalizeProg(log.prog);
       var tr=document.createElement("tr");
       tr.dataset.id=log.id;
+
+      // ✅ 보기 버튼 <td> 추가
       tr.innerHTML =
-        "<td><input type='checkbox' class='row-check' /></td>"+
-        "<td>"+(log.date||"-")+"</td>"+
-        "<td>"+(log.loc||"-")+"</td>"+
-        "<td>"+(log.type||"-")+"</td>"+
-        "<td><span class='status "+statusClass(st)+"'>"+st+"</span></td>";
+        "<td><input type='checkbox' class='row-check' /></td>" +       // 체크박스
+        "<td>"+(log.date||"-")+"</td>" +                              // 날짜
+        "<td>"+(log.loc||"-")+"</td>" +                               // 위치
+        "<td>"+(log.type||"-")+"</td>" +                              // 감지유형
+        "<td><span class='status "+statusClass(st)+"'>"+st+"</span></td>" + // 상태
+        "<td><button type='button' class='btn-detail'>보기</button></td>";   // ✅ 상세보기 버튼 추가
+
       tbody.appendChild(tr);
     }
   }
 
+  // ✅ 페이지 번호 업데이트
   var pageNo=document.querySelector(".page-no");
   var maxPage=Math.ceil(FILTERED_LOGS.length/PAGE_SIZE)||1;
   if(pageNo) pageNo.textContent = page + " / " + maxPage;
 
+  // ✅ 통계 갱신
   updateStats(FILTERED_LOGS);
 }
 
@@ -669,14 +705,14 @@ function drawRegionBarChart(regionCount, total){
 // 위반유형 도넛그래프
 // ------------------------------
 function drawTypeDonutChart(typeCount, totalType){
-	var ctx = document.getElementById("typeDonut2");
-	  if (!ctx) return;
-	  if (window.typeDonutChart) window.typeDonutChart.destroy();
+   var ctx = document.getElementById("typeDonut2");
+     if (!ctx) return;
+     if (window.typeDonutChart) window.typeDonutChart.destroy();
 
-	  var labels = ["헬멧 미착용", "2인이상 탑승"];
-	  var data = [typeCount["헬멧 미착용"], typeCount["2인이상 탑승"]];
-	  var total = totalType || data.reduce(function (a, b) { return a + b; }, 0);
-  	window.typeDonutChart = new Chart(ctx, {
+     var labels = ["헬멧 미착용", "2인이상 탑승"];
+     var data = [typeCount["헬멧 미착용"], typeCount["2인이상 탑승"]];
+     var total = totalType || data.reduce(function (a, b) { return a + b; }, 0);
+     window.typeDonutChart = new Chart(ctx, {
       type: "doughnut",
       data: {
         labels: labels,
@@ -746,3 +782,15 @@ function drawHourlyLineChart(labels, data){
     }
   });
 }
+
+         // 상세보기 모달 열기
+      document.addEventListener('click', e => {
+        if (e.target.classList.contains('btn-detail')) {
+       document.getElementById('detailModal').classList.add('show');
+        }
+   });
+
+      // 닫기 버튼
+   document.getElementById('detailCloseBtn').addEventListener('click', () => {
+     document.getElementById('detailModal').classList.remove('show');
+   });

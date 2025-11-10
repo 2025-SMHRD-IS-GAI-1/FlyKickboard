@@ -891,4 +891,25 @@ body.report-active {
   transform: translateY(-1px);
 }
 
+/* ====== FK Alert Modal (공통) ====== */
+.fk-modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 9999;
+  display: none;
+}
+.fk-modal__content {
+  width: 320px; max-width: 86vw;
+  margin: 15% auto; padding: 22px 24px;
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+  text-align: center; font-family: 'Noto Sans KR', sans-serif;
+}
+.fk-btn {
+  margin-top: 14px; padding: 8px 18px; border: 0; border-radius: 8px;
+  background: #0e3ea9; color: #fff; font-weight: 700; cursor: pointer;
+}
+.fk-btn:hover { background: #1552d6; }
+
+
 
