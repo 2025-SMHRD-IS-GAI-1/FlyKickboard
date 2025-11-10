@@ -72,18 +72,18 @@
         <!-- 왼쪽: 도넛 -->
         <article class="card">
           <header class="card-header">
-            <h4 class="card-title">위반유형별 비율(도넛)</h4>
+            <h4 class="card-title">위반유형별 비율</h4>
           </header>
           <div class="card-body">
             <div class="chart donut">
               <canvas id="typeDonut2" height="220" aria-label="위반유형 도넛차트"></canvas>
             </div>
             <div class="legend-row" style="margin-top:10px;">
-              <span class="legend">헬멧 미착용 <strong>—%</strong></span>
-              <span class="legend">2인 탑승 <strong>—%</strong></span>
+              <span class="legend">헬멧 미착용 <strong></strong></span>
+              <span class="legend">2인 탑승 <strong></strong></span>
             </div>
-          </div>
-        </article>
+          </div> <!-- ✅ FIX: 빠졌던 card-body 닫기 -->
+        </article> <!-- ✅ FIX: 빠졌던 article 닫기 -->
 
         <!-- 오른쪽: 감지유형별 건수 -->
         <article class="card">
@@ -96,9 +96,9 @@
                 <tr><th>감지유형</th><th>건수</th></tr>
               </thead>
               <tbody>
-                <tr><td class="left">헬멧 미착용</td><td>—</td></tr>
-                <tr><td class="left">2인 탑승</td><td>—</td></tr>
-                <tr><td class="left"><strong>총 건수</strong></td><td><strong>—</strong></td></tr>
+                <tr><td class="left">헬멧 미착용</td><td></td></tr>
+                <tr><td class="left">2인 탑승</td><td></td></tr>
+                <tr><td class="left"><strong>총 건수</strong></td><td><strong></strong></td></tr>
               </tbody>
             </table>
           </div>
@@ -158,6 +158,6 @@
       </section>
     </div>
   </article>
-
+  
 </body>
 </html>

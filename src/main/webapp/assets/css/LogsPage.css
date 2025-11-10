@@ -186,33 +186,64 @@
 }
 
 
-
-/* 통계 박스 */
+/* ===== 애플 대시보드형 통계 박스 (처리 상태만 포인트 강조, 정리버전) ===== */
 .stats-box {
   display: flex;
-  justify-content: space-between;
+  gap: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e7ebf3;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  padding: 18px 26px;
+  width: 100%;
+  max-width: 540px;
   align-items: center;
-  gap: 12px;
-  background: #f8faff;
-  border-radius: 10px;
-  padding: 16px 12px;
-  font-weight: 700;
-  border: 1px solid #dce3ff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  margin-top: 14px;
+  justify-content: space-around;
+  transition: all 0.3s ease;
 }
-.stat-item { flex: 1; text-align: center; }
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  padding-top: 2px;             /* 숫자 들뜸 방지 */
+}
+
+/* 라벨 기본 */
 .stat-item .label {
   display: block;
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
 }
+
+/* 숫자 */
 .stat-item .value {
-  font-size: 18px;
-  color: #0e3ea9;
-  font-weight: 800;
+  font-size: 23px;
+  font-weight: 900;
+  color: #111827;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
+
+/* 🎨 처리 상태 포인트 강조 */
+.stat-item:nth-child(2) .label { color: #1e3a8a; }   /* 처리전 */
+.stat-item:nth-child(3) .label { color: #b45309; }   /* 처리중 */
+.stat-item:nth-child(4) .label { color: #15803d; }   /* 처리완료 */
+
+.stat-item:nth-child(2) .value { color: #2563eb; }   /* 파랑 */
+.stat-item:nth-child(3) .value { color: #f59e0b; }   /* 노랑 */
+.stat-item:nth-child(4) .value { color: #16a34a; }   /* 초록 */
+
+/* hover 효과 */
+.stats-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
+}
+
+
 
 /* 페이지네이션 */
 .pagination {
@@ -392,4 +423,342 @@
 
 #filterPanel.as-modal {
   z-index: 2100 !important;
+}
+
+/* =========================================================
+   Report.css  (Logs.jsp 내 통계 모달 시각 통합 버전)
+   ========================================================= */
+
+/* --- Theme --- */
+:root {
+  --blue: #1846f0;          /* 상단 기본 파랑 */
+  --blue2: #0e35cc;
+  --bg: #f6f8fb;            /* 페이지 배경 */
+  --card: #ffffff;          /* 카드 바탕 */
+  --line: #e5e9f4;          /* 기본 선 */
+  --ink: #111827;           /* 본문 글색 */
+  --muted: #6b7280;         /* 보조 글색 */
+}
+
+/* --- Base --- */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; padding: 0; }
+
+body.report-active {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Helv, Arial, sans-serif;
+}
+
+/* 스코프 강제: 모달 안에서만 스타일 먹도록 */
+.report-modal .report-content h2 { /* 기존 h2 대체 */
+  max-width:1120px; margin:0 auto 20px; text-align:center;
+  font-size:26px; font-weight:800; color:var(--blue);
+}
+
+.report-modal .report-content .card { /* 기존 .card 대체 */
+  max-width:1120px; margin:0 auto 22px; background:var(--card);
+  border:1px solid var(--line); border-radius:14px;
+  box-shadow:0 10px 24px rgba(17,24,39,.06); overflow:hidden;
+  display:flex; flex-direction:column;
+}
+
+.report-modal .report-content .card-header { /* 기존 .card-header 대체 */
+  padding:14px 18px; background:linear-gradient(90deg,var(--blue),var(--blue2)); color:#fff;
+}
+.report-modal .report-content .card-title { margin:0; font-size:18px; font-weight:800; }
+.report-modal .report-content .card-body { padding:18px; }
+
+.card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* --- 본문 --- */
+.card-body { padding: 18px; }
+
+/* --- 내부 2단 그리드 --- */
+.report-modal .report-content .ui-grid { /* 기존 .ui-grid 대체 */
+  display:grid; grid-auto-rows:1fr; gap:16px; align-items:stretch;
+}
+
+.report-modal .report-content .ui-grid > .card {
+  margin:0; border:0; box-shadow:none; background:transparent;
+}
+.report-modal .report-content .ui-grid > .card > .card-header {
+  background:linear-gradient(90deg,#1f55ff,#1950f2); color:#fff; border-radius:10px;
+  padding:12px 14px; margin:0 0 10px 0;
+}
+.report-modal .report-content .ui-grid > .card > .card-body {
+  background:#fff; border:1px solid var(--line); border-radius:10px;
+  padding:16px; display:flex; flex-direction:column; gap:12px; min-height:0;
+}
+
+.report-modal .report-content #sec-3 .ui-grid > .card > .card-body { min-height:360px; }
+.report-modal .report-content #sec-4 .ui-grid > .card > .card-body { min-height:280px; }
+.report-modal .report-content #selectedDayHourly .ui-grid > .card > .card-body { min-height:300px; }
+
+/* --- 섹션 높이 --- */
+#sec-3 .ui-grid > .card > .card-body { min-height: 360px; }
+#sec-4 .ui-grid > .card > .card-body { min-height: 280px; }
+#selectedDayHourly .ui-grid > .card > .card-body { min-height: 300px; }
+
+/* --- 차트 박스 --- */
+.report-modal .report-content .chart { /* 기존 .chart 대체 */
+  flex:1 1 auto; min-height:260px; border:1px dashed #c8d6ff; background:#f7f9ff;
+  border-radius:12px; display:flex; align-items:center; justify-content:center;
+  color:#6f7fb2; text-align:center;
+}
+.report-modal .report-content .chart canvas { width:100% !important; height:auto !important; display:block; }
+
+
+/* --- 표 --- */
+.report-modal .report-content .tbl { /* 기존 .tbl 대체 */
+  width:100%; border-collapse:collapse; font-size:14.5px; background:#fff;
+}
+.report-modal .report-content .tbl th,
+.report-modal .report-content .tbl td {
+  border:1px solid #e1e6f2; padding:10px 12px;
+}
+.report-modal .report-content .tbl thead th {
+  background:#eff2f7; color:#1b2a52; font-weight:800;
+}
+.report-modal .report-content .tbl tbody tr:nth-child(odd) td { background:#fafbfd; }
+.report-modal .report-content .tbl td.left { text-align:left; }
+.report-modal .report-content .tbl :is(th,td):nth-child(n+2){ text-align:right; }
+.report-modal .report-content .tbl tfoot td,
+.report-modal .report-content .tbl tbody tr:last-child td {
+  background:#f4f6fb; font-weight:700;
+}
+
+/* --- 보조 텍스트 --- */
+.muted { color: var(--muted); }
+
+/* --- 반응형 --- */
+@media (max-width:900px){
+  .report-modal .report-content .ui-grid{ grid-template-columns:1fr !important; }
+  .report-modal .report-content #sec-3 .ui-grid > .card > .card-body{ min-height:300px; }
+  .report-modal .report-content .chart{ min-height:220px; }
+}
+@media (max-width:640px){
+  .report-modal .report-content h2{ font-size:22px; }
+  .report-modal .report-content .card-title{ font-size:16px; }
+  .report-modal .report-content .tbl{ font-size:13.5px; }
+}
+
+/* --- 인쇄 --- */
+@media print {
+  body { background: #fff; padding: 0; }
+  .card { box-shadow: none; border-color: #d6dbe6; }
+  .card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* 모달 구조 전용 스타일 (Logs.jsp) */
+.report-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.report-modal.show {
+  display: flex;
+}
+.report-content {
+  background: var(--bg);
+  max-width: 1200px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+  padding: 36px 28px 28px 28px;
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.close-btn:hover { color: var(--ink); }
+
+/* 모달 내 스크롤바 미세 조정 */
+.report-content::-webkit-scrollbar {
+  width: 8px;
+}
+.report-content::-webkit-scrollbar-thumb {
+  background-color: #c2c8e6;
+  border-radius: 8px;
+}
+.report-content::-webkit-scrollbar-track {
+  background: #eef1fa;
+}
+.logs-table th[data-sort] {
+  cursor: pointer;
+  user-select: none;
+}
+.logs-table th[data-sort]:hover {
+  background-color: #eef3ff;
+}
+
+
+/*감지 이력 테이블 */
+
+/* 행 번호 초기화 */
+.logs-table {
+  counter-reset: rownum;
+  table-layout: fixed; /* 셀 폭 고정 */
+  width: 100%;
+}
+.logs-table tbody tr {
+  counter-increment: rownum;
+}
+
+/* --- 1열: 체크박스 + No --- */
+:root {
+  --cell-pad-y: 14px;    /* 위아래 여백 */
+  --cell-pad-x: 28px;    /* 좌우 여백 */
+  --gap-cb-no: 18px;     /* 체크박스 ↔ No 간격 */
+  --w-col-1: 160px;      /* 체크박스+No */
+  --w-col-2: 180px;      /* 날짜 */
+  --w-col-3: 260px;      /* 위치 */
+  --w-col-4: 200px;      /* 감지유형 */
+  --w-col-5: 180px;      /* 상태 */
+  --w-col-6: 160px;      /* 상세보기 */
+}
+
+/* 셀 여백 통일 */
+.logs-table th {
+  padding: var(--cell-pad-y) var(--cell-pad-x);
+}
+.logs-table td {
+  padding: calc(var(--cell-pad-y) - 2px) var(--cell-pad-x);
+}
+
+/* 1열(체크박스+No) */
+.logs-table th:nth-child(1),
+.logs-table td:nth-child(1) {
+  width: var(--w-col-1);
+  text-align: center;
+}
+.logs-table thead th:first-child {
+  position: relative;
+  padding-left: 16px;
+}
+.logs-table thead th:first-child::after {
+  content: "No";
+  margin-left: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* 본문 No 자동번호 */
+.logs-table tbody td:first-child::after {
+  content: counter(rownum);
+  margin-left: var(--gap-cb-no);
+}
+
+.logs-table tbody td:first-child input[type="checkbox"] {
+  margin-right: var(--gap-cb-no);
+  transform: scale(1.2);
+}
+.logs-table tbody td:first-child::after {
+  content: counter(rownum);
+  margin-left: 0; /* ← 왼쪽 간격 제거 */
+  font-weight: 700;
+  color: #334155;
+  display: inline-block;
+  min-width: 30px;
+  text-align: center; /* ← 가운데 정렬로 변경 */
+  font-size: 15px;
+}
+
+
+/* --- 2~6열 공통 폭 지정 --- */
+.logs-table th:nth-child(2),
+.logs-table td:nth-child(2) {
+  width: var(--w-col-2);
+  text-align: center;
+}
+.logs-table th:nth-child(3),
+.logs-table td:nth-child(3) {
+  width: var(--w-col-3);
+  text-align: center;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.logs-table th:nth-child(4),
+.logs-table td:nth-child(4) {
+  width: var(--w-col-4);
+  text-align: center;
+}
+.logs-table th:nth-child(5),
+.logs-table td:nth-child(5) {
+  width: var(--w-col-5);
+  text-align: center;
+}
+.logs-table th:nth-child(6),
+.logs-table td:nth-child(6) {
+  width: var(--w-col-6);
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* --- 상세보기 버튼 --- */
+.btn-detail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1e4ba8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.btn-detail:hover {
+  background: #2558bd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+.btn-detail:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.logs-table th:last-child,
+.logs-table td:last-child {
+  display: table-cell !important;
+}
+
+.btn-detail {
+  display: inline-flex !important;
+  background: #ffffff;
+  border: 1px solid rgba(14,62,169,0.35);
+  border-radius: 6px;
+  color: #0e3ea9;
+  font-weight: 700;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.btn-detail:hover {
+  background: #0e3ea9;
+  color: #ffffff;
 }

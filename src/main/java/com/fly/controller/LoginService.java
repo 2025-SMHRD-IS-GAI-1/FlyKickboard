@@ -31,7 +31,15 @@ public class LoginService implements Command {
 			System.out.println("로그인 성공 !");
 			HttpSession session = request.getSession();
 			session.setAttribute("login", login);
-			System.out.println(login.getId());
+			
+			
+			if(id.equalsIgnoreCase("admin") && pw.equalsIgnoreCase("admin")) {
+				session.setAttribute("isAdmin", true);
+				System.out.println("관리자 로그인");
+			} else {
+				session.setAttribute("isAdmin", false);
+				System.out.println("일반로그인");
+			}
 			dao.LastLogin(login.getId());
 			return "redirect:/GoMain.do";
 		} else {

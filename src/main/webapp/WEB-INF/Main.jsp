@@ -33,9 +33,12 @@
       </nav>
       
       <div class="actions" aria-label="사용자 메뉴">
-        <a href="${ctx}/Manager.do">
+      <c:if test="${sessionScope.isAdmin}">
+      	<a href="${ctx}/Manager.do">
           <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
         </a>
+      </c:if>
+        
         <a href="${ctx}/logout.do">
           <button class="login-btn" type="button" data-action="logout">로그아웃</button>
         </a>  
