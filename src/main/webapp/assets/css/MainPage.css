@@ -411,6 +411,56 @@ body {
   min-width: 0;
 }
 
+/* ====== 표(Logs 테이블) 가로 글자 + 칼정렬 고정 ====== */
+
+/* 전체를 가로 글자 강제 (혹시 브라우저/상위 스타일로 vertical 쓰인 경우 방지) */
+.logs-table th,
+.logs-table td {
+  writing-mode: horizontal-tb !important;
+}
+
+/* 열 폭은 이미 --w-col-* 로 지정되어 있으니
+   줄바꿈만 막아서 칼정렬 유지 (내용 길면 말줄임 처리) */
+.logs-table th:nth-child(2),
+.logs-table td:nth-child(2),  /* 날짜 */
+.logs-table th:nth-child(4),
+.logs-table td:nth-child(4),  /* 감지유형 */
+.logs-table th:nth-child(5),
+.logs-table td:nth-child(5),  /* 상태 */
+.logs-table th:nth-child(6),
+.logs-table td:nth-child(6) { /* 상세보기 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 시간/숫자류는 숫자폭 균등으로 더 반듯하게 */
+.logs-table td:nth-child(2),
+.logs-table td .time,
+.logs-table td .count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 위치(3열)는 긴 지명이 있을 수 있으니 한 줄 말줄임(필요 시) */
+.logs-table th:nth-child(3),
+.logs-table td:nth-child(3) {
+  white-space: nowrap;      /* 여러 줄 원치 않으면 활성화 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 체크박스 + No 열도 가로 강제 + 정렬 안정화 */
+.logs-table th:nth-child(1),
+.logs-table td:nth-child(1) {
+  writing-mode: horizontal-tb !important;
+}
 
 
-
+:root {
+  --w-col-1: 160px; /* 체크박스+No */
+  --w-col-2: 180px; /* 날짜 */
+  --w-col-3: 260px; /* 위치 */
+  --w-col-4: 200px; /* 감지유형 */
+  --w-col-5: 180px; /* 상태 */
+  --w-col-6: 160px; /* 상세보기 */
+}

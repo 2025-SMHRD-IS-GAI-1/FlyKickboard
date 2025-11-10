@@ -626,7 +626,7 @@ body.report-active {
 :root {
   --cell-pad-y: 14px;    /* 위아래 여백 */
   --cell-pad-x: 28px;    /* 좌우 여백 */
-  --gap-cb-no: 18px;     /* 체크박스 ↔ No 간격 */
+  --gap-cb-no: 85px;     /* 체크박스 ↔ No 간격 */
   --w-col-1: 160px;      /* 체크박스+No */
   --w-col-2: 180px;      /* 날짜 */
   --w-col-3: 260px;      /* 위치 */
@@ -655,7 +655,7 @@ body.report-active {
 }
 .logs-table thead th:first-child::after {
   content: "No";
-  margin-left: 18px;
+  margin-left: 85px;  /*헤더 간격*/
   font-weight: 700;
   color: #ffffff;
 }
