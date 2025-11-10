@@ -43,7 +43,8 @@ public class LoginService implements Command {
 			dao.LastLogin(login.getId());
 			return "redirect:/GoMain.do";
 		} else {
-			System.out.println("실패");
+			System.out.println("로그인 실패");
+		    request.setAttribute("loginError", "아이디 또는 비밀번호가 올바르지 않습니다.");
 			return "Login.jsp";
 		}
 		

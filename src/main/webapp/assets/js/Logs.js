@@ -792,12 +792,30 @@ function drawHourlyLineChart(labels, data){
   });
 }
 
-         // 상세보기 모달 열기
-      document.addEventListener('click', e => {
-        if (e.target.classList.contains('btn-detail')) {
-       document.getElementById('detailModal').classList.add('show');
-        }
-   });
+document.addEventListener("click", e => {
+  if (e.target.classList.contains("btn-detail")) {
+    const tr = e.target.closest("tr");
+    if (!tr) return;
+
+    // ✅ 행의 각 셀 데이터 읽기
+    const tds = tr.querySelectorAll("td");
+    const date = tds[1]?.textContent.trim() || "-";
+    const loc = tds[2]?.textContent.trim() || "-";
+    const statusText = tds[4]?.querySelector("span.status")?.textContent.trim() || "-";
+    const statusClass = tds[4]?.querySelector("span.status")?.className.replace("status ", "") || "";
+
+    // ✅ 상세 모달에 반영
+    document.getElementById("detailDate").textContent = date;
+    document.getElementById("detailLoc").textContent = loc;
+
+    const statusSpan = document.getElementById("detailStatus");
+    statusSpan.textContent = statusText;
+    statusSpan.className = "status-badge " + statusClass; // 상태 색상도 반영
+
+    // ✅ 모달 열기
+    document.getElementById("detailModal").classList.add("show");
+  }
+});
 
       // 닫기 버튼
    document.getElementById('detailCloseBtn').addEventListener('click', () => {
