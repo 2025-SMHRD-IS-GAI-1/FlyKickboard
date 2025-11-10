@@ -262,7 +262,7 @@
       <th data-sort="date" scope="col">날짜</th>
       <th data-sort="loc" scope="col">위치</th>
       <th data-sort="type" scope="col">감지 유형</th>
-      <th data-sort="prog" scope="col">상태</th>
+      <th data-sort="prog" scope="col">상세보기</th>
       <th scope="col">상세보기</th>
       <!-- ✅ 상세보기 열 추가 -->
     </tr>
@@ -289,7 +289,7 @@
 
     <!-- 상단 상태 헤더 -->
     <header class="detail-header">
-      <h3>상태</h3>
+      <h3>상세보기</h3>
     </header>
 
     <!-- 감지유형 배지 -->

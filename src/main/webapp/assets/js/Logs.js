@@ -690,3 +690,15 @@ function drawHourlyLineChart(labels, data){
     }
   });
 }
+
+			// 상세보기 모달 열기
+		document.addEventListener('click', e => {
+ 		 if (e.target.classList.contains('btn-detail')) {
+    	document.getElementById('detailModal').classList.add('show');
+  		}
+	});
+
+		// 닫기 버튼
+	document.getElementById('detailCloseBtn').addEventListener('click', () => {
+  	document.getElementById('detailModal').classList.remove('show');
+	});
