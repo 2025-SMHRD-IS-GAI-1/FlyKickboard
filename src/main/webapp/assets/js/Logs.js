@@ -35,7 +35,19 @@ document.addEventListener("DOMContentLoaded", function () {
     FILTERED_LOGS = window.LAST_LOGS.slice();
     renderTable(CURRENT_PAGE);
 	setupSorting();   // ✅ 정렬 이벤트 연결
-
+    
+	// ==============================
+	// ✅ 로그아웃 알림
+	// ==============================
+	const logoutBtn = document.querySelector(".login-btn");
+	if (logoutBtn) {
+	  logoutBtn.addEventListener("click", () => {
+	    alert("로그아웃 되었습니다.");
+	    // 원래 페이지 이동 (선택)
+	    window.location.href = "Logout.do";
+	  });
+	}
+	
     // ==============================
     // ✅ 날짜 검색
     // ==============================
@@ -124,7 +136,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	    // ✅ 4. 모달 표시 + 통계 갱신
 	    modal.classList.add("show");
 	    updateReportModal(targetList);
+		
+		if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
+		if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
 	  });
+	  
 	}
 
     // ==============================
@@ -141,50 +157,67 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==============================
     // ✅ 전송 버튼
     // ==============================
-    if (btnSend) {
-      btnSend.addEventListener("click", function () {
-        var ids = getCheckedRows();
-        if (!ids.length) return alert("전송할 항목을 선택하세요.");
+	// ==============================
+	// ✅ 전송 버튼 이벤트 (삭제 이벤트와 동일한 구조로 정리)
+	// ==============================
+	if (btnSend) {
+	  btnSend.addEventListener("click", () => {
+	    const rows = getCheckedRows();
+	    if (rows.length === 0) return alert("전송할 항목을 선택하세요.");
+	    if (!confirm(`선택된 ${rows.length}건을 전송하시겠습니까?`)) return;
 
-        fetch(ctx + "/SendLog.do", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(ids.map(i => Number(i.id)))
-        })
-          .then(res => res.text())
-          .then(msg => {
-            alert(msg || "전송 완료되었습니다.");
-            location.reload();
-          })
-          .catch(err => {
-            console.error("전송 오류:", err);
-            alert("전송 중 오류 발생");
-          });
-      });
-    }
+	    fetch(ctx + "/SendLog.do", {
+	      method: "POST",
+	      headers: { "Content-Type": "application/json" },
+	      body: JSON.stringify(rows.map(r => Number(r.id)))
+	    })
+	      .then(res => res.text())
+	      .then(msg => {
+	        alert(msg || "전송이 완료되었습니다.");
 
-    // ==============================
-    // ✅ 삭제 버튼
-    // ==============================
-    if (btnDel) {
-      btnDel.addEventListener("click", function () {
-        var rows = getCheckedRows();
-        if (!rows.length) return alert("삭제할 항목을 선택하세요.");
-        if (!confirm("정말 삭제하시겠습니까?")) return;
+	        // ✅ DOM 즉시 반영: 전송된 행의 상태를 '처리중' 으로 변경
+	        rows.forEach(r => {
+	          const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
+	          if (tr) {
+	            const statusCell = tr.querySelector("td:last-child");
+	            if (statusCell) {
+	              statusCell.innerHTML = `<span class="status progress">처리중</span>`;
+	            }
+	          }
+	        });
 
-        fetch(ctx + "/DeleteLog.do", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(rows.map(r => Number(r.id)))
-        })
-          .then(res => res.text())
-          .then(msg => {
-            alert(msg || "삭제 완료되었습니다.");
-            location.reload();
-          })
-          .catch(err => console.error("삭제 오류:", err));
-      });
-    } // ✅ ← 이 중괄호가 삭제 기능의 정확한 끝입니다!
+	        // ✅ 통계 갱신 (삭제처럼 실시간 반영)
+	        window.LAST_LOGS = readLogsFromDom();
+	        FILTERED_LOGS = window.LAST_LOGS.slice();
+	        updateStats(FILTERED_LOGS);
+	      })
+	      .catch(err => {
+	        console.error("전송 오류:", err);
+	        alert("전송 중 오류가 발생했습니다.");
+	      });
+	  });
+	}
+
+   // ============================== 
+   // 삭제 버튼 이벤트 
+   // ============================== 
+   if (btnDel) { 
+	btnDel.addEventListener("click", () => {
+	const rows = getCheckedRows(); 
+   if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
+   if (!confirm("정말 삭제하시겠습니까?")) return; 
+   fetch("DeleteLog.do", { 
+	method: "POST",
+	 headers: { "Content-Type": "application/json" },
+	  body: JSON.stringify(rows.map(r => Number(r.id))) })
+	   .then(res => res.text())
+	   .then(msg => { 
+		alert(msg); l
+		ocation.reload(); 
+	  }) 
+		.catch(err => console.error("삭제 오류:", err)); 
+	  }); 
+	}
 
     // ==============================
     // ✅ 전체선택 체크박스 기능
