@@ -1,3 +1,7 @@
+// ==============================
+// Logs.js (전송/삭제/필터/페이징/통계/그래프 통합버전)
+// ==============================
+
 var ctx = (document.body && document.body.getAttribute("data-ctx")) || "";
 
 // 전역 상태
@@ -21,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var closeBtn  = document.getElementById("closeReportBtn");
     var btnSend   = document.getElementById("btnSend");
     var btnDel    = document.getElementById("btnDel");
+	const btnPrint = document.getElementById("btnPrint");
 	var CURRENT_SORT = { key: null, asc: true };
     console.log("✅ Logs.js initialized");
 
@@ -120,7 +125,102 @@ document.addEventListener("DOMContentLoaded", function () {
 	    // ✅ 4. 모달 표시 + 통계 갱신
 	    modal.classList.add("show");
 	    updateReportModal(targetList);
+<<<<<<< HEAD
 	  });
+=======
+		
+		if (closeBtn) closeBtn.addEventListener("click", function () { modal.classList.remove("show"); });
+		if (btnPrint) btnPrint.addEventListener("click", function () { modal.classList.remove("show"); });
+		if (modal) modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("show"); });
+	  });
+	  // ==============================
+	  	// ✅ 통계 모달 내부 출력 버튼
+	  	// ==============================
+	  	
+	  	if (btnPrint) {
+	  	  btnPrint.addEventListener("click", async function () {
+	  	    const modal = document.getElementById("reportModal");
+	  	    if (!modal) return alert("통계 모달을 찾을 수 없습니다.");
+
+	  	    // ✅ 1. 그래프 캔버스 → 이미지 변환
+	  	    const canvases = modal.querySelectorAll("canvas");
+	  	    const images = [];
+	  	    for (let canvas of canvases) {
+	  	      try {
+	  	        await new Promise(res => setTimeout(res, 300));
+	  	        const imgURL = canvas.toDataURL("image/png");
+	  	        images.push(imgURL);
+	  	      } catch (e) {
+	  	        console.warn("⚠️ 차트 변환 실패:", e);
+	  	      }
+	  	    }
+
+	  	    // ✅ 2. 모달 내의 모든 테이블 추출
+	  	    const tables = Array.from(modal.querySelectorAll("table")).map(t => t.outerHTML).join("<br><br>");
+
+	  	    // ✅ 3. 인쇄용 HTML 생성
+	  	    const printWindow = window.open("", "_blank");
+	  	    const doc = printWindow.document;
+	  	    const styles = Array.from(document.querySelectorAll("link[rel='stylesheet'], style"))
+	  	      .map(node => node.outerHTML)
+	  	      .join("\n");
+
+	  	    // ✅ 4. HTML 작성
+	  	    doc.open();
+	  	    doc.write(`
+	  	      <html lang="ko">
+	  	        <head>
+	  	          <meta charset="utf-8">
+	  	          <title>📊 통계 보고서</title>
+	  	          ${styles}
+	  	          <style>
+	  	            body { font-family: 'Noto Sans KR', sans-serif; margin: 25px; background: white; }
+	  	            h1 { text-align: center; margin-bottom: 25px; font-size: 22px; }
+	  	            section { margin-bottom: 40px; page-break-inside: avoid; }
+	  	            img { display: block; margin: 10px auto; max-width: 95%; }
+	  	            table { width: 90%; border-collapse: collapse; margin: 20px auto; }
+	  	            th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+	  	            th { background: #e9eef9; font-weight: 600; }
+	  	            @page { size: A4 portrait; margin: 15mm; }
+	  	          </style>
+	  	        </head>
+	  	        <body>
+	  	          <h1>📊 통계 보고서</h1>
+
+	  	          <section>
+	  	            <h2>1️⃣ 지역별 감지건수</h2>
+	  	            ${images[0] ? `<img src="${images[0]}">` : ""}
+	  	          </section>
+
+	  	          <section>
+	  	            <h2>2️⃣ 위반유형별 비율</h2>
+	  	            ${images[1] ? `<img src="${images[1]}">` : ""}
+	  	          </section>
+
+	  	          <section>
+	  	            <h2>3️⃣ 시간대별 추이 그래프</h2>
+	  	            ${images[2] ? `<img src="${images[2]}">` : ""}
+	  	          </section>
+
+	  	          <section>
+	  	            <h2>📋 상세 표 데이터</h2>
+	  	            ${tables || "<p>표 데이터가 없습니다.</p>"}
+	  	          </section>
+	  	        </body>
+	  	      </html>
+	  	    `);
+	  	    doc.close();
+
+	  	    // ✅ 5. 인쇄 실행
+	  	    printWindow.focus();
+	  	    setTimeout(() => {
+	  	      printWindow.print();
+	  	      printWindow.close();
+	  	    }, 800);
+	  	  });
+	  	}
+ 
+>>>>>>> 1c751849fb21685eb73215eb46722163ad5f95d3
 	}
 
     // ==============================
