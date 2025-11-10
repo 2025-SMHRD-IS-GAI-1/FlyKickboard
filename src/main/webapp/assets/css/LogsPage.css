@@ -762,3 +762,132 @@ body.report-active {
   background: #0e3ea9;
   color: #ffffff;
 }
+
+/* ✅ 상세보기 모달 전체 배경 */
+.detail-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 5000;
+  backdrop-filter: blur(3px);
+}
+.detail-modal.show {
+  display: flex;
+}
+
+/* ✅ 모달 박스 */
+.detail-dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.25);
+  max-width: 420px;
+  width: 90%;
+  overflow: hidden;
+  animation: modalIn 0.25s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 상단 파란 헤더 */
+.detail-header {
+  background: #0e3ea9;
+  color: #fff;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* 감지유형 배지 */
+.detail-type {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+.badge-type {
+  background: #e54848;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* 이미지 */
+.detail-image {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0;
+}
+.detail-image img {
+  max-width: 80%;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+/* 정보 텍스트 */
+.detail-info {
+  padding: 0 24px;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.detail-info strong {
+  color: #1e3a8a;
+  display: inline-block;
+  width: 60px;
+}
+
+/* 상태 뱃지 */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 6px;
+}
+.status-badge.complete {
+  background: #e9fbf3;
+  color: #15803d;
+  border: 1px solid #b9e5c8;
+}
+.status-badge.progress {
+  background: #fff5cc;
+  color: #8a6a00;
+  border: 1px solid #ffe08a;
+}
+.status-badge.pending {
+  background: #e9f0ff;
+  color: #1e49b5;
+  border: 1px solid #c9daff;
+}
+
+/* 닫기 버튼 */
+.detail-actions {
+  display: flex;
+  justify-content: center;
+  padding: 20px 24px 26px;
+}
+.detail-actions .btn.blue {
+  width: 100%;
+  background: #0e3ea9;
+  color: #fff;
+  font-weight: 800;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 10px 0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.detail-actions .btn.blue:hover {
+  background: #1552d6;
+  transform: translateY(-1px);
+}
+
+
