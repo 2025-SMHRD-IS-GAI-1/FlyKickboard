@@ -283,6 +283,43 @@
   </tbody>
 </table>
 
+<!-- ✅ 상세보기 모달 -->
+<div id="detailModal" class="detail-modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="detail-dialog">
+
+    <!-- 상단 상태 헤더 -->
+    <header class="detail-header">
+      <h3>상태</h3>
+    </header>
+
+    <!-- 감지유형 배지 -->
+    <div class="detail-type">
+      <span class="badge badge-type" id="detailType">헬멧 미착용</span>
+    </div>
+
+    <!-- 이미지 영역 -->
+    <div class="detail-image">
+      <img id="detailImage" src="${ctx}/assets/img/sample_helmet.jpg" alt="감지 장면" />
+    </div>
+
+    <!-- 정보 영역 -->
+    <div class="detail-info">
+      <p><strong>날짜:</strong> <span id="detailDate">2025-10-17 14:32</span></p>
+      <p><strong>위치:</strong> <span id="detailLoc">광천동</span></p>
+      <p><strong>상태:</strong> <span class="status-badge complete" id="detailStatus">처리완료</span></p>
+    </div>
+
+    <!-- 닫기 버튼 -->
+    <div class="detail-actions">
+      <button type="button" class="btn blue" id="detailCloseBtn">닫 기</button>
+    </div>
+
+  </div>
+</div>
+<!-- ✅ 상세보기 모달 끝 -->
+
+
+
 
 
            <!-- 통계 박스 -->
