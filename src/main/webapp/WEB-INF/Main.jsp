@@ -22,7 +22,6 @@
 <body data-ctx="${ctx}"> <!-- ✅ contextPath를 body 속성으로 전달 -->
 
   <div class="container">
-
     <!-- 상단 헤더 -->
     <header class="header">
       <div class="logo">날아라킥보드</div>

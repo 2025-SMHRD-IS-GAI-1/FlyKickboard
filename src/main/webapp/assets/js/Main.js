@@ -13,7 +13,10 @@ if(session == "") {
 function setupLogout() {
   const logoutBtn = document.querySelector(".login-btn");
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
+    logoutBtn.addEventListener("click", () => {
+      // alert 제거했으니 여기서 바로 이동만 시켜주면 OK
+      window.location.href = "Logout.do";
+    });
   }
 }
 

@@ -794,3 +794,8 @@ function drawHourlyLineChart(labels, data){
    document.getElementById('detailCloseBtn').addEventListener('click', () => {
      document.getElementById('detailModal').classList.remove('show');
    });
+   
+   
+   
+
+   
