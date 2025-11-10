@@ -5,7 +5,7 @@
 var ctx = (document.body && document.body.getAttribute("data-ctx")) || "";
 
 if (session == "") {
-	window.location.href = "GoLogin.do";
+   window.location.href = "GoLogin.do";
 }
 
 // 전역 상태
@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var closeBtn  = document.getElementById("closeReportBtn");
     var btnSend   = document.getElementById("btnSend");
     var btnDel    = document.getElementById("btnDel");
-	const btnPrint = document.getElementById("btnPrint");
-	var CURRENT_SORT = { key: null, asc: true };
+   const btnPrint = document.getElementById("btnPrint");
+   var CURRENT_SORT = { key: null, asc: true };
     console.log("✅ Logs.js initialized");
 
     if (modal) modal.classList.remove("show");
@@ -39,20 +39,20 @@ document.addEventListener("DOMContentLoaded", function () {
     window.LAST_LOGS = readLogsFromDom();
     FILTERED_LOGS = window.LAST_LOGS.slice();
     renderTable(CURRENT_PAGE);
-	setupSorting();   // ✅ 정렬 이벤트 연결
+   setupSorting();   // ✅ 정렬 이벤트 연결
     
-	// ==============================
-	// ✅ 로그아웃 알림
-	// ==============================
-	const logoutBtn = document.querySelector(".login-btn");
-	if (logoutBtn) {
-	  logoutBtn.addEventListener("click", () => {
-	    alert("로그아웃 되었습니다.");
-	    // 원래 페이지 이동 (선택)
-	    window.location.href = "Logout.do";
-	  });
-	}
-	
+   // ==============================
+   // ✅ 로그아웃 알림
+   // ==============================
+   const logoutBtn = document.querySelector(".login-btn");
+   if (logoutBtn) {
+     logoutBtn.addEventListener("click", () => {
+       alert("로그아웃 되었습니다.");
+       // 원래 페이지 이동 (선택)
+       window.location.href = "Logout.do";
+     });
+   }
+   
     // ==============================
     // ✅ 날짜 검색
     // ==============================
@@ -277,9 +277,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	        printWindow.close();
 	      }, 800);
 	    });
-	  }
- 
-	}
+	  } 
+   }
 
     // ==============================
     // ✅ 페이징
@@ -295,53 +294,53 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==============================
     // ✅ 전송 버튼
     // ==============================
-	// ==============================
-	// ✅ 전송 버튼 이벤트 (삭제 이벤트와 동일한 구조로 정리)
-	// ==============================
-	if (btnSend) {
-	  btnSend.addEventListener("click", () => {
-	    const rows = getCheckedRows();
-	    if (rows.length === 0) return alert("전송할 항목을 선택하세요.");
-	    if (!confirm(`선택된 ${rows.length}건을 전송하시겠습니까?`)) return;
+   // ==============================
+   // ✅ 전송 버튼 이벤트 (삭제 이벤트와 동일한 구조로 정리)
+   // ==============================
+   if (btnSend) {
+     btnSend.addEventListener("click", () => {
+       const rows = getCheckedRows();
+       if (rows.length === 0) return alert("전송할 항목을 선택하세요.");
+       if (!confirm(`선택된 ${rows.length}건을 전송하시겠습니까?`)) return;
 
-	    fetch(ctx + "/SendLog.do", {
-	      method: "POST",
-	      headers: { "Content-Type": "application/json" },
-	      body: JSON.stringify(rows.map(r => Number(r.id)))
-	    })
-	      .then(res => res.text())
-	      .then(msg => {
-	        alert(msg || "전송이 완료되었습니다.");
+       fetch(ctx + "/SendLog.do", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify(rows.map(r => Number(r.id)))
+       })
+         .then(res => res.text())
+         .then(msg => {
+           alert(msg || "전송이 완료되었습니다.");
 
-	        // ✅ DOM 즉시 반영: 전송된 행의 상태를 '처리중' 으로 변경
-	        rows.forEach(r => {
-	          const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
-	          if (tr) {
-	            const statusCell = tr.querySelector("td:last-child");
-	            if (statusCell) {
-	              statusCell.innerHTML = `<span class="status progress">처리중</span>`;
-	            }
-	          }
-	        });
+           // ✅ DOM 즉시 반영: 전송된 행의 상태를 '처리중' 으로 변경
+           rows.forEach(r => {
+             const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
+             if (tr) {
+               const statusCell = tr.querySelector("td:last-child");
+               if (statusCell) {
+                 statusCell.innerHTML = `<span class="status progress">처리중</span>`;
+               }
+             }
+           });
 
-	        // ✅ 통계 갱신 (삭제처럼 실시간 반영)
-	        window.LAST_LOGS = readLogsFromDom();
-	        FILTERED_LOGS = window.LAST_LOGS.slice();
-	        updateStats(FILTERED_LOGS);
-	      })
-	      .catch(err => {
-	        console.error("전송 오류:", err);
-	        alert("전송 중 오류가 발생했습니다.");
-	      });
-	  });
-	}
+           // ✅ 통계 갱신 (삭제처럼 실시간 반영)
+           window.LAST_LOGS = readLogsFromDom();
+           FILTERED_LOGS = window.LAST_LOGS.slice();
+           updateStats(FILTERED_LOGS);
+         })
+         .catch(err => {
+           console.error("전송 오류:", err);
+           alert("전송 중 오류가 발생했습니다.");
+         });
+     });
+   }
 
    // ============================== 
    // 삭제 버튼 이벤트 
    // ============================== 
    if (btnDel) { 
-	btnDel.addEventListener("click", () => {
-	const rows = getCheckedRows(); 
+   btnDel.addEventListener("click", () => {
+   const rows = getCheckedRows(); 
    if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
    if (!confirm("정말 삭제하시겠습니까?")) return; 
    fetch("DeleteLog.do", { 
@@ -384,74 +383,74 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-	// ✅ 날짜 문자열을 Date로 (yyyy-mm-dd 또는 yy/mm/dd)
-	function toDateSafe(str){
-	  if(!str) return null;
-	  var m1 = str.match(/(\d{4})-(\d{2})-(\d{2})/);       // 2025-12-24
-	  if(m1) return new Date(+m1[1], m1[2]-1, +m1[3]);
-	  var m2 = str.match(/(\d{2})\/(\d{2})\/(\d{2})/);     // 25/12/24
-	  if(m2) return new Date(2000 + +m2[1], +m2[2]-1, +m2[3]);
-	  return new Date(str); // fallback (브라우저 파서)
-	}
+   // ✅ 날짜 문자열을 Date로 (yyyy-mm-dd 또는 yy/mm/dd)
+   function toDateSafe(str){
+     if(!str) return null;
+     var m1 = str.match(/(\d{4})-(\d{2})-(\d{2})/);       // 2025-12-24
+     if(m1) return new Date(+m1[1], m1[2]-1, +m1[3]);
+     var m2 = str.match(/(\d{2})\/(\d{2})\/(\d{2})/);     // 25/12/24
+     if(m2) return new Date(2000 + +m2[1], +m2[2]-1, +m2[3]);
+     return new Date(str); // fallback (브라우저 파서)
+   }
 
-	// ✅ 상태 정렬용 우선순위
-	function progOrder(p){
-	  var n = normalizeProg(p);
-	  return (n === "처리전") ? 1 : (n === "처리중") ? 2 : (n === "처리완료") ? 3 : 99;
-	}
+   // ✅ 상태 정렬용 우선순위
+   function progOrder(p){
+     var n = normalizeProg(p);
+     return (n === "처리전") ? 1 : (n === "처리중") ? 2 : (n === "처리완료") ? 3 : 99;
+   }
 
-	// ✅ 실제 정렬 로직 (FILTERED_LOGS를 정렬)
-	function sortLogsByKey(key, asc){
-	  if(!Array.isArray(FILTERED_LOGS)) return;
-	  FILTERED_LOGS.sort(function(a,b){
-	    var A = (a[key] || "").trim();
-	    var B = (b[key] || "").trim();
+   // ✅ 실제 정렬 로직 (FILTERED_LOGS를 정렬)
+   function sortLogsByKey(key, asc){
+     if(!Array.isArray(FILTERED_LOGS)) return;
+     FILTERED_LOGS.sort(function(a,b){
+       var A = (a[key] || "").trim();
+       var B = (b[key] || "").trim();
 
-	    if(key === "date"){
-	      A = toDateSafe(A); B = toDateSafe(B);
-	      var at = A ? A.getTime() : 0, bt = B ? B.getTime() : 0;
-	      return asc ? (at - bt) : (bt - at);
-	    }
-	    if(key === "prog"){
-	      var ap = progOrder(a.prog), bp = progOrder(b.prog);
-	      return asc ? (ap - bp) : (bp - ap);
-	    }
-	    // 문자열 기본 비교 (한글 정렬 안정화)
-	    var cmp = String(A).localeCompare(String(B), "ko");
-	    return asc ? cmp : -cmp;
-	  });
-	}
+       if(key === "date"){
+         A = toDateSafe(A); B = toDateSafe(B);
+         var at = A ? A.getTime() : 0, bt = B ? B.getTime() : 0;
+         return asc ? (at - bt) : (bt - at);
+       }
+       if(key === "prog"){
+         var ap = progOrder(a.prog), bp = progOrder(b.prog);
+         return asc ? (ap - bp) : (bp - ap);
+       }
+       // 문자열 기본 비교 (한글 정렬 안정화)
+       var cmp = String(A).localeCompare(String(B), "ko");
+       return asc ? cmp : -cmp;
+     });
+   }
 
-	// ✅ 정렬 헤더 화살표 표시
-	function highlightSortedColumn(key, asc){
-	  var ths = document.querySelectorAll(".logs-table th[data-sort]");
-	  for(var i=0;i<ths.length;i++){
-	    var t = ths[i];
-	    t.textContent = t.textContent.replace(/\s*[↑↓]$/,"");
-	    if(t.getAttribute("data-sort") === key){
-	      t.textContent += asc ? " ↑" : " ↓";
-	    }
-	  }
-	}
+   // ✅ 정렬 헤더 화살표 표시
+   function highlightSortedColumn(key, asc){
+     var ths = document.querySelectorAll(".logs-table th[data-sort]");
+     for(var i=0;i<ths.length;i++){
+       var t = ths[i];
+       t.textContent = t.textContent.replace(/\s*[↑↓]$/,"");
+       if(t.getAttribute("data-sort") === key){
+         t.textContent += asc ? " ↑" : " ↓";
+       }
+     }
+   }
 
-	// ✅ 헤더 클릭 바인딩 (DOMContentLoaded 안 최상위에서 한 번만 호출)
-	function setupSorting(){
-	  var ths = document.querySelectorAll(".logs-table th[data-sort]");
-	  for(var i=0;i<ths.length;i++){
-	    (function(th){
-	      th.style.cursor = "pointer";
-	      th.addEventListener("click", function(){
-	        var key = th.getAttribute("data-sort");
-	        if(CURRENT_SORT.key === key) CURRENT_SORT.asc = !CURRENT_SORT.asc;
-	        else { CURRENT_SORT.key = key; CURRENT_SORT.asc = true; }
-	        sortLogsByKey(key, CURRENT_SORT.asc);
-	        CURRENT_PAGE = 1;           // 첫 페이지로
-	        renderTable(CURRENT_PAGE);  // 다시 그리기
-	        highlightSortedColumn(key, CURRENT_SORT.asc);
-	      });
-	    })(ths[i]);
-	  }
-	}
+   // ✅ 헤더 클릭 바인딩 (DOMContentLoaded 안 최상위에서 한 번만 호출)
+   function setupSorting(){
+     var ths = document.querySelectorAll(".logs-table th[data-sort]");
+     for(var i=0;i<ths.length;i++){
+       (function(th){
+         th.style.cursor = "pointer";
+         th.addEventListener("click", function(){
+           var key = th.getAttribute("data-sort");
+           if(CURRENT_SORT.key === key) CURRENT_SORT.asc = !CURRENT_SORT.asc;
+           else { CURRENT_SORT.key = key; CURRENT_SORT.asc = true; }
+           sortLogsByKey(key, CURRENT_SORT.asc);
+           CURRENT_PAGE = 1;           // 첫 페이지로
+           renderTable(CURRENT_PAGE);  // 다시 그리기
+           highlightSortedColumn(key, CURRENT_SORT.asc);
+         });
+       })(ths[i]);
+     }
+   }
 
   } catch (err) {
     console.error("[Logs.js] 초기화 중 에러:", err);
@@ -777,14 +776,14 @@ function drawRegionBarChart(regionCount, total){
 // 위반유형 도넛그래프
 // ------------------------------
 function drawTypeDonutChart(typeCount, totalType){
-	var ctx = document.getElementById("typeDonut2");
-	  if (!ctx) return;
-	  if (window.typeDonutChart) window.typeDonutChart.destroy();
+   var ctx = document.getElementById("typeDonut2");
+     if (!ctx) return;
+     if (window.typeDonutChart) window.typeDonutChart.destroy();
 
-	  var labels = ["헬멧 미착용", "2인이상 탑승"];
-	  var data = [typeCount["헬멧 미착용"], typeCount["2인이상 탑승"]];
-	  var total = totalType || data.reduce(function (a, b) { return a + b; }, 0);
-  	window.typeDonutChart = new Chart(ctx, {
+     var labels = ["헬멧 미착용", "2인이상 탑승"];
+     var data = [typeCount["헬멧 미착용"], typeCount["2인이상 탑승"]];
+     var total = totalType || data.reduce(function (a, b) { return a + b; }, 0);
+     window.typeDonutChart = new Chart(ctx, {
       type: "doughnut",
       data: {
         labels: labels,
@@ -855,14 +854,71 @@ function drawHourlyLineChart(labels, data){
   });
 }
 
-			// 상세보기 모달 열기
-		document.addEventListener('click', e => {
- 		 if (e.target.classList.contains('btn-detail')) {
-    	document.getElementById('detailModal').classList.add('show');
-  		}
-	});
+         // 상세보기 모달 열기
+      document.addEventListener('click', e => {
+        if (e.target.classList.contains('btn-detail')) {
+       document.getElementById('detailModal').classList.add('show');
+        }
+   });
 
-		// 닫기 버튼
-	document.getElementById('detailCloseBtn').addEventListener('click', () => {
-  	document.getElementById('detailModal').classList.remove('show');
-	});
+      // 닫기 버튼
+   document.getElementById('detailCloseBtn').addEventListener('click', () => {
+     document.getElementById('detailModal').classList.remove('show');
+   });
+   // 상세보기 모달 열기
+   		document.addEventListener('click', e => {
+    		 if (e.target.classList.contains('btn-detail')) {
+       	document.getElementById('detailModal').classList.add('show');
+     		}
+   	});
+
+   		// 닫기 버튼
+   	document.getElementById('detailCloseBtn').addEventListener('click', () => {
+     	document.getElementById('detailModal').classList.remove('show');
+   	});
+
+   	// ------------------------------
+   	// ✅ 보기 버튼 클릭 시 상태를 '처리중'으로 변경 (단, '처리전'만 해당)
+   	// ------------------------------
+   	document.addEventListener("click", function(e) {
+   	  if (e.target.classList.contains("btn-detail")) {
+   	    const tr = e.target.closest("tr"); // 클릭한 버튼의 행 찾기
+   	    if (!tr) return;
+
+   	    const statusSpan = tr.querySelector("td:nth-child(5) span.status");
+   	    if (!statusSpan) return;
+
+   	    const currentStatus = statusSpan.textContent.trim();
+
+   	    // ✅ '처리전'인 경우만 '처리중'으로 변경
+   	    if (currentStatus === "처리전") {
+   	      statusSpan.textContent = "처리중";
+   	      statusSpan.className = "status progress"; // 스타일 변경
+
+   	      const id = tr.dataset.id;
+
+   	      // ✅ 내부 데이터 배열에서도 상태 변경
+   	      if (id && Array.isArray(window.LAST_LOGS)) {
+   	        const found = window.LAST_LOGS.find(l => String(l.id) === String(id));
+   	        if (found) found.prog = "처리중";
+   	      }
+
+   	      // ✅ 서버에도 상태 업데이트 요청
+   	      fetch(ctx + "/UpdateStatus.do", {
+   	        method: "POST",
+   	        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+   	        body: "id=" + encodeURIComponent(id) + "&status=처리중"
+   	      })
+   	      .then(res => res.text())
+   	      .then(msg => console.log("서버 응답:", msg))
+   	      .catch(err => console.error("서버 반영 실패:", err));
+
+   	      // ✅ 통계 실시간 갱신
+   	      updateStats(window.LAST_LOGS);
+
+   	      console.log(`▶ 로그 ${id} 상태가 '처리전' → '처리중' 으로 변경됨`);
+   	    } else {
+   	      console.log(`ℹ️ '${currentStatus}' 상태는 변경되지 않음`);
+   	    }
+   	  }
+   	});
