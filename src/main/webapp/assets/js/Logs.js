@@ -792,30 +792,47 @@ function drawHourlyLineChart(labels, data){
   });
 }
 
-document.addEventListener("click", e => {
-  if (e.target.classList.contains("btn-detail")) {
-    const tr = e.target.closest("tr");
-    if (!tr) return;
+document.addEventListener("click", async (e) => {
+	if (e.target.classList.contains("btn-detail")) {
+	    const tr = e.target.closest("tr");
+	    if (!tr) return;
 
-    // ✅ 행의 각 셀 데이터 읽기
-    const tds = tr.querySelectorAll("td");
-    const date = tds[1]?.textContent.trim() || "-";
-    const loc = tds[2]?.textContent.trim() || "-";
-    const statusText = tds[4]?.querySelector("span.status")?.textContent.trim() || "-";
-    const statusClass = tds[4]?.querySelector("span.status")?.className.replace("status ", "") || "";
+	    const detectionId = tr.dataset.id; // ✅ DETECTION_ID
+	    if (!detectionId) return;
 
-    // ✅ 상세 모달에 반영
-    document.getElementById("detailDate").textContent = date;
-    document.getElementById("detailLoc").textContent = loc;
+	    try {
+	      // ✅ 1️⃣ DB에서 상세 데이터 불러오기
+	      const res = await fetch('/Fly_Kickboard/GetDetectionDetail.do?id=' + detectionId);
+	      if (!res.ok) throw new Error("상세정보 요청 실패");
+	      const data = await res.json();
 
-    const statusSpan = document.getElementById("detailStatus");
-    statusSpan.textContent = statusText;
-    statusSpan.className = "status-badge " + statusClass; // 상태 색상도 반영
+	      // ✅ 2️⃣ 데이터 반영
+	      document.getElementById("detailDate").textContent = data.RegDt || "-";
+	      document.getElementById("detailLoc").textContent = data.CameraLoc || "-";
+	      document.getElementById("detailType").textContent = data.DetetType || "미확인";
+	      
+	      const statusSpan = document.getElementById("detailStatus");
+	      statusSpan.textContent = data.ProgStatus || "-";
+	      statusSpan.className = "status-badge " + (data.statusClass || "pending");
 
-    // ✅ 모달 열기
-    document.getElementById("detailModal").classList.add("show");
-  }
-});
+	      // ✅ 3️⃣ 이미지 표시
+	      const img = document.getElementById("detailImage");
+	      if (data.FileId) {
+	        img.src = `showImage?id=${data.FileId}`;
+	        img.onerror = () => img.src = "/Fly_Kickboard/resources/img/no_image.png";
+	      } else {
+	        img.src = "/Fly_Kickboard/resources/img/no_image.png";
+	      }
+
+	      // ✅ 4️⃣ 모달 열기
+	      document.getElementById("detailModal").classList.add("show");
+
+	    } catch (err) {
+	      console.error("❌ 상세정보 로딩 오류:", err);
+	      alert("상세정보를 불러오지 못했습니다.");
+	    }
+	  }
+	});
 
       // 닫기 버튼
    document.getElementById('detailCloseBtn').addEventListener('click', () => {
