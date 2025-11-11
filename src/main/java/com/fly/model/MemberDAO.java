@@ -89,11 +89,12 @@ public class MemberDAO {
 
 	// 메인화면 헬멧미착용 / 2인탑승 분류
 	public List<MemberVO> LogType(MemberVO mvo) {
-		SqlSession sqlSession = factory.openSession(true);
-		List<MemberVO> vo = sqlSession.selectList("logtype", mvo);
-		sqlSession.close();
-		return vo;
-	}
+        SqlSession sqlSession = factory.openSession(true);
+        // namespace + SQL ID 조합으로 호출됨
+        List<MemberVO> list = sqlSession.selectList("com.fly.model.MemberDAO.logtype", mvo);
+        sqlSession.close();
+        return list;
+    }
 
 	// 감지 상태 변경 (처리중 / 완료)
 	public int updateStatus(MemberVO vo) {
