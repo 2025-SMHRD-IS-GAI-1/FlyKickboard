@@ -28,5 +28,6 @@
   <mappers>
   	<!-- mapper 파일이 여러개 생긴ㄷ나면? 그 개수만큼 mapper 태그 추가해주기 -->
     <mapper resource="com/fly/db/MemberMapper.xml"/>
+    
   </mappers>
 </configuration>
