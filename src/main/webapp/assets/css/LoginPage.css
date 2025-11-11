@@ -49,7 +49,7 @@ body {
 /* 제목 */
 .hero {
   position: absolute;
-  top: 60px;
+  top: 120px;               /* ✅ 글씨를 아래로 내림 (기존 60px → 120px) */
   left: 50%;
   transform: translateX(-50%);
   width: min(1200px, 92vw);
@@ -60,6 +60,7 @@ body {
   letter-spacing: -0.02em;
   text-shadow: 0 6px 18px rgba(6,26,80,.35);
 }
+
 
 /* 로그인 카드 */
 .card {
@@ -221,4 +222,6 @@ body {
   }
   .input { width: 100%; }
 }
+
+
 
