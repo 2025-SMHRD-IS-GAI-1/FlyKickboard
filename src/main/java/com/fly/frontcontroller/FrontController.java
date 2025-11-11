@@ -20,6 +20,7 @@ import com.fly.controller.AllLogService;
 import com.fly.controller.AllManagerService;
 import com.fly.controller.DeleteLogService;
 import com.fly.controller.DeleteService;
+import com.fly.controller.GetDetectionDetailService;
 import com.fly.controller.JoinService;
 import com.fly.controller.LogService;
 import com.fly.controller.LogTypeService;
@@ -53,6 +54,7 @@ public class FrontController extends HttpServlet {
 		map.put("LogType.do", new LogTypeService());
 		map.put("UpdateStatus.do", new UpdateStatusService());
 		map.put("LogsAfter.do", new LogsAfterService());
+		map.put("GetDetectionDetail.do", new GetDetectionDetailService());
 	}
 
 	protected void service(HttpServletRequest request, HttpServletResponse response)
@@ -89,6 +91,11 @@ public class FrontController extends HttpServlet {
 		} else {
 			com = map.get(FinalUrl);
 			MoveUrl = com.execute(request, response);
+		}
+		// 페이지 경로를 이동
+		if (MoveUrl == null) {
+		    // Ajax 응답 or 직접 response 처리된 경우
+		    return;
 		}
 		// 페이지 경로를 이동
 		if (MoveUrl.contains("fetch:/")) {

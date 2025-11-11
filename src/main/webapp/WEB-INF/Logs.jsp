@@ -300,7 +300,7 @@
 
     <!-- 이미지 영역 -->
     <div class="detail-image">
-      <img id="detailImage" src="${ctx}/assets/img/sample_helmet.jpg" alt="감지 장면" />
+      <img id="detailImage" src="" alt="감지 장면" width="250">
     </div>
 
     <!-- 정보 영역 -->
