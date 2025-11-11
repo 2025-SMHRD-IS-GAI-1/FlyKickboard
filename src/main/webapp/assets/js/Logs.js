@@ -838,8 +838,51 @@ document.addEventListener("click", async (e) => {
    document.getElementById('detailCloseBtn').addEventListener('click', () => {
      document.getElementById('detailModal').classList.remove('show');
    });
+   // ------------------------------
+         // ✅ 보기 버튼 클릭 시 상태를 '처리중'으로 변경 (단, '처리전'만 해당)
+         // ------------------------------
+         document.addEventListener("click", function(e) {
+           if (e.target.classList.contains("btn-detail")) {
+             const tr = e.target.closest("tr"); // 클릭한 버튼의 행 찾기
+             if (!tr) return;
+
+             const statusSpan = tr.querySelector("td:nth-child(5) span.status");
+             if (!statusSpan) return;
+
+             const currentStatus = statusSpan.textContent.trim();
+
+             // ✅ '처리전'인 경우만 '처리중'으로 변경
+             if (currentStatus === "처리전") {
+               statusSpan.textContent = "처리중";
+               statusSpan.className = "status progress"; // 스타일 변경
+
+               const id = tr.dataset.id;
+
+               // ✅ 내부 데이터 배열에서도 상태 변경
+               if (id && Array.isArray(window.LAST_LOGS)) {
+                 const found = window.LAST_LOGS.find(l => String(l.id) === String(id));
+                 if (found) found.prog = "처리중";
+               }
+
+               // ✅ 서버에도 상태 업데이트 요청
+               fetch(ctx + "/UpdateStatus.do", {
+                 method: "POST",
+                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                 body: "id=" + encodeURIComponent(id) + "&status=처리중"
+               })
+               .then(res => res.text())
+               .then(msg => console.log("서버 응답:", msg))
+               .catch(err => console.error("서버 반영 실패:", err));
+
+               // ✅ 통계 실시간 갱신
+               updateStats(window.LAST_LOGS);
+
+               console.log(`▶ 로그 ${id} 상태가 '처리전' → '처리중' 으로 변경됨`);
+             } else {
+               console.log(`ℹ️ '${currentStatus}' 상태는 변경되지 않음`);
+             }
+           }
    
-   
-   
+   });
 
    

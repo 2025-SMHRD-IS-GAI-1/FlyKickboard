@@ -66,14 +66,23 @@
     FROM T_DETECTION
   </select>
 
-  <!-- 선택 감지기록 삭제 -->
-  <delete id="deleteLogs" parameterType="java.util.List">
-    DELETE FROM T_DETECTION
-    WHERE DETECT_ID IN
-    <foreach collection="list" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </delete>
+  <!-- ✅ 1️⃣ 자식 테이블(T_FILE) 먼저 삭제 -->
+<delete id="deleteIds" parameterType="java.util.List">
+  DELETE FROM T_FILE
+  WHERE DETECT_ID IN
+  <foreach collection="list" item="id" open="(" separator="," close=")">
+    #{id}
+  </foreach>
+</delete>
+
+<!-- ✅ 2️⃣ 부모 테이블(T_DETECTION) 삭제 -->
+<delete id="deleteLogs" parameterType="java.util.List">
+  DELETE FROM T_DETECTION
+  WHERE DETECT_ID IN
+  <foreach collection="list" item="id" open="(" separator="," close=")">
+    #{id}
+  </foreach>
+</delete>
 
 <!-- 최근 감지 로그 20개 -->
 <select id="logtype" resultType="com.fly.model.MemberVO">
