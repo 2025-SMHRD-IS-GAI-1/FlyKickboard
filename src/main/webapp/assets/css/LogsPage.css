@@ -644,11 +644,11 @@ body.report-active {
 }
 .logs-table thead th:first-child {
   position: relative;
-  padding-left: 16px;
+  padding-left: 32px;
 }
 .logs-table thead th:first-child::after {
   content: "No";
-  margin-left: 85px;  /*헤더 간격*/
+  margin-left: 24px;  /*헤더 간격*/
   font-weight: 700;
   color: #ffffff;
 }
@@ -665,7 +665,7 @@ body.report-active {
 }
 .logs-table tbody td:first-child::after {
   content: counter(rownum);
-  margin-left: 0; /* ← 왼쪽 간격 제거 */
+  margin-left: 6px; /* ← 왼쪽 간격 제거 */
   font-weight: 700;
   color: #334155;
   display: inline-block;
@@ -772,14 +772,17 @@ body.report-active {
 }
 
 /* ✅ 모달 박스 */
-.detail-dialog {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.25);
-  max-width: 420px;
-  width: 90%;
-  overflow: hidden;
-  animation: modalIn 0.25s ease;
+.detail-dialog{
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 32px rgba(0,0,0,.25);
+  max-width:420px;
+  width:90%;
+  max-height:88vh;        /* 👈 화면 높이의 88%를 상한으로 */
+  overflow:auto;          /* 👈 넘치면 모달 안에서 스크롤 */
+  display:flex;           /* 👇 버튼이 항상 하단에 붙도록 */
+  flex-direction:column;
+  animation:modalIn .25s ease;
 }
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(-10px); }
@@ -797,11 +800,13 @@ body.report-active {
 }
 
 /* 감지유형 배지 */
-.detail-type {
+.detail-type{
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;   /* ← 왼쪽 정렬 */
   align-items: center;
-  margin-top: 16px;
+  gap: 8px;                      /* 선택: 배지 여러 개일 때 간격 */
+  padding-left: 24px;            /* 본문 패딩과 맞춰 왼쪽 여백(네 .detail-info가 24px) */
+  margin-top: 12px;
 }
 .badge-type {
   background: #e54848;
@@ -812,18 +817,42 @@ body.report-active {
   border-radius: 8px;
   text-align: center;
 }
-
-/* 이미지 */
+/* 이미지 자동 맞춤 (세로/가로 어떤 비율이든 중앙에 고정) */
 .detail-image {
+  position: relative;
+  width: 100%;
+  height: clamp(360px, 58vh, 520px); /* 화면 기준 높이 자동 조절 */
+  margin: 14px 0;
+  border-radius: 14px;
+  background: #f7f9fd;
   display: flex;
   justify-content: center;
-  margin: 14px 0;
+  align-items: center;
+  overflow: hidden;
 }
+
+/* 이미지 크기 자동 맞춤 + 비율 유지 */
 .detail-image img {
-  max-width: 80%;
-  border-radius: 8px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* ✅ 이미지 비율 유지하면서 영역 안에 맞춤 */
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.12);
 }
+
+.detail-dialog{
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 32px rgba(0,0,0,.25);
+  max-width:420px;
+  width:90%;
+  max-height:88vh;      /* ← 화면 높이 상한 */
+  overflow:auto;        /* ← 넘치면 내부 스크롤 */
+  display:flex;         /* 버튼을 바닥에 붙이기 위함 */
+  flex-direction:column;
+  animation:modalIn .25s ease;
+}
+
 
 /* 정보 텍스트 */
 .detail-info {
@@ -935,8 +964,8 @@ body:has(.logs-section){
 
 /* 4) 체크박스와 숫자 간격/열폭을 반응형으로만 살짝 조정 */
 .logs-section {                        /* 페이지 범위 한정 */
-  --gap-cb-no: 85px;                   /* 기본값 유지 */
-  --w-col-1: 160px;                    /* 기본값 유지 */
+  --gap-cb-no: 48px;                   /* 기본값 유지 */
+  --w-col-1: 150px;                    /* 기본값 유지 */
 }
 
 /* 좁아질수록 간격·열폭만 단계적으로 축소 (깨짐 없이 유지) */
@@ -954,4 +983,11 @@ body:has(.logs-section){
   .logs-section { --gap-cb-no: 46px; --w-col-1: 124px; }
   .logs-table tbody td:first-child input[type="checkbox"] { transform: scale(.9); }
 }
+
+/* 🔧 상세정보 라벨/값을 왼쪽으로 바짝 붙이기 */
+.detail-info p{ display:flex; align-items:center; gap:4px; } /* 간격 최소화 */
+.detail-info strong{ width:35px; text-align:left; }          /* 라벨 폭 축소(더 붙이려면 52~54px) */
+.detail-info strong + *{ margin-left:0; }                    /* 값 왼쪽 여백 제거 */
+#detailStatus{ margin-left:0; }                              /* 상태 배지도 동일 적용 */
+
 

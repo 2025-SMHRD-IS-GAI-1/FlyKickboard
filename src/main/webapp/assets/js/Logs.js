@@ -345,26 +345,35 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	   }
 
-   // ============================== 
-   // 삭제 버튼 이벤트 
-   // ============================== 
-   if (btnDel) { 
-   btnDel.addEventListener("click", () => {
-   const rows = getCheckedRows(); 
-   if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
-   if (!confirm("정말 삭제하시겠습니까?")) return; 
-   fetch("DeleteLog.do", { 
-   method: "POST",
-    headers: { "Content-Type": "application/json" },
-     body: JSON.stringify(rows.map(r => Number(r.id))) })
-      .then(res => res.text())
-      .then(msg => { 
-      alert(msg); l
-      ocation.reload(); 
-     }) 
-      .catch(err => console.error("삭제 오류:", err)); 
-     }); 
-   }
+	   // ==============================
+	   // 삭제 버튼 이벤트
+	   // ==============================
+	   if (btnDel) {
+	     btnDel.addEventListener("click", () => {
+	       const rows = getCheckedRows();
+	       if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
+	       if (!confirm("정말 삭제하시겠습니까?")) return;
+
+	       fetch("DeleteLog.do", {
+	         method: "POST",
+	         headers: { "Content-Type": "application/json" },
+	         body: JSON.stringify(rows.map(r => Number(r.id)))
+	       })
+	         .then(res => {
+	           if (!res.ok) throw new Error("서버 응답 오류");
+	           return res.text();
+	         })
+	         .then(() => {
+	           alert("삭제되었습니다.");  // ✅ 고정 메시지
+	           location.reload();
+	         })
+	         .catch(err => {
+	           console.error("삭제 오류:", err);
+	           alert("삭제 중 오류가 발생했습니다.");
+	         });
+	     });
+	   }
+
 
     // ==============================
     // ✅ 전체선택 체크박스 기능
