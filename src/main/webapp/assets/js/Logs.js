@@ -717,10 +717,36 @@ function updateReportModal(list){
       hourTable.innerHTML=hourHtml;
     }
 
-    var label=document.getElementById("selectedDateLabel");
-    if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
-  var label=document.getElementById("selectedDateLabel");
-  if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
+	const label = document.getElementById("selectedDateLabel");
+		let dateLabel = "";
+
+		if (list && list.length > 0) {
+		  // 리스트에서 날짜만 추출
+		  const dates = list
+		    .map(item => (item.date || "").substring(0, 10)) // "YYYY-MM-DD HH:MM:SS" → "YYYY-MM-DD"
+		    .filter(d => d); // 빈 값 제거
+
+		  if (dates.length > 0) {
+		    // 날짜 정렬
+		    const sortedDates = [...new Set(dates)].sort(); // 중복 제거 후 정렬
+		    const first = sortedDates[0];
+		    const last = sortedDates[sortedDates.length - 1];
+
+		    if (first === last) {
+		      dateLabel = `선택 일자: ${first}`;
+		    } else {
+		      dateLabel = `선택 기간: ${first} ~ ${last}`;
+		    }
+		  }
+		} 
+
+		// 아무것도 없으면 오늘 날짜
+		if (!dateLabel) {
+		  const today = new Date().toISOString().slice(0, 10);
+		  dateLabel = `선택 일자: ${today}`;
+		}
+		// ✅ 최종 반영
+			if (label) label.textContent = dateLabel;
 }
 
 // ------------------------------
