@@ -64,6 +64,7 @@
       PROG_STATUS AS "prog",
       DETECT_ID AS "det_id"
     FROM T_DETECTION
+    ORDER BY REG_DT DESC
   </select>
 
   <!-- ✅ 1️⃣ 자식 테이블(T_FILE) 먼저 삭제 -->
