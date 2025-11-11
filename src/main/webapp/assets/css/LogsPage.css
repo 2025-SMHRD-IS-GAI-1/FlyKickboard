@@ -772,14 +772,17 @@ body.report-active {
 }
 
 /* ✅ 모달 박스 */
-.detail-dialog {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.25);
-  max-width: 420px;
-  width: 90%;
-  overflow: hidden;
-  animation: modalIn 0.25s ease;
+.detail-dialog{
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 32px rgba(0,0,0,.25);
+  max-width:420px;
+  width:90%;
+  max-height:88vh;        /* 👈 화면 높이의 88%를 상한으로 */
+  overflow:auto;          /* 👈 넘치면 모달 안에서 스크롤 */
+  display:flex;           /* 👇 버튼이 항상 하단에 붙도록 */
+  flex-direction:column;
+  animation:modalIn .25s ease;
 }
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(-10px); }
@@ -812,18 +815,67 @@ body.report-active {
   border-radius: 8px;
   text-align: center;
 }
-
-/* 이미지 */
+/* 이미지 자동 맞춤 (세로/가로 어떤 비율이든 중앙에 고정) */
 .detail-image {
+  position: relative;
+  width: 100%;
+  height: clamp(360px, 58vh, 520px); /* 화면 기준 높이 자동 조절 */
+  margin: 14px 0;
+  border-radius: 14px;
+  background: #f7f9fd;
   display: flex;
   justify-content: center;
-  margin: 14px 0;
+  align-items: center;
+  overflow: hidden;
 }
+
+/* 이미지 크기 자동 맞춤 + 비율 유지 */
 .detail-image img {
-  max-width: 80%;
-  border-radius: 8px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* ✅ 이미지 비율 유지하면서 영역 안에 맞춤 */
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.12);
 }
+
+.detail-dialog{
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 32px rgba(0,0,0,.25);
+  max-width:420px;
+  width:90%;
+  max-height:88vh;      /* ← 화면 높이 상한 */
+  overflow:auto;        /* ← 넘치면 내부 스크롤 */
+  display:flex;         /* 버튼을 바닥에 붙이기 위함 */
+  flex-direction:column;
+  animation:modalIn .25s ease;
+}
+
+/*사진영역에  자동맞춤*/
+/* 기본값: 가로형(랜드스케이프) — 지금 쓰는 방식 유지 */
+.detail-image.landscape{
+  height: clamp(360px, 58vh, 520px);
+}
+.detail-image.landscape img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 세로형(포트레이트): 가로 여백 제거용 — 높이를 내용에 맞추고 가로를 꽉 채움 */
+.detail-image.portrait{
+  height: auto;                 /* 박스가 이미지 높이에 맞춰짐 */
+}
+.detail-image.portrait img{
+  width: 100%;
+  height: auto;                 /* 세로 사진은 가로를 꽉 채우고 비율 유지 */
+  object-fit: contain;
+}
+
+/* 다이얼로그가 너무 넓어 보이지 않게 최대폭 살짝 줄임(선택) */
+.detail-dialog{ max-width: 480px; }
+
+
 
 /* 정보 텍스트 */
 .detail-info {
@@ -954,4 +1006,6 @@ body:has(.logs-section){
   .logs-section { --gap-cb-no: 46px; --w-col-1: 124px; }
   .logs-table tbody td:first-child input[type="checkbox"] { transform: scale(.9); }
 }
+
+
 
