@@ -11,24 +11,29 @@ import com.google.gson.Gson;
 
 public class LogsAfterService implements Command {
 
-	@Override
-	public String execute(HttpServletRequest request, HttpServletResponse response) {
-		String sinceIdParam = request.getParameter("sinceId");
-		long sinceId = 0;
+    @Override
+    public String execute(HttpServletRequest request, HttpServletResponse response) {
 
-		try {
-			sinceId = Long.parseLong(sinceIdParam);
-		} catch (Exception e) {
-			System.out.println("sinceId 변환 실패 → 기본값 0");
-		}
+        // sinceId 파라미터 받기
+        String sinceIdParam = request.getParameter("sinceId");
+        long sinceId = 0;
+        try {
+            sinceId = Long.parseLong(sinceIdParam);
+        } catch (Exception e) {
+            System.out.println("⚠ sinceId 변환 실패 → 기본값 0 사용");
+        }
 
-		MemberDAO dao = new MemberDAO();
-		List<MemberVO> list = dao.getLogsAfter(sinceId);
+        // DAO 호출
+        MemberDAO dao = new MemberDAO();
+        List<MemberVO> list = dao.getLogsAfter(sinceId);
 
-		Gson gson = new Gson();
-		String json = gson.toJson(list);
-		System.out.println("[새 감지이력] " + json);
+        // JSON 변환
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
 
-		return "fetch:/" + json; // JSON 응답
-	}
+        System.out.println("[새 감지이력] " + json);
+
+        // ✅ JSON 응답을 FrontController로 반환
+        return "fetch:/" + json;
+    }
 }

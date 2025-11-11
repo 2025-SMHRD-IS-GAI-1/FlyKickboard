@@ -52,7 +52,7 @@ public class FrontController extends HttpServlet {
 		map.put("DeleteLog.do", new DeleteLogService());
 		map.put("LogType.do", new LogTypeService());
 		map.put("UpdateStatus.do", new UpdateStatusService());
-		map.put("LogsAfter.do", new LogsAfterService());
+		map.put("LogAfter.do", new LogsAfterService());
 	}
 
 	protected void service(HttpServletRequest request, HttpServletResponse response)
