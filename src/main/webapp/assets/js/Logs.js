@@ -345,26 +345,35 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	   }
 
-   // ============================== 
-   // 삭제 버튼 이벤트 
-   // ============================== 
-   if (btnDel) { 
-   btnDel.addEventListener("click", () => {
-   const rows = getCheckedRows(); 
-   if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
-   if (!confirm("정말 삭제하시겠습니까?")) return; 
-   fetch("DeleteLog.do", { 
-   method: "POST",
-    headers: { "Content-Type": "application/json" },
-     body: JSON.stringify(rows.map(r => Number(r.id))) })
-      .then(res => res.text())
-      .then(msg => { 
-      alert(msg); l
-      ocation.reload(); 
-     }) 
-      .catch(err => console.error("삭제 오류:", err)); 
-     }); 
-   }
+	   // ==============================
+	   // 삭제 버튼 이벤트
+	   // ==============================
+	   if (btnDel) {
+	     btnDel.addEventListener("click", () => {
+	       const rows = getCheckedRows();
+	       if (rows.length === 0) return alert("삭제할 항목을 선택하세요.");
+	       if (!confirm("정말 삭제하시겠습니까?")) return;
+
+	       fetch("DeleteLog.do", {
+	         method: "POST",
+	         headers: { "Content-Type": "application/json" },
+	         body: JSON.stringify(rows.map(r => Number(r.id)))
+	       })
+	         .then(res => {
+	           if (!res.ok) throw new Error("서버 응답 오류");
+	           return res.text();
+	         })
+	         .then(() => {
+	           alert("삭제되었습니다.");  // ✅ 고정 메시지
+	           location.reload();
+	         })
+	         .catch(err => {
+	           console.error("삭제 오류:", err);
+	           alert("삭제 중 오류가 발생했습니다.");
+	         });
+	     });
+	   }
+
 
     // ==============================
     // ✅ 전체선택 체크박스 기능
@@ -717,10 +726,36 @@ function updateReportModal(list){
       hourTable.innerHTML=hourHtml;
     }
 
-    var label=document.getElementById("selectedDateLabel");
-    if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
-  var label=document.getElementById("selectedDateLabel");
-  if(label) label.textContent="선택 일자: "+new Date().toISOString().slice(0,10);
+	const label = document.getElementById("selectedDateLabel");
+		let dateLabel = "";
+
+		if (list && list.length > 0) {
+		  // 리스트에서 날짜만 추출
+		  const dates = list
+		    .map(item => (item.date || "").substring(0, 10)) // "YYYY-MM-DD HH:MM:SS" → "YYYY-MM-DD"
+		    .filter(d => d); // 빈 값 제거
+
+		  if (dates.length > 0) {
+		    // 날짜 정렬
+		    const sortedDates = [...new Set(dates)].sort(); // 중복 제거 후 정렬
+		    const first = sortedDates[0];
+		    const last = sortedDates[sortedDates.length - 1];
+
+		    if (first === last) {
+		      dateLabel = `선택 일자: ${first}`;
+		    } else {
+		      dateLabel = `선택 기간: ${first} ~ ${last}`;
+		    }
+		  }
+		} 
+
+		// 아무것도 없으면 오늘 날짜
+		if (!dateLabel) {
+		  const today = new Date().toISOString().slice(0, 10);
+		  dateLabel = `선택 일자: ${today}`;
+		}
+		// ✅ 최종 반영
+			if (label) label.textContent = dateLabel;
 }
 
 // ------------------------------

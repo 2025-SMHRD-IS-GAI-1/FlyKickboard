@@ -644,11 +644,11 @@ body.report-active {
 }
 .logs-table thead th:first-child {
   position: relative;
-  padding-left: 16px;
+  padding-left: 32px;
 }
 .logs-table thead th:first-child::after {
   content: "No";
-  margin-left: 80px;  /*헤더 간격*/
+  margin-left: 24px;  /*헤더 간격*/
   font-weight: 700;
   color: #ffffff;
 }
@@ -665,7 +665,7 @@ body.report-active {
 }
 .logs-table tbody td:first-child::after {
   content: counter(rownum);
-  margin-left: 0; /* ← 왼쪽 간격 제거 */
+  margin-left: 6px; /* ← 왼쪽 간격 제거 */
   font-weight: 700;
   color: #334155;
   display: inline-block;
@@ -800,11 +800,13 @@ body.report-active {
 }
 
 /* 감지유형 배지 */
-.detail-type {
+.detail-type{
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;   /* ← 왼쪽 정렬 */
   align-items: center;
-  margin-top: 16px;
+  gap: 8px;                      /* 선택: 배지 여러 개일 때 간격 */
+  padding-left: 24px;            /* 본문 패딩과 맞춰 왼쪽 여백(네 .detail-info가 24px) */
+  margin-top: 12px;
 }
 .badge-type {
   background: #e54848;
@@ -850,31 +852,6 @@ body.report-active {
   flex-direction:column;
   animation:modalIn .25s ease;
 }
-
-/*사진영역에  자동맞춤*/
-/* 기본값: 가로형(랜드스케이프) — 지금 쓰는 방식 유지 */
-.detail-image.landscape{
-  height: clamp(360px, 58vh, 520px);
-}
-.detail-image.landscape img{
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* 세로형(포트레이트): 가로 여백 제거용 — 높이를 내용에 맞추고 가로를 꽉 채움 */
-.detail-image.portrait{
-  height: auto;                 /* 박스가 이미지 높이에 맞춰짐 */
-}
-.detail-image.portrait img{
-  width: 100%;
-  height: auto;                 /* 세로 사진은 가로를 꽉 채우고 비율 유지 */
-  object-fit: contain;
-}
-
-/* 다이얼로그가 너무 넓어 보이지 않게 최대폭 살짝 줄임(선택) */
-.detail-dialog{ max-width: 480px; }
-
 
 
 /* 정보 텍스트 */
@@ -987,8 +964,8 @@ body:has(.logs-section){
 
 /* 4) 체크박스와 숫자 간격/열폭을 반응형으로만 살짝 조정 */
 .logs-section {                        /* 페이지 범위 한정 */
-  --gap-cb-no: 85px;                   /* 기본값 유지 */
-  --w-col-1: 160px;                    /* 기본값 유지 */
+  --gap-cb-no: 48px;                   /* 기본값 유지 */
+  --w-col-1: 150px;                    /* 기본값 유지 */
 }
 
 /* 좁아질수록 간격·열폭만 단계적으로 축소 (깨짐 없이 유지) */
@@ -1007,5 +984,10 @@ body:has(.logs-section){
   .logs-table tbody td:first-child input[type="checkbox"] { transform: scale(.9); }
 }
 
+/* 🔧 상세정보 라벨/값을 왼쪽으로 바짝 붙이기 */
+.detail-info p{ display:flex; align-items:center; gap:4px; } /* 간격 최소화 */
+.detail-info strong{ width:35px; text-align:left; }          /* 라벨 폭 축소(더 붙이려면 52~54px) */
+.detail-info strong + *{ margin-left:0; }                    /* 값 왼쪽 여백 제거 */
+#detailStatus{ margin-left:0; }                              /* 상태 배지도 동일 적용 */
 
 
