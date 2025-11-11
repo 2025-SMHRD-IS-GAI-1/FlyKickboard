@@ -249,7 +249,7 @@ function initNaverMap() {
     if (legend) legend.style.display = "block";
   }
   /*************************************************
-   * ✅ 감지 유형별 필터링 (반복 토글 완벽 지원)
+   * ✅ 감지 유형별 필터링 (반복 토글 + 개수 항상 유지)
    *************************************************/
   function setupFilterButtons() {
     const helmetBtn = document.getElementById("btnHelmet");
@@ -264,15 +264,14 @@ function initNaverMap() {
     if (!window.AppState) window.AppState = { filter: null };
 
     const applyFilter = (filterType, btn) => {
-      // 🔹 현재 필터 상태 확인
       const currentFilter = AppState.filter;
 
-      // 🔹 같은 버튼 다시 클릭 → 전체 복귀
+      // 🔹 같은 버튼 다시 클릭 → 전체 보기로 복귀
       if (currentFilter === filterType) {
         AppState.filter = null;
         renderLogs(ALL_LOGS);
         renderMapMarkers(ALL_LOGS);
-        updateSummaryCounts(ALL_LOGS);
+        updateSummaryCounts(ALL_LOGS); // ✅ 전체 기준으로
         highlightButton(null);
         return;
       }
@@ -289,7 +288,7 @@ function initNaverMap() {
 
       renderLogs(filtered);
       renderMapMarkers(filtered);
-      updateSummaryCounts(filtered);
+      updateSummaryCounts(ALL_LOGS); // ✅ 필터 상태여도 전체 로그 기준으로
       highlightButton(btn);
     };
 
@@ -297,7 +296,6 @@ function initNaverMap() {
     helmetBtn.addEventListener("click", () => applyFilter("helmet", helmetBtn));
     doubleBtn.addEventListener("click", () => applyFilter("double", doubleBtn));
   }
-
   /*************************************************
    * ✅ 버튼 강조 표시 (활성/비활성 시각적 구분)
    *************************************************/

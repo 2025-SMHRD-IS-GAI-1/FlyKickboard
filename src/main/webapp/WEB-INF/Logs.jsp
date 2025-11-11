@@ -263,7 +263,7 @@
       <th data-sort="date" scope="col">날짜</th>
       <th data-sort="loc" scope="col">위치</th>
       <th data-sort="type" scope="col">감지 유형</th>
-      <th data-sort="prog" scope="col">상세보기</th>
+      <th data-sort="prog" scope="col">처리상태</th>
       <th scope="col">상세보기</th>
       <!-- ✅ 상세보기 열 추가 -->
     </tr>
@@ -302,13 +302,13 @@
     <div class="detail-image">
       <img id="detailImage" src="" alt="감지 장면" width="250">
     </div>
-master
+
 
     <!-- 정보 영역 -->
     <div class="detail-info">
       <p><strong>날짜:</strong> <span id="detailDate">2025-10-17 14:32</span></p>
       <p><strong>위치:</strong> <span id="detailLoc">광천동</span></p>
-      <p><strong>상태:</strong> <span class="status-badge complete" id="detailStatus">처리완료</span></p>
+      <p><strong>상태:</strong> <span class="status-badge" id="detailStatus">처리중</span></p>
     </div>
 
     <!-- 닫기 버튼 -->

@@ -24,7 +24,7 @@
       <div class="logo">날아라킥보드</div>
       <nav class="nav">
         <a href="${ctx}/Main.do"><button class="nav-btn">실시간</button></a>
-        <a href="${ctx}/Logs.do"><button class="nav-btn">감지 이력</button></a>
+        <a href="${ctx}/Logs.do"><button class="nav-btn">감지 이력 조회</button></a>
       </nav>
       <div class="actions">
         <a href="${ctx}/Logout.do"><button class="login-btn">로그아웃</button></a>

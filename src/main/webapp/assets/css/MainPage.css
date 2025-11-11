@@ -311,13 +311,14 @@ body {
 /* 항목 라인 */
 .map-legend .legend-item {
   display: flex;
-  align-items: center;
+  align-items: baseline;     /* ⬅️ center → baseline으로 변경 */
   gap: 8px;
   font-weight: 600;
   color: #334155;
-  padding-left: 2px;             /* 점과 텍스트 시각정렬 */
-  white-space: nowrap;           /* 줄바꿈 방지 */
+  padding-left: 2px;
+  white-space: nowrap;
 }
+
 
 /* 점 표시 (더 작고 또렷하게) */
 .map-legend .dot {
