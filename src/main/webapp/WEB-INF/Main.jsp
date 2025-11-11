@@ -12,9 +12,7 @@
   <link rel="stylesheet" href="${ctx}/assets/css/MainPage.css" />
   <link rel="stylesheet" href="${ctx}/assets/css/LogsPage.css" />
 
-  <!-- ✅ 전역 변수 정의 (JS에서 사용) -->
-  <script type="text/javascript">
-    // contextPath 및 세션 정보를 JS 전역 변수로 전달
+  <script>
     window.ctx = "${ctx}";
     window.session = "${login}";
   </script>
@@ -22,7 +20,6 @@
 
 <body data-ctx="${ctx}">
   <div class="container">
-    <!-- ✅ 헤더 영역 -->
     <header class="header">
       <div class="logo">날아라킥보드</div>
       <nav class="nav">
@@ -34,19 +31,18 @@
       </div>
     </header>
 
-    <!-- ✅ 메인 콘텐츠 -->
     <main class="main-content">
       <!-- 지도 영역 -->
       <section class="map-section">
         <h2>감지 위치</h2>
-        <div id="map" style="width:100%;height:700px;border-radius:12px;"></div>
-
-        <!-- 범례 -->
-        <div id="mapLegend" class="map-legend" style="display:none">
-          <strong>위반유형</strong>
-          <div><span class="dot helmet"></span> 헬멧 미착용</div>
-          <div><span class="dot double"></span> 2인 탑승</div>
-        </div>
+        <div id="map" style="width:100%;height:700px;border-radius:12px; position:relative;">
+		  <!-- ✅ 지도 위에 표시될 범례 -->
+		  <div id="mapLegend" class="map-legend">
+		    <strong>위반유형</strong>
+		    <div><span class="dot helmet"></span> 헬멧 미착용</div>
+		    <div><span class="dot double"></span> 2인 탑승</div>
+		  </div>
+		</div>
       </section>
 
       <!-- 최근 감지 이력 -->
@@ -70,10 +66,8 @@
   <!-- ✅ 네이버 지도 SDK -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=azilk7tpsg"></script>
 
-  <!-- ✅ JS 로드 순서 매우 중요 -->
-  <!-- 1️⃣ 지도 관련 기능 -->
+  <!-- ✅ JS 모듈 로드 -->
   <script type="module" src="${ctx}/assets/js/MapHandler.js"></script>
-  <!-- 2️⃣ 메인 기능 (로그 불러오기, 이벤트 등) -->
   <script type="module" src="${ctx}/assets/js/Main.js"></script>
 </body>
 </html>
