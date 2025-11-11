@@ -81,10 +81,15 @@ public class MemberDAO {
 
 	// 감지이력 삭제
 	public int DeleteLog(List<Integer> ids) {
-	    SqlSession sqlSession = factory.openSession(true);
-	    int row = sqlSession.delete("deleteLogs", ids);
-	    sqlSession.close();
-	    return row;
+		try (SqlSession sqlSession = factory.openSession(true)) {
+	        // 1️⃣ 자식 테이블(T_FILE) 먼저 삭제
+	        sqlSession.delete("deleteIds", ids);
+
+	        // 2️⃣ 부모 테이블(T_DETECTION) 삭제
+	        int row = sqlSession.delete("deleteLogs", ids);
+
+	        return row; // 삭제된 감지이력 행 수 반환
+	    }
 	}
 
 	// 메인화면 헬멧미착용 / 2인탑승 분류
