@@ -811,9 +811,9 @@ document.addEventListener("click", async (e) => {
 	      document.getElementById("detailLoc").textContent = data.CameraLoc || "-";
 	      document.getElementById("detailType").textContent = data.DetetType || "미확인";
 	      
-	      const statusSpan = document.getElementById("detailStatus");
-	      statusSpan.textContent = data.ProgStatus || "-";
-	      statusSpan.className = "status-badge " + (data.statusClass || "pending");
+		  const statusSpan = document.getElementById("detailStatus");
+		  statusSpan.textContent = data.ProgStatus || "-";
+		  statusSpan.className = "status-badge " + statusClass(data.ProgStatus);
 
 	      // ✅ 3️⃣ 이미지 표시
 	      const img = document.getElementById("detailImage");
