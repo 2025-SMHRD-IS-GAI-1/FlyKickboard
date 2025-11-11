@@ -111,8 +111,8 @@ function updateSummaryCounts(logs) {
 
   logs.forEach((l) => {
     const t = (l.type || "").replace(/\s/g, ""); // 공백 제거
-    if (t.includes("헬멧미착용")) helmet += 1;
-    if (t.includes("2인탑승") || t.includes("2인이상탑승")) dbl += 1;
+    if (t.includes("헬멧 미착용")) helmet += 1;
+    if (t.includes("2인탑승") || t.includes("2인 이상탑승")) dbl += 1;
   });
 
   helmetEl.textContent = helmet;

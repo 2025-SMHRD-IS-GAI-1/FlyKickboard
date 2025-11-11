@@ -27,6 +27,11 @@
         <a href="${ctx}/Logs.do"><button class="nav-btn">감지 이력 조회</button></a>
       </nav>
       <div class="actions">
+      	<c:if test="${sessionScope.isAdmin}">
+         <a href="${ctx}/Manager.do">
+          <button class="admin-btn active" type="button" aria-current="page">관리자 메뉴</button>
+        </a>
+      </c:if>
         <a href="${ctx}/Logout.do"><button class="login-btn">로그아웃</button></a>
       </div>
     </header>
@@ -49,7 +54,7 @@
           </div>
           <div class="summary-card double" id="btnDouble">
             <div class="count" id="cntDouble">0</div>
-            <p>2인 탑승</p>
+            <p>2인이상 탑승</p>
           </div>
         </div>
         <ul id="historyList"></ul>
