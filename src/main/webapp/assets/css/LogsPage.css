@@ -648,7 +648,7 @@ body.report-active {
 }
 .logs-table thead th:first-child::after {
   content: "No";
-  margin-left: 85px;  /*헤더 간격*/
+  margin-left: 80px;  /*헤더 간격*/
   font-weight: 700;
   color: #ffffff;
 }

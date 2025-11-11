@@ -222,7 +222,8 @@ function renderMapMarkers(logs) {
 	  const info = new naver.maps.InfoWindow({
 	    content: `
 	      <div class="fk-infowin">
-	        <div class="loc">${sample.loc || ""}</div>
+	        <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
+	        <div class="tit">${sample.loc || ""}</div>
 	        <div class="type">${(group[0]?.type || "").replace(/\s+/g,"")}</div>
 	        <div class="time">${group[0]?.date || ""}</div>
 	      </div>
@@ -234,6 +235,7 @@ function renderMapMarkers(logs) {
 	    disableAnchor: true,
 	    pixelOffset: new naver.maps.Point(0, -6)
 	  });
+
 
     naver.maps.Event.addListener(marker, "click", () => {
       info.open(window.mapInstance, marker);
