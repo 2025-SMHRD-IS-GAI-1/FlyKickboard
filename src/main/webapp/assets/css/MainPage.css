@@ -465,13 +465,5 @@ body {
   --w-col-6: 160px; /* 상세보기 */
 }
 
-/* 🔴 최근 5개 감지 */
-.dot.recent-dot {
-  background-color: #ff4d4d; /* 빨강 */
-}
 
-/* 🔵 오래된 감지 */
-.dot.old-dot {
-  background-color: #007bff; /* 파랑 */
-}
 
