@@ -264,52 +264,94 @@ body {
   overflow: hidden;   
 }
 
-
-/* 위반유형 박스  */
+/* 🔹 미니 위반유형 박스 (깔끔/소형) */
 .map-legend {
   position: absolute;
-  bottom: 60px;         /* 지도 안쪽 여백 살짝 늘림 */
-  left: 60px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #d1d5db;
-  border-radius: 10px;  /* 모서리 둥글게 */
-  padding: 12px 18px;   /* 내부 여백 크게 */
-  font-size: 14px;      /* 글씨 크게 */
-  line-height: 1.6;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  bottom: 20px;
+  left: 20px;
+
+  /* 크기/스케일 */
+  --scale: 0.88;                 /* ← 더 작게: 0.84 ~ 0.86 권장 */
+  transform: scale(var(--scale));
+  transform-origin: bottom left;
+
+  /* 박스 스타일 */
+  min-width: 132px;              /* 넓이 고정 대신 최소폭만 */
+  max-width: 160px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid #dfe4ef;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 6px 20px rgba(13,40,90,0.10);
+  backdrop-filter: blur(4px);
+
+  /* 타이포/레이아웃 */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 16px;
+  line-height: 1.35;
+  color: #222;
   z-index: 10;
-  transform: scale(1.1);           /* 전체 크기 비율로 살짝 확대 */
-  transform-origin: bottom left;   /* 왼쪽 아래 기준으로 확대 */
+  box-sizing: border-box;
+  text-align: left;
 }
 
+/* 타이틀: 더 간결하게 */
 .map-legend .legend-title {
-  font-weight: 700;
-  color: #111;
-  font-size: 14px;
-  margin-bottom: 6px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 4px;
+  font-weight: 800;
+  font-size: 18px;
+  color: #0e3ea9;
+  padding-bottom: 6px;
+  margin: 0;
+  letter-spacing: -0.2px;
+  border-bottom: 1px dashed #cdd6ff;  /* 얇은 점선으로 가볍게 */
 }
 
+/* 항목 라인 */
 .map-legend .legend-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 4px 0;
+  font-weight: 600;
+  color: #334155;
+  padding-left: 2px;             /* 점과 텍스트 시각정렬 */
+  white-space: nowrap;           /* 줄바꿈 방지 */
 }
 
+/* 점 표시 (더 작고 또렷하게) */
 .map-legend .dot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  display: inline-block;
+  display: inline-block !important;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.85); /* 지도 위에서도 선명 */
 }
 
-.map-legend .dot.helmet {
-  background-color: #3a46ff !important;
+/* 색상 토큰 */
+.map-legend .dot.helmet { background-color: #3a46ff !important; }
+.map-legend .dot.double { background-color: #12c06a !important; }
+
+/* 다크 지도 대비 살짝 향상 (선택) */
+@media (prefers-color-scheme: dark) {
+  .map-legend {
+    background: rgba(20,24,33,0.86);
+    border-color: rgba(255,255,255,0.12);
+    color: #e8edf7;
+  }
+  .map-legend .legend-title {
+    color: #9db5ff;
+    border-bottom-color: #2a3a74;
+  }
+  .map-legend .legend-item { color: #d9e1f0; }
+  .map-legend .dot { box-shadow: 0 0 0 2px rgba(20,24,33,0.86); }
 }
-.map-legend .dot.double {
-  background-color: #12c06a !important;
+
+/* 작은 화면 여백 보정 */
+@media (max-width: 480px) {
+  .map-legend { bottom: 14px; left: 14px; }
 }
 
 
@@ -411,58 +453,30 @@ body {
   min-width: 0;
 }
 
-/* ====== 표(Logs 테이블) 가로 글자 + 칼정렬 고정 ====== */
 
-/* 전체를 가로 글자 강제 (혹시 브라우저/상위 스타일로 vertical 쓰인 경우 방지) */
-.logs-table th,
-.logs-table td {
-  writing-mode: horizontal-tb !important;
+/* 위반유형 버튼 고정(작은 화면에서도 위로 안올라가게)*/
+
+/* 필터 래퍼가 flex/grid일 때 줄바꿈 방지 */
+.toolbar-right,
+.filter-wrapper,
+.btn-filter {
+  flex-shrink: 0 !important;        /* 공간 줄어도 크기 유지 */
+  white-space: nowrap !important;   /* 줄바꿈 방지 */
 }
 
-/* 열 폭은 이미 --w-col-* 로 지정되어 있으니
-   줄바꿈만 막아서 칼정렬 유지 (내용 길면 말줄임 처리) */
-.logs-table th:nth-child(2),
-.logs-table td:nth-child(2),  /* 날짜 */
-.logs-table th:nth-child(4),
-.logs-table td:nth-child(4),  /* 감지유형 */
-.logs-table th:nth-child(5),
-.logs-table td:nth-child(5),  /* 상태 */
-.logs-table th:nth-child(6),
-.logs-table td:nth-child(6) { /* 상세보기 */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* 필터 버튼이 오른쪽 끝 정렬로 밀려나도 위로 안올라가게 */
+.logs-section .toolbar {
+  align-items: center !important;   /* 수직 가운데 정렬 유지 */
+  flex-wrap: nowrap !important;     /* 자동 줄바꿈 차단 */
 }
 
-/* 시간/숫자류는 숫자폭 균등으로 더 반듯하게 */
-.logs-table td:nth-child(2),
-.logs-table td .time,
-.logs-table td .count {
-  font-variant-numeric: tabular-nums;
-}
-
-/* 위치(3열)는 긴 지명이 있을 수 있으니 한 줄 말줄임(필요 시) */
-.logs-table th:nth-child(3),
-.logs-table td:nth-child(3) {
-  white-space: nowrap;      /* 여러 줄 원치 않으면 활성화 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 체크박스 + No 열도 가로 강제 + 정렬 안정화 */
-.logs-table th:nth-child(1),
-.logs-table td:nth-child(1) {
-  writing-mode: horizontal-tb !important;
-}
-
-
-:root {
-  --w-col-1: 160px; /* 체크박스+No */
-  --w-col-2: 180px; /* 날짜 */
-  --w-col-3: 260px; /* 위치 */
-  --w-col-4: 200px; /* 감지유형 */
-  --w-col-5: 180px; /* 상태 */
-  --w-col-6: 160px; /* 상세보기 */
+/* 좁은 화면일 때 스크롤 허용 (위로 밀림 방지 + 반응형 대응) */
+@media (max-width: 900px) {
+  .logs-section .toolbar {
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 
