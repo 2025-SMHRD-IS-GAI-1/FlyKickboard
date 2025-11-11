@@ -799,17 +799,18 @@ body.report-active {
 /* 감지유형 배지 */
 .detail-type {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
   margin-top: 16px;
 }
 .badge-type {
   background: #e54848;
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  padding: 6px 10px;
-  border-radius: 6px;
-   margin-left: 40px; 
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-align: center;
 }
 
 /* 이미지 */
