@@ -86,6 +86,7 @@ function startRealTimeMonitor() {
       } else if (filter === "double") {
         displayLogs = ALL_LOGS.filter((l) => (l.type || "").includes("2인"));
       }
+	  
 
       renderLogs(displayLogs);
       renderMapMarkers(displayLogs);
@@ -160,16 +161,16 @@ function logItemHTML(log) {
     log.type?.includes("2인") ? "#12c06a" : "#999999";
 
   return `
-    <li class="log-item" style="display:flex;justify-content:space-between;align-items:center;">
+    <li class="log-item">
       <div class="left-info" style="display:flex;align-items:center;gap:8px;">
         <span class="dot" style="color:${color}">●</span>
         <span class="type" style="font-weight:bold;">${log.type}</span>
       </div>
-      <span class="date" style="flex:1;text-align:center;color:#555;">
-        ${log.date || "날짜 없음"}
-      </span>
-      <span class="loc" style="width:130px;text-align:right;">
+      <span class="region" style="flex:1;text-align:center;color:#555;">
         ${log.loc || ""}
+      </span>
+      <span class="time" style="width:130px;text-align:right;">
+        ${log.date || "날짜 없음"}
       </span>
     </li>
   `;
@@ -202,29 +203,37 @@ function renderMapMarkers(logs) {
           </div>`
       )
       .join("<hr style='margin:3px 0;border:none;border-top:1px dotted #ccc;'>");
+/*코드변경*/
+	  const marker = new naver.maps.Marker({
+	    position: new naver.maps.LatLng(sample.latitude, sample.longitude),
+	    map: window.mapInstance,
+	    icon: {
+	      content: `
+	        <div class="fk-marker" style="--mk:${color}">
+	          <span class="halo"></span>
+	          <span class="core"></span>
+	        </div>
+	      `,
+	      anchor: new naver.maps.Point(12, 12),
+	    },
+	  });
 
-    const marker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(sample.latitude, sample.longitude),
-      map: window.mapInstance,
-      icon: {
-        content: `<div style="
-          width:12px;height:11px;
-          background:${color};
-          border-radius:50%;
-          box-shadow: 0 0 3px rgba(0,0,0,0.25);
-        "></div>`, // ✅ 검은 테두리 제거, 그림자만
-      },
-    });
 
-    const info = new naver.maps.InfoWindow({
-      content: `
-        <div style="padding:6px;min-width:160px;">
-          <div style="margin-bottom:4px;">
-            <b>📍 ${sample.loc}</b>
-          </div>
-          ${listHTML}
-        </div>`,
-    });
+	  const info = new naver.maps.InfoWindow({
+	    content: `
+	      <div class="fk-infowin">
+	        <div class="loc">${sample.loc || ""}</div>
+	        <div class="type">${(group[0]?.type || "").replace(/\s+/g,"")}</div>
+	        <div class="time">${group[0]?.date || ""}</div>
+	      </div>
+	    `,
+	    backgroundColor: "transparent",
+	    borderColor: "transparent",
+	    borderWidth: 0,
+	    anchorSize: new naver.maps.Size(0, 0),
+	    disableAnchor: true,
+	    pixelOffset: new naver.maps.Point(0, -6)
+	  });
 
     naver.maps.Event.addListener(marker, "click", () => {
       info.open(window.mapInstance, marker);
@@ -241,7 +250,14 @@ function initNaverMap() {
 
   window.mapInstance = new naver.maps.Map(mapElement, {
     center: new naver.maps.LatLng(35.159545, 126.852601),
-    zoom: 12,
+    zoom: 12, // 초기 확대 비율
+  });
+
+  // ✅ [추가 1] 줌 변경 시 마커 크기 자동 조정
+  naver.maps.Event.addListener(window.mapInstance, "zoom_changed", () => {
+    const zoom = window.mapInstance.getZoom();      // 현재 줌값 (보통 10~18)
+    const scale = 1 + (zoom - 12) * 0.08;           // 확대 비율에 따라 0.8~1.5 정도로 조정
+    document.documentElement.style.setProperty("--marker-scale", scale);
   });
 
   // ✅ 지도 로드 후 범례 표시
@@ -315,3 +331,6 @@ function initNaverMap() {
       }
     });
   }
+
+  
+  /*코드추가 */

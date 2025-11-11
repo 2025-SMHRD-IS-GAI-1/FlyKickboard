@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	   .then(res => res.text())
 	   .then(msg => {
 		console.log("서버 응답:", msg);
-		alert("선택된 항목이 '처리완료'로 변경되었습니다.");
+		alert("선택된 항목이 전송 되었습니다.");
 		targetRows.forEach(r => {
 			const tr = document.querySelector(`#LogTable tr[data-id="${r.id}"]`);
 			if(tr) {

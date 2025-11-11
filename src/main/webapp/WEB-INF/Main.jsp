@@ -36,12 +36,6 @@
       <section class="map-section">
         <h2>감지 위치</h2>
         <div id="map" style="width:100%;height:700px;border-radius:12px; position:relative;">
-		  <!-- ✅ 지도 위에 표시될 범례 -->
-		  <div id="mapLegend" class="map-legend">
-		    <strong>위반유형</strong>
-		    <div><span class="dot helmet"></span> 헬멧 미착용</div>
-		    <div><span class="dot double"></span> 2인 탑승</div>
-		  </div>
 		</div>
       </section>
 
