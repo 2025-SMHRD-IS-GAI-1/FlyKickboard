@@ -105,6 +105,10 @@ public class MemberDAO {
 	}
 
 	
+
+
+
+	
 	
 	// ---------------------- [ 지도 + 실시간 로그 기능 추가 ] ----------------------
 
@@ -149,3 +153,4 @@ public class MemberDAO {
 		return list;
 	}
 }
+

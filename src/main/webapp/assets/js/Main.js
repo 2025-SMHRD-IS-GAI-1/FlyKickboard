@@ -25,6 +25,9 @@ function setupLogout() {
 /*************************************************
  * ✅ 초기 20건 로드
  *************************************************/
+/*************************************************
+ * ✅ 초기 20건 로드 (항상 최신순으로 정렬)
+ *************************************************/
 async function loadLogs() {
   try {
     const ctx = document.body.dataset.ctx || "";
@@ -33,19 +36,22 @@ async function loadLogs() {
 
     const logs = await res.json();
 
-    // 전역 상태 갱신(최신순 가정)
-    ALL_LOGS = Array.isArray(logs) ? logs.slice(0, MAX_KEEP) : [];
+    // ✅ 1. 항상 최신순(내림차순) 정렬
+    ALL_LOGS = Array.isArray(logs)
+      ? logs.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, MAX_KEEP)
+      : [];
 
+    // ✅ 2. 렌더링
     renderLogs(ALL_LOGS);
     renderMapMarkers(ALL_LOGS);
-    updateSummaryCounts(ALL_LOGS); // ✅ 요약 카드 갱신
+    updateSummaryCounts(ALL_LOGS);
   } catch (err) {
     console.error("❌ 감지 로그 불러오기 실패:", err);
   }
 }
 
 /*************************************************
- * ✅ 실시간 갱신
+ * ✅ 실시간 갱신 (항상 최신순 유지)
  *************************************************/
 function startRealTimeMonitor() {
   let lastId = 0;
@@ -57,23 +63,39 @@ function startRealTimeMonitor() {
       if (!res.ok) return;
 
       const newLogs = await res.json();
+
+      // ✅ 새 로그가 없을 때도 항상 정렬 유지
+      if (!Array.isArray(newLogs)) return;
+
       if (newLogs.length > 0) {
-        // 최신 ID 갱신
-        lastId = Math.max(...newLogs.map((l) => Number(l.det_id)));
-
-        // 전역 상태 앞에 추가하고 20개 유지
-        ALL_LOGS = [...newLogs, ...ALL_LOGS].slice(0, MAX_KEEP);
-
-        // 화면 반영
-        prependLogs(newLogs);
-        renderMapMarkers(newLogs);
-        updateSummaryCounts(ALL_LOGS); // ✅ 요약 카드 갱신
+        newLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+        lastId = Math.max(...newLogs.map(l => Number(l.det_id)));
+        ALL_LOGS = [...newLogs, ...ALL_LOGS];
       }
+
+      // ✅ 무조건 최신순으로 정렬 + 20개 유지
+      ALL_LOGS = ALL_LOGS
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, MAX_KEEP);
+
+      // ✅ 필터 유지
+      const filter = (window.AppState && AppState.filter) || null;
+      let displayLogs = ALL_LOGS;
+      if (filter === "helmet") {
+        displayLogs = ALL_LOGS.filter((l) => (l.type || "").includes("헬멧"));
+      } else if (filter === "double") {
+        displayLogs = ALL_LOGS.filter((l) => (l.type || "").includes("2인"));
+      }
+
+      renderLogs(displayLogs);
+      renderMapMarkers(displayLogs);
+      updateSummaryCounts(ALL_LOGS);
     } catch (err) {
       console.error("❌ 실시간 감지 오류:", err);
     }
   }, 5000);
 }
+
 
 /*************************************************
  * ✅ 요약 카드 개수 갱신
@@ -138,16 +160,16 @@ function logItemHTML(log) {
     log.type?.includes("2인") ? "#12c06a" : "#999999";
 
   return `
-    <li class="log-item" style="display:flex;justify-content:space-between;align-items:center;">
+    <li class="log-item">
       <div class="left-info" style="display:flex;align-items:center;gap:8px;">
         <span class="dot" style="color:${color}">●</span>
         <span class="type" style="font-weight:bold;">${log.type}</span>
       </div>
-      <span class="date" style="flex:1;text-align:center;color:#555;">
-        ${log.date || "날짜 없음"}
-      </span>
-      <span class="loc" style="width:130px;text-align:right;">
+      <span class="region" style="flex:1;text-align:center;color:#555;">
         ${log.loc || ""}
+      </span>
+      <span class="time" style="width:130px;text-align:right;">
+        ${log.date || "날짜 없음"}
       </span>
     </li>
   `;
@@ -226,41 +248,72 @@ function initNaverMap() {
     const legend = document.getElementById("mapLegend");
     if (legend) legend.style.display = "block";
   }
-/*************************************************
- * ✅ 감지 유형별 필터링
- *************************************************/
-function setupFilterButtons() {
-  const helmetBtn = document.getElementById("btnHelmet");
-  const doubleBtn = document.getElementById("btnDouble");
+  /*************************************************
+   * ✅ 감지 유형별 필터링 (반복 토글 완벽 지원)
+   *************************************************/
+  function setupFilterButtons() {
+    const helmetBtn = document.getElementById("btnHelmet");
+    const doubleBtn = document.getElementById("btnDouble");
 
-  if (!helmetBtn || !doubleBtn) {
-    console.warn("⚠ 필터 버튼을 찾을 수 없습니다.");
-    return;
+    if (!helmetBtn || !doubleBtn) {
+      console.warn("⚠ 필터 버튼을 찾을 수 없습니다.");
+      return;
+    }
+
+    // ✅ 전역 상태 관리
+    if (!window.AppState) window.AppState = { filter: null };
+
+    const applyFilter = (filterType, btn) => {
+      // 🔹 현재 필터 상태 확인
+      const currentFilter = AppState.filter;
+
+      // 🔹 같은 버튼 다시 클릭 → 전체 복귀
+      if (currentFilter === filterType) {
+        AppState.filter = null;
+        renderLogs(ALL_LOGS);
+        renderMapMarkers(ALL_LOGS);
+        updateSummaryCounts(ALL_LOGS);
+        highlightButton(null);
+        return;
+      }
+
+      // 🔹 새 필터 적용
+      AppState.filter = filterType;
+      let filtered = [];
+
+      if (filterType === "helmet") {
+        filtered = ALL_LOGS.filter((log) => (log.type || "").includes("헬멧"));
+      } else if (filterType === "double") {
+        filtered = ALL_LOGS.filter((log) => (log.type || "").includes("2인"));
+      }
+
+      renderLogs(filtered);
+      renderMapMarkers(filtered);
+      updateSummaryCounts(filtered);
+      highlightButton(btn);
+    };
+
+    // ✅ 이벤트 등록
+    helmetBtn.addEventListener("click", () => applyFilter("helmet", helmetBtn));
+    doubleBtn.addEventListener("click", () => applyFilter("double", doubleBtn));
   }
 
-  helmetBtn.addEventListener("click", () => {
-    const filtered = ALL_LOGS.filter((log) => log.type.includes("헬멧"));
-    renderLogs(filtered);
-    highlightButton(helmetBtn);
-  });
+  /*************************************************
+   * ✅ 버튼 강조 표시 (활성/비활성 시각적 구분)
+   *************************************************/
+  function highlightButton(activeBtn) {
+    const buttons = [document.getElementById("btnHelmet"), document.getElementById("btnDouble")];
 
-  doubleBtn.addEventListener("click", () => {
-    const filtered = ALL_LOGS.filter((log) => log.type.includes("2인"));
-    renderLogs(filtered);
-    highlightButton(doubleBtn);
-  });
-}
-
-/*************************************************
- * ✅ 버튼 클릭 시 강조 표시
- *************************************************/
-function highlightButton(activeBtn) {
-  document.querySelectorAll(".summary-card").forEach((btn) => {
-    btn.style.outline = "none";
-    btn.style.boxShadow = "none";
-    btn.style.transform = "none";
-  });
-  activeBtn.style.outline = "2px solid #0e3ea9";
-  activeBtn.style.boxShadow = "0 0 8px rgba(14,62,169,0.3)";
-  activeBtn.style.transform = "translateY(-1px)";
-}
+    buttons.forEach((btn) => {
+      if (!btn) return;
+      if (btn === activeBtn) {
+        btn.style.outline = "2px solid #0e3ea9";
+        btn.style.boxShadow = "0 0 8px rgba(14,62,169,0.4)";
+        btn.style.transform = "translateY(-1px)";
+      } else {
+        btn.style.outline = "none";
+        btn.style.boxShadow = "none";
+        btn.style.transform = "none";
+      }
+    });
+  }
