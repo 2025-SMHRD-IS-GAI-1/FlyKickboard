@@ -302,7 +302,7 @@
     <div class="detail-image">
       <img id="detailImage" src="" alt="감지 장면" width="250">
     </div>
-master
+
 
     <!-- 정보 영역 -->
     <div class="detail-info">
