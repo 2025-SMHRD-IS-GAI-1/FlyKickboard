@@ -203,11 +203,12 @@ function logItemHTML(log) {
 }
 
 /*************************************************
- * ✅ 지도 마커 표시 (같은 카메라 감지이력 묶기)
+ * ✅ 지도 마커 표시 (같은 카메라 감지이력 묶기 + 다중 감지 표시)
  *************************************************/
 function renderMapMarkers(logs) {
   if (!(window.naver && naver.maps && window.mapInstance)) return;
 
+  // ✅ 기존 마커 완전 제거 (이벤트까지 포함)
   if (window.cameraMarkers && window.cameraMarkers.length > 0) {
     window.cameraMarkers.forEach(m => {
       naver.maps.Event.clearInstanceListeners(m);
@@ -216,13 +217,14 @@ function renderMapMarkers(logs) {
   }
   window.cameraMarkers = [];
 
+  // ✅ 카메라 ID 기준으로 그룹화
   const grouped = {};
   logs.forEach((log) => {
     if (!grouped[log.camera_id]) grouped[log.camera_id] = [];
     grouped[log.camera_id].push(log);
   });
 
-  // ✅ 공용 InfoWindow 초기화
+  // ✅ 공용 InfoWindow (전역 1개만 사용)
   if (!sharedInfoWindow) {
     sharedInfoWindow = new naver.maps.InfoWindow({
       backgroundColor: "transparent",
@@ -234,6 +236,7 @@ function renderMapMarkers(logs) {
     });
   }
 
+  // ✅ 그룹별 마커 생성
   Object.values(grouped).forEach((group) => {
     const sample = group[0];
     const color =
@@ -254,24 +257,50 @@ function renderMapMarkers(logs) {
       },
     });
 
-    // ✅ 클릭 시 InfoWindow 내용만 갱신해서 열기
+    // ✅ 클릭 시 InfoWindow 내용 갱신
     naver.maps.Event.addListener(marker, "click", () => {
+      // 감지유형별 색상 구분 (파랑=헬멧, 초록=2인)
+      const detectionsHTML = group
+        .map((item, idx) => {
+          const itemColor = item.type?.includes("헬멧")
+            ? "#3a46ff"
+            : item.type?.includes("2인")
+            ? "#12c06a"
+            : "#555";
+          return `
+            <div class="det-row" style="margin-bottom:4px;">
+              <span style="font-weight:bold;color:${itemColor};">
+                ${idx + 1}. ${item.type}
+              </span><br>
+              <span style="font-size:11px;color:#666;">${item.date}</span>
+            </div>
+          `;
+        })
+        .join("<hr style='border:none;border-top:1px solid #ddd;margin:4px 0;'>");
+
       const content = `
-        <div class="fk-infowin">
-          <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
-          <div class="tit">${sample.loc || ""}</div>
-          <div class="type">${(group[0]?.type || "").replace(/\s+/g,"")}</div>
-          <div class="time">${group[0]?.date || ""}</div>
+        <div class="fk-infowin" style="min-width:180px;">
+          <button class="close-btn"
+            onclick="this.parentElement.style.display='none'"
+            style="position:absolute;top:2px;right:4px;border:none;background:none;font-size:14px;cursor:pointer;">×</button>
+          <div class="tit"
+            style="font-weight:bold;font-size:13px;color:#0e3ea9;margin-bottom:6px;">
+            ${sample.loc || ""}
+          </div>
+          <div style="max-height:150px;overflow-y:auto;padding-right:4px;">
+            ${detectionsHTML}
+          </div>
         </div>
       `;
+
       sharedInfoWindow.setContent(content);
       sharedInfoWindow.open(window.mapInstance, marker);
     });
 
+    // ✅ 마커 배열에 저장
     window.cameraMarkers.push(marker);
   });
 }
-
 /*************************************************
  * ✅ 지도 초기화
  *************************************************/
