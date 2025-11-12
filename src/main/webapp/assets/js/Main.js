@@ -1,7 +1,8 @@
+console.log("Main.js 로드됨");
 /************** 전역 상태 **************/
 let ALL_LOGS = [];     // 최근 20개 유지
 const MAX_KEEP = 20;
-
+let sharedInfoWindow = null;
 /*************************************************
  * 페이지 로드
  *************************************************/
@@ -22,9 +23,7 @@ function setupLogout() {
     logoutBtn.addEventListener("click", () => alert("로그아웃 되었습니다."));
 }
 
-/*************************************************
- * ✅ 초기 20건 로드
- *************************************************/
+
 /*************************************************
  * ✅ 초기 20건 로드 (항상 최신순으로 정렬)
  *************************************************/
@@ -50,31 +49,53 @@ async function loadLogs() {
   }
 }
 
-/*************************************************
- * ✅ 실시간 갱신 (항상 최신순 유지)
- *************************************************/
+let monitorInterval = null;
+let isMonitorRunning = false;
+
+// 실시간
 function startRealTimeMonitor() {
+  // 🔹 기존 인터벌이 있다면 먼저 제거
+  if (monitorInterval) {
+    clearInterval(monitorInterval);
+    monitorInterval = null; // ✅ 완전 초기화
+    isMonitorRunning = false; // ✅ 상태 리셋
+    console.warn("🧹 기존 실시간 모니터 인터벌 제거됨");
+  }
+
+  // 🔹 이미 실행 중이면 중복 실행 방지
+  if (isMonitorRunning) {
+    console.warn("⚠️ startRealTimeMonitor 이미 실행 중 — 중복 방지");
+    return;
+  }
+
+  isMonitorRunning = true; // ✅ 한 번만 실행
+  console.log("🚀 실시간 모니터 시작됨");
+
   let lastId = 0;
 
-  setInterval(async () => {
+  monitorInterval = setInterval(async () => {
     try {
       const ctx = document.body.dataset.ctx || "";
       const res = await fetch(`${ctx}/LogAfter.do?sinceId=${lastId}`);
       if (!res.ok) return;
 
       const newLogs = await res.json();
-
-      // ✅ 새 로그가 없을 때도 항상 정렬 유지
       if (!Array.isArray(newLogs)) return;
 
-      if (newLogs.length > 0) {
-        newLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
-        lastId = Math.max(...newLogs.map(l => Number(l.det_id)));
-        ALL_LOGS = [...newLogs, ...ALL_LOGS];
-      }
+      // ✅ 중복 제거 (이미 있는 det_id는 무시)
+      let filtered = newLogs.filter(
+        (n) => !ALL_LOGS.some((a) => a.det_id === n.det_id)
+      );
 
-      // ✅ 무조건 최신순으로 정렬 + 20개 유지
-      ALL_LOGS = ALL_LOGS
+      // ✅ 새 로그가 전혀 없으면 아무것도 안 그리기
+      if (filtered.length === 0) return;
+
+      // ✅ 새 로그가 있을 때만 정렬 + lastId 갱신
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      lastId = Math.max(...filtered.map((l) => Number(l.det_id)));
+
+      // ✅ 새 로그를 기존 로그 앞에 추가
+      ALL_LOGS = [...filtered, ...ALL_LOGS]
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .slice(0, MAX_KEEP);
 
@@ -86,17 +107,20 @@ function startRealTimeMonitor() {
       } else if (filter === "double") {
         displayLogs = ALL_LOGS.filter((l) => (l.type || "").includes("2인"));
       }
-	  
 
+      // ✅ 새 로그 있을 때만 렌더링
       renderLogs(displayLogs);
       renderMapMarkers(displayLogs);
       updateSummaryCounts(ALL_LOGS);
+
+      console.log(
+        `📡 새 로그 ${filtered.length}건, 마지막 ID: ${lastId}, 전체 ${ALL_LOGS.length}건`
+      );
     } catch (err) {
       console.error("❌ 실시간 감지 오류:", err);
     }
-  }, 5000);
+  }, 2000);
 }
-
 
 /*************************************************
  * ✅ 요약 카드 개수 갱신
@@ -112,7 +136,7 @@ function updateSummaryCounts(logs) {
   logs.forEach((l) => {
     const t = (l.type || "").replace(/\s/g, ""); // 공백 제거
     if (t.includes("헬멧미착용")) helmet += 1;
-    if (t.includes("2인탑승") || t.includes("2인이상탑승")) dbl += 1;
+    if (t.includes("2인 탑승") || t.includes("2인이상탑승")) dbl += 1;
   });
 
   helmetEl.textContent = helmet;
@@ -177,72 +201,104 @@ function logItemHTML(log) {
 }
 
 /*************************************************
- * ✅ 지도 마커 표시 (같은 카메라 감지이력 묶기)
+ * ✅ 지도 마커 표시 (같은 카메라 감지이력 묶기 + 다중 감지 표시)
  *************************************************/
 function renderMapMarkers(logs) {
   if (!(window.naver && naver.maps && window.mapInstance)) return;
 
+  // ✅ 기존 마커 완전 제거 (이벤트까지 포함)
+  if (window.cameraMarkers && window.cameraMarkers.length > 0) {
+    window.cameraMarkers.forEach(m => {
+      naver.maps.Event.clearInstanceListeners(m);
+      m.setMap(null);
+    });
+  }
+  window.cameraMarkers = [];
+
+  // ✅ 카메라 ID 기준으로 그룹화
   const grouped = {};
   logs.forEach((log) => {
     if (!grouped[log.camera_id]) grouped[log.camera_id] = [];
     grouped[log.camera_id].push(log);
   });
 
+  // ✅ 공용 InfoWindow (전역 1개만 사용)
+  if (!sharedInfoWindow) {
+    sharedInfoWindow = new naver.maps.InfoWindow({
+      backgroundColor: "transparent",
+      borderColor: "transparent",
+      borderWidth: 0,
+      anchorSize: new naver.maps.Size(0, 0),
+      disableAnchor: true,
+      pixelOffset: new naver.maps.Point(0, -6)
+    });
+  }
+
+  // ✅ 그룹별 마커 생성
   Object.values(grouped).forEach((group) => {
     const sample = group[0];
     const color =
       group.some((l) => l.type?.includes("헬멧")) ? "#3a46ff" :
       group.some((l) => l.type?.includes("2인")) ? "#12c06a" : "#999999";
 
-    const listHTML = group
-      .map(
-        (l) => `
-          <div style="margin-bottom:4px;">
-            <b>${l.type}</b><br>
-            <span style="font-size:12px;color:gray;">${l.date}</span>
-          </div>`
-      )
-      .join("<hr style='margin:3px 0;border:none;border-top:1px dotted #ccc;'>");
-/*코드변경*/
-	  const marker = new naver.maps.Marker({
-	    position: new naver.maps.LatLng(sample.latitude, sample.longitude),
-	    map: window.mapInstance,
-	    icon: {
-	      content: `
-	        <div class="fk-marker" style="--mk:${color}">
-	          <span class="halo"></span>
-	          <span class="core"></span>
-	        </div>
-	      `,
-	      anchor: new naver.maps.Point(12, 12),
-	    },
-	  });
-
-
-	  const info = new naver.maps.InfoWindow({
-	    content: `
-	      <div class="fk-infowin">
-	        <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
-	        <div class="tit">${sample.loc || ""}</div>
-	        <div class="type">${(group[0]?.type || "").replace(/\s+/g,"")}</div>
-	        <div class="time">${group[0]?.date || ""}</div>
-	      </div>
-	    `,
-	    backgroundColor: "transparent",
-	    borderColor: "transparent",
-	    borderWidth: 0,
-	    anchorSize: new naver.maps.Size(0, 0),
-	    disableAnchor: true,
-	    pixelOffset: new naver.maps.Point(0, -6)
-	  });
-
-
-    naver.maps.Event.addListener(marker, "click", () => {
-      info.open(window.mapInstance, marker);
+    const marker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(sample.latitude, sample.longitude),
+      map: window.mapInstance,
+      icon: {
+        content: `
+          <div class="fk-marker" style="--mk:${color}">
+            <span class="halo"></span>
+            <span class="core"></span>
+          </div>
+        `,
+        anchor: new naver.maps.Point(12, 12),
+      },
     });
+
+    // ✅ 클릭 시 InfoWindow 내용 갱신
+    naver.maps.Event.addListener(marker, "click", () => {
+      // 감지유형별 색상 구분 (파랑=헬멧, 초록=2인)
+      const detectionsHTML = group
+        .map((item, idx) => {
+          const itemColor = item.type?.includes("헬멧")
+            ? "#3a46ff"
+            : item.type?.includes("2인")
+            ? "#12c06a"
+            : "#555";
+          return `
+            <div class="det-row" style="margin-bottom:4px;">
+              <span style="font-weight:bold;color:${itemColor};">
+                ${idx + 1}. ${item.type}
+              </span><br>
+              <span style="font-size:11px;color:#666;">${item.date}</span>
+            </div>
+          `;
+        })
+        .join("<hr style='border:none;border-top:1px solid #ddd;margin:4px 0;'>");
+
+      const content = `
+        <div class="fk-infowin" style="min-width:180px;">
+          <button class="close-btn"
+            onclick="this.parentElement.style.display='none'"
+            style="position:absolute;top:2px;right:4px;border:none;background:none;font-size:14px;cursor:pointer;">×</button>
+          <div class="tit"
+            style="font-weight:bold;font-size:13px;color:#0e3ea9;margin-bottom:6px;">
+            ${sample.loc || ""}
+          </div>
+          <div style="max-height:150px;overflow-y:auto;padding-right:4px;">
+            ${detectionsHTML}
+          </div>
+        </div>
+      `;
+
+      sharedInfoWindow.setContent(content);
+      sharedInfoWindow.open(window.mapInstance, marker);
+    });
+
+    // ✅ 마커 배열에 저장
+    window.cameraMarkers.push(marker);
   });
 }
-
 /*************************************************
  * ✅ 지도 초기화
  *************************************************/
@@ -255,17 +311,15 @@ function initNaverMap() {
     zoom: 12, // 초기 확대 비율
   });
 
-  // ✅ [추가 1] 줌 변경 시 마커 크기 자동 조정
+  // ✅ 줌 변경 시 크기 리셋 (커짐 방지)
   naver.maps.Event.addListener(window.mapInstance, "zoom_changed", () => {
-    const zoom = window.mapInstance.getZoom();      // 현재 줌값 (보통 10~18)
-    const scale = 1 + (zoom - 12) * 0.08;           // 확대 비율에 따라 0.8~1.5 정도로 조정
-    document.documentElement.style.setProperty("--marker-scale", scale);
+    document.documentElement.style.setProperty("--marker-scale", 1);
   });
 
-  // ✅ 지도 로드 후 범례 표시
-    const legend = document.getElementById("mapLegend");
-    if (legend) legend.style.display = "block";
-  }
+  // ✅ 범례 표시
+  const legend = document.getElementById("mapLegend");
+  if (legend) legend.style.display = "block";
+}
   /*************************************************
    * ✅ 감지 유형별 필터링 (반복 토글 + 개수 항상 유지)
    *************************************************/

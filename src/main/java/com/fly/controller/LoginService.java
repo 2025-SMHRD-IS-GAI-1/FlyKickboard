@@ -11,6 +11,7 @@ import com.fly.model.MemberVO;
 public class LoginService implements Command {
 
 	@Override
+	// 로그인
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
 		String moveUrl = "";
 		String id = request.getParameter("id");

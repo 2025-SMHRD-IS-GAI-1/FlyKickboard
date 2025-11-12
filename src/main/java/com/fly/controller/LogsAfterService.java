@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 public class LogsAfterService implements Command {
 
     @Override
+    // 메인 페이지에서 새로 감지된 로그 출력
     public String execute(HttpServletRequest request, HttpServletResponse response) {
 
         // sinceId 파라미터 받기
@@ -20,7 +21,7 @@ public class LogsAfterService implements Command {
         try {
             sinceId = Long.parseLong(sinceIdParam);
         } catch (Exception e) {
-            System.out.println("⚠ sinceId 변환 실패 → 기본값 0 사용");
+            System.out.println("sinceId 변환 실패 → 기본값 0 사용");
         }
 
         // DAO 호출
@@ -31,9 +32,9 @@ public class LogsAfterService implements Command {
         Gson gson = new Gson();
         String json = gson.toJson(list);
 
-        System.out.println("[새 감지이력] " + json);
+        System.out.println("새 감지이력 " + json);
 
-        // ✅ JSON 응답을 FrontController로 반환
+        // JSON 응답을 FrontController로 반환
         return "fetch:/" + json;
     }
 }

@@ -10,8 +10,8 @@ import com.fly.model.MemberVO;
 public class UpdateService implements Command {
 
 	@Override
+	// 사용자 수정
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
-		System.out.println("들어옴?");
 		// 필요 데이터 꺼내오기 
 		// js에서 아이디를 보내 일치한아이디가 잊는지 확인후 일치한이이디의 비밀번호와 지역을 수정
 		String id = request.getParameter("id"); // 아이디

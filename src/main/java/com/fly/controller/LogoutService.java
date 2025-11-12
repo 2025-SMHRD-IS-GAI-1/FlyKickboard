@@ -9,6 +9,7 @@ import com.fly.frontcontroller.Command;
 public class LogoutService implements Command {
 
 	@Override
+	// 로그인 서비스
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
 		// 1. session 꺼내오기
 		HttpSession session = request.getSession();

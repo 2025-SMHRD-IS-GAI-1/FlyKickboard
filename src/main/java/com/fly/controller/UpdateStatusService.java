@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;  // ✅ 추가
 public class UpdateStatusService implements Command {
 
     @Override
+    // 처리상태
     public String execute(HttpServletRequest request, HttpServletResponse response) {
         String id = request.getParameter("id");
         String idsJson = request.getParameter("ids"); // 다중 처리용

@@ -13,7 +13,9 @@ import com.google.gson.Gson;
 
 @WebServlet("/api/mapdata")
 public class CameraDataController extends HttpServlet {
+	
   @Override
+  // 카메라 데이터 + 감지로그데이터 
   protected void doGet(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
 
@@ -22,7 +24,7 @@ public class CameraDataController extends HttpServlet {
     MemberDAO dao = new MemberDAO();
 
     try {
-      // ✅ 카메라 + 감지 로그 JOIN 데이터 (20건)
+      // 카메라 + 감지 로그 JOIN 데이터 (20건)
       List<MemberVO> detections = dao.LogType(new MemberVO());
       gson.toJson(detections, res.getWriter());
     } catch (Exception e) {

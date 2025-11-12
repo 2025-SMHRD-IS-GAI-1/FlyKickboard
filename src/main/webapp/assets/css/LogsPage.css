@@ -991,3 +991,6 @@ body:has(.logs-section){
 #detailStatus{ margin-left:0; }                              /* 상태 배지도 동일 적용 */
 
 
+html, body {
+  overflow: hidden; /* ✅ 세로, 가로 스크롤 모두 제거 */
+}

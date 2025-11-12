@@ -12,7 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class DeleteLogService implements Command {
-
+	
+	// 로그 삭제 데이터
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -21,7 +22,7 @@ public class DeleteLogService implements Command {
             String json = reader.readLine();
             System.out.println("받은 JSON : " + json);
 
-            // ✅ JSON → List<Integer> 변환 (중요!)
+            // JSON → List<Integer> 변환 (중요!)
             Gson gson = new Gson();
             List<Integer> idList = gson.fromJson(json, new TypeToken<List<Integer>>(){}.getType());
             System.out.println("변환된 ID 리스트 : " + idList);

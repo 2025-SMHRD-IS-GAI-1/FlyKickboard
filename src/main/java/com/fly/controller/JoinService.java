@@ -10,6 +10,7 @@ import com.fly.model.MemberVO;
 public class JoinService implements Command {
 
 	@Override
+	// 사용자 추가 서비스
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
 		// 인코딩 작업
 		response.setContentType("text/html;charset=UTF-8");
