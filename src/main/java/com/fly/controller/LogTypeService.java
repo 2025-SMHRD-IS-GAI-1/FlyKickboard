@@ -11,7 +11,9 @@ import com.fly.model.MemberVO;
 import com.google.gson.Gson;
 
 public class LogTypeService implements Command {
+	
 	@Override
+	// 감지유형 
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
 		String type = request.getParameter("type");
 		System.out.println(type);

@@ -12,6 +12,7 @@ import com.fly.model.MemberVO;
 public class AllLogService implements Command {
 
 	@Override
+	// 전체 로그 조회
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
 		MemberDAO dao = new MemberDAO();
 		MemberVO mvo = new MemberVO();

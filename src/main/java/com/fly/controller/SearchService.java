@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 public class SearchService implements Command {
 
 	@Override
+	// 사용자 검색
     public String execute(HttpServletRequest request, HttpServletResponse response) {
         String keyword = request.getParameter("keyword");
 

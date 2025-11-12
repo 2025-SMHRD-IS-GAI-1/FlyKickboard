@@ -12,6 +12,7 @@ import com.fly.model.MemberVO;
 public class AllManagerService implements Command {
 
 	@Override
+	// 전체 사용자 조회
 	public String execute(HttpServletRequest request, HttpServletResponse response) {
 		System.out.println("test1");
 		MemberDAO dao = new MemberDAO();

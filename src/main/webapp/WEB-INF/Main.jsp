@@ -67,6 +67,6 @@
 
   <!-- ✅ JS 모듈 로드 -->
   <script type="module" src="${ctx}/assets/js/MapHandler.js"></script>
-  <script type="module" src="${ctx}/assets/js/Main.js"></script>
+  <script src="${ctx}/assets/js/Main.js"></script>
 </body>
 </html>
