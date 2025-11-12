@@ -204,36 +204,28 @@ function renderMapMarkers(logs) {
       )
       .join("<hr style='margin:3px 0;border:none;border-top:1px dotted #ccc;'>");
 /*코드변경*/
-	  const marker = new naver.maps.Marker({
-	    position: new naver.maps.LatLng(sample.latitude, sample.longitude),
-	    map: window.mapInstance,
-	    icon: {
-	      content: `
-	        <div class="fk-marker" style="--mk:${color}">
-	          <span class="halo"></span>
-	          <span class="core"></span>
-	        </div>
-	      `,
-	      anchor: new naver.maps.Point(12, 12),
-	    },
-	  });
+const marker = new naver.maps.Marker({
+  position: new naver.maps.LatLng(sample.latitude, sample.longitude),
+  map: window.mapInstance,
+  icon: {
+    content: `<div style="
+      width:12px;height:11px;
+      background:${color};
+      border-radius:50%;
+      box-shadow: 0 0 3px rgba(0,0,0,0.25);
+    "></div>`, // ✅ 검은 테두리 제거, 그림자만
+  },
+});
 
-
-	  const info = new naver.maps.InfoWindow({
-	    content: `
-	      <div class="fk-infowin">
-	        <div class="loc">${sample.loc || ""}</div>
-	        <div class="type">${(group[0]?.type || "").replace(/\s+/g,"")}</div>
-	        <div class="time">${group[0]?.date || ""}</div>
-	      </div>
-	    `,
-	    backgroundColor: "transparent",
-	    borderColor: "transparent",
-	    borderWidth: 0,
-	    anchorSize: new naver.maps.Size(0, 0),
-	    disableAnchor: true,
-	    pixelOffset: new naver.maps.Point(0, -6)
-	  });
+const info = new naver.maps.InfoWindow({
+  content: `
+    <div style="padding:6px;min-width:160px;">
+      <div style="margin-bottom:4px;">
+        <b>📍 ${sample.loc}</b>
+      </div>
+      ${listHTML}
+    </div>`,
+});
 
     naver.maps.Event.addListener(marker, "click", () => {
       info.open(window.mapInstance, marker);
