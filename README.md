@@ -1,11 +1,11 @@
-1. 프로젝트 개요
+**1. 프로젝트 개요**
 YOLO11 기반 경찰 업무 효율화 공유 킥보드 법규 위반 단속 시스템
 - 킥보드 이용자 증가와 비례하여 안전사고 발생 건수도 증가
 - 안전모 착용 실태 및 규제 한계
 - 대부분의 지자체는 공유 킥보드 안전관리 및 단속 업무를 인력에 의존, 하지만 관할 지역 내 설치된 CCTV 수에 비해 단속 인력은 절대적으로 부족하고 현장 단속 또한 인력과 시간의 한계로 인해 지속적으로 단속하기가 어려움
 - 단순 단속 중심의 방식에서 벗어나, 스마트 모니터링 기반의 사전 예방적 안전 관리 체계로 발전할 필요
 
-2. 주요기능
+**2. 주요기능**
 ▪ 개발 목표 
  - 공유킥보드 이용 증가로 인한 안전사고 문제를 해결하기 위해 이용자의 안전모 미착용 및 2인 이상 탑승을 AI 객체탐지 기반으로 실시간 단속, 관리 함으로써 교통사고 예방과 공공 안전 증진을 도모 
 ▪ 개발 내용 
@@ -19,27 +19,27 @@ YOLO11 기반 경찰 업무 효율화 공유 킥보드 법규 위반 단속 시�
    3) 대시보드에 통계 제공 (탐지 건수, 위반 유형별 비율)
  - 탐지 후 처리 기능
 
-3. 기술스택
+**3. 기술스택**
 
 <img width="1521" height="617" alt="image" src="https://github.com/user-attachments/assets/0d32cc31-007b-426e-856c-d94373b06a97" />
 
 
-4. 시스템 아키텍처
+**4. 시스템 아키텍처**
 
 <img width="1521" height="743" alt="image" src="https://github.com/user-attachments/assets/94fbcfe4-cba3-423b-817a-6dc37809f73b" />
 
-5. 유스케이스
+**5. 유스케이스**
 
 ![KakaoTalk_20251113_121415420](https://github.com/user-attachments/assets/03921c12-ba76-4fe7-a214-1e1831ca282e)
 
-6. ERD다이어그램
+**6. ERD다이어그램**
 
 <img width="1826" height="822" alt="KakaoTalk_20251111_202221392" src="https://github.com/user-attachments/assets/865302a6-ae2e-458d-b4ea-572785dc2654" />
 
-7. 서비스 흐름도
+**7. 서비스 흐름도**
 ![KakaoTalk_20251113_121415420_01](https://github.com/user-attachments/assets/7bc5617f-a313-4abd-aaa6-ca05ca0382ea)
 
-8. 화면구성
+**8. 화면구성**
  
  - 로그인
 
@@ -57,7 +57,7 @@ YOLO11 기반 경찰 업무 효율화 공유 킥보드 법규 위반 단속 시�
 
 <img width="1917" height="952" alt="image" src="https://github.com/user-attachments/assets/713949ba-56a7-4101-82d0-f91ead29c0fc" />
 
-10. 모델 개발 및 트러블 슈팅
+**9. 모델 개발 및 트러블 슈팅**
 
  - 문제 1 
 
@@ -67,11 +67,11 @@ YOLO11 기반 경찰 업무 효율화 공유 킥보드 법규 위반 단속 시�
 
 <img width="1594" height="591" alt="image" src="https://github.com/user-attachments/assets/bfa38304-3b04-4ee5-be86-487432f06454" />
 
-11. 팀원 역할
+**10. 팀원 역할**
 
 <img width="1074" height="523" alt="image" src="https://github.com/user-attachments/assets/0179f8c9-4108-474c-9f89-a2cace31110d" />
 
-12. 참고문헌
+**11. 참고문헌**
                         
 <img width="946" height="438" alt="image" src="https://github.com/user-attachments/assets/9a6ffcd0-16a0-4d46-9d9d-b3f770103e43" />
 
